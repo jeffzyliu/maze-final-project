@@ -4,7 +4,7 @@
 ## Team name: Willpower
 ## Team Members: Willem Klein Wassink, Celina Tala, Jeff Liu
 
-GitHub usernames:
+GitHub usernames: Willemkw
 
 To build, run `make`.
 

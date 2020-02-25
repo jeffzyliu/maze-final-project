@@ -1,8 +1,8 @@
 # project_maze_challenge
 # CS50 Winter 2020, Final Project
 
-## Team name:
-## Team Members:
+## Team name: Willpower
+## Team Members: Willem Klein Wassink, Celina Tala, Jeff Liu
 
 GitHub usernames:
 

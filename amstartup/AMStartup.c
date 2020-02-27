@@ -20,6 +20,7 @@
 #include <string.h>
 #include <time.h>
 #include <getopt.h>
+#include <pthread.h>
 
 
 int main (int argc, char *argv[])
@@ -176,6 +177,10 @@ fprintf(fp, "%s %d %s", username, port, ctime(&curtime));
 fclose(fp);
 close(comm_sock);
 free(logfile);
+
+int avatarID = 0;
+char *client_file = "../avatars/amazing_client.c";
+
 return 0;
 }
 

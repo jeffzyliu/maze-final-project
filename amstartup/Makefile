@@ -21,3 +21,4 @@ clean:
 	rm -f $(PROG)
 	rm -f AMStartup.o
 	rm -rf logFiles/*.log 
+	rm -f core

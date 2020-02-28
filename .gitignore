@@ -2,3 +2,4 @@ AMStartup
 .vscode
 core
 vgcore*
+.DS_Store

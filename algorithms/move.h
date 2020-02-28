@@ -1,11 +1,11 @@
 /**
- * decision.h
+ * move.h
  * 
  * module to decide what direction an avatar should head into next
  */ 
 
-#ifndef __DECISION_H
-#define __DECISION_H
+#ifndef __MOVE_H
+#define __MOVE_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,4 +27,4 @@
  */
 int decide_simplerighthand(int lastHeading, XYPos *oldLoc, XYPos *newLoc);
 
-#endif // __DECISION_H
+#endif // __MOVE_H

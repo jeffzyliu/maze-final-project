@@ -1,5 +1,5 @@
 /**
- * decision.c
+ * move.c
  * 
  * module to decide what direction an avatar should head into next
  */ 
@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "../amazing.h"
+#include "move.h"
 
 static int turnLeft(int heading);
 static int turnRight(int heading);

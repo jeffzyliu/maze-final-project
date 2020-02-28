@@ -1,7 +1,7 @@
 /**
  * move.h
  * 
- * module to decide what direction an avatar should head into next
+ * module about move information and algorithms
  */ 
 
 #ifndef __MOVE_H
@@ -36,6 +36,10 @@ int avatar_moved(XYPos *oldLoc, XYPos *newLoc);
  */
 int decide_simplerighthand(int lastHeading, XYPos *oldLoc, XYPos *newLoc);
 
+/**
+ * uses the maze map to expedite right hand following by not trying duplicate sides
+ * may need a mutex lock
+ */ 
 int decide_maprighthand(int lastHeading, XYPos *oldLoc, XYPos *newLoc/*, (maze_t *maze*/);
 
 #endif // __MOVE_H

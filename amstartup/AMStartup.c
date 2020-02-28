@@ -130,11 +130,11 @@ int main (int argc, char *argv[])
 
     //The AM_INIT message the client sends to the server after parameter validation
     AM_Message init_message;
+    memset(&init_message, 0, sizeof(AM_Message));
     init_message.type = htonl(AM_INIT);
     init_message.init.nAvatars = htonl(nAvatars);
     init_message.init.Difficulty = htonl(Difficulty);
     printf("Try to send AM_INIT message to the server now \n");
-    memset(&init_message, 0, sizeof(AM_Message));
     if (write(comm_sock, &init_message, sizeof(AM_Message)) < 0) {
         fprintf(stderr, "error\n");
         exit(5);
@@ -156,8 +156,9 @@ int main (int argc, char *argv[])
         exit(7);
     }
     //if it returns an error message
-    if (IS_AM_ERROR(server_message.type)) {
-        printf("Received an error message from server\n");
+    if (IS_AM_ERROR(ntohl(server_message.type))) {
+        fprintf(stderr, "Received an error message from server\n");
+        exit(8);
     } 
     // printf("%d\n", ntohl(server_message.type));
 
@@ -165,6 +166,7 @@ int main (int argc, char *argv[])
     int height = ntohl(server_message.init_ok.MazeHeight);
     int mazeport = ntohl(server_message.init_ok.MazePort);
     close(comm_sock);
+    printf("%d and height %d\n", width, height);
 
     //starting to write our logfile
     char *username = getenv("USER");

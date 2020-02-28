@@ -15,6 +15,8 @@
  * simplest right-hand-follow maze solve algorithm
  * assumes that the avatar does the moving and gives old and new positions
  * 
+ * this would not handle null-moves; it should only be called when it wants to move for sure
+ * 
  * requires:
  *   lastHeading of the avatar that calls it
  *   x,y tuple oldLocation

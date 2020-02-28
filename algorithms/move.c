@@ -1,7 +1,7 @@
 /**
  * move.c
  * 
- * module to decide what direction an avatar should head into next
+ * module about move information and algorithms
  */ 
 
 #include <stdio.h>
@@ -13,27 +13,43 @@ static int turnLeft(int heading);
 static int turnRight(int heading);
 
 /**
+ * checks if an avatar moved
+ * 
+ * if so, returns move direction
+ * else returns null move
+ */ 
+int avatar_moved(XYPos *oldLoc, XYPos *newLoc)
+{
+    if (oldLoc->x != newLoc->x) {
+        return newLoc->x > oldLoc->x ? M_EAST : M_WEST;
+    } else if (oldLoc->y != newLoc->y) {
+        return newLoc->y > oldLoc->y ? M_NORTH : M_SOUTH;
+    } else { // no movement
+        return M_NULL_MOVE; // == 8
+    }
+}
+
+/**
  * simplest right-hand-follow maze solve algorithm
  * assumes that the avatar does the moving and gives old and new positions
  */ 
 int decide_simplerighthand(int lastHeading, XYPos *oldLoc, XYPos *newLoc)
 {
-    // move success
-    if (oldLoc->x != newLoc->x || oldLoc->y != newLoc->y) {
-        return turnRight(lastHeading);
-    }
-    // should be redundant code; keeping in for the note
-    // if (oldLoc->x != newLoc->x) {
-    //     int direction = newLoc->x > oldLoc->x ? M_EAST : M_WEST;
-    //     return turnRight(direction);
-    // } else if (oldLoc->y != newLoc->y) {
-    //     int direction = newLoc->y > oldLoc->y ? M_NORTH : M_SOUTH;
-    //     return turnRight(direction);
-    // }
-
-    // move failed
-    return turnLeft(lastHeading);
+    if (avatar_moved(oldLoc, newLoc) != M_NULL_MOVE) {
+        return turnRight(lastHeading); // move success
+    } else {
+     return turnLeft(lastHeading); // move failed
+    }    
 }
+
+/**
+ * todo: program this algorithm which uses the map to optimize a bit
+ */ 
+int decide_maprighthand(int lastHeading, XYPos *oldLoc, XYPos *newLoc/*, (maze_t *maze*/)
+{
+    return 0;
+}
+
 
 static int turnLeft(int heading)
 {

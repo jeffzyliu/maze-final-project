@@ -10,10 +10,13 @@
  * 
  */
 
-#include "../amazing.h"
-
 #ifndef __MAZE_H
 #define __MAZE_H
+
+#include <stdio.h>
+#include <stdbool.h>
+#include <stdlib.h>
+#include "../amazing.h"
 
 // ------------------- global types
 typedef struct maze maze_t;

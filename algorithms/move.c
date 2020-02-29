@@ -12,6 +12,7 @@
 #include <pthread.h>
 
 pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutex2 = PTHREAD_MUTEX_INITIALIZER;
 
 static int turnLeft(int heading);
 static int turnRight(int heading);
@@ -55,14 +56,23 @@ int decide_maprighthand(int lastHeading, XYPos *oldLoc, XYPos *newLoc, maze_t *m
     pthread_mutex_unlock(&mutex1);
 }
 
+/**
+ * updates the maze depending on what we learned from moving; also check if we just exited a dead end
+ */ 
 void maze_update(int lastHeading, XYPos *oldLoc, XYPos *newLoc, maze_t *maze)
 {
-    pthread_mutex_lock(&mutex1);
+    pthread_mutex_lock(&mutex2);
     int direction = avatar_moved(oldLoc, newLoc);
-    if (direction != M_NULL_MOVE) {
-        set_neighbor(maze, oldLoc->x, oldLoc->y, direction, newLoc->x, newLoc->y);
+    if (direction != M_NULL_MOVE) { // moved in a direction, set new path in direction moved
+        if (wall_count(maze, oldLoc->x, oldLoc->y) >= 3) { // exited a dead-end, mark as closed
+            set_neighbor(maze, oldLoc->x, oldLoc->y, direction, oldLoc->x, oldLoc->y);
+        } else {
+            set_neighbor(maze, oldLoc->x, oldLoc->y, direction, newLoc->x, newLoc->y); // mark as open
+        }
+    } else { // didn't move, set last heading to wall
+        set_neighbor(maze, oldLoc->x, oldLoc->y, lastHeading, oldLoc->x, oldLoc->y);
     }
-    pthread_mutex_unlock(&mutex1);
+    pthread_mutex_unlock(&mutex2);
 }
 
 static int turnLeft(int heading)

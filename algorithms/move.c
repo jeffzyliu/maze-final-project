@@ -1,7 +1,10 @@
 /**
  * move.c
  * 
+ * author: Jeff Liu, Willem Klein Wassink, Celina tala
+ * 
  * module about move information and algorithms
+ * see move.h for documentation
  */ 
 
 #include <stdio.h>
@@ -18,6 +21,7 @@ static int turnLeft(int heading);
 static int turnRight(int heading);
 static int turnAround(int heading);
 static XYPos otherSide(int heading, XYPos loc);
+static bool directionBlocked(maze_t *maze, XYPos currLoc, int proposedDirection);
 
 /**
  * checks if an avatar moved
@@ -55,16 +59,19 @@ int decide_simplerighthand(int lastHeading, XYPos oldLoc, XYPos newLoc)
 int decide_maprighthand(int lastHeading, XYPos oldLoc, XYPos newLoc, maze_t *maze)
 {
     pthread_mutex_lock(&mutex1);
-    // do {
-
-    // } while ();
-
+    int proposedHeading = decide_simplerighthand(lastHeading, oldLoc, newLoc);
+    while (directionBlocked(maze, newLoc, proposedHeading)) {
+        proposedHeading = turnLeft(proposedHeading);
+    }
     pthread_mutex_unlock(&mutex1);
-    return 0;
+    return proposedHeading;
 }
 
 /**
- * updates the maze depending on what we learned from moving; also check if we just exited a dead end
+ * updates the maze depending on what we learned from moving
+ * also check if we just exited a dead end
+ * 
+ * sets both sides
  */ 
 void maze_update(int lastHeading, XYPos oldLoc, XYPos newLoc, maze_t *maze)
 {
@@ -86,6 +93,9 @@ void maze_update(int lastHeading, XYPos oldLoc, XYPos newLoc, maze_t *maze)
     pthread_mutex_unlock(&mutex1);
 }
 
+/**
+ * converts a heading to its left one
+ */ 
 static int turnLeft(int heading)
 {
     switch (heading) {
@@ -102,6 +112,9 @@ static int turnLeft(int heading)
     }
 }
 
+/**
+ * converts a heading to its right one
+ */ 
 static int turnRight(int heading)
 {
     switch (heading) {
@@ -118,6 +131,9 @@ static int turnRight(int heading)
     }
 }
 
+/**
+ * converts a heading to its opposite one
+ */ 
 static int turnAround(int heading)
 {
     switch (heading) {
@@ -134,6 +150,9 @@ static int turnAround(int heading)
     }
 }
 
+/**
+ * gets a coordinate to the N/S/E/W of the current one
+ */ 
 static XYPos otherSide(int heading, XYPos loc)
 {
     XYPos otherside;
@@ -158,4 +177,12 @@ static XYPos otherSide(int heading, XYPos loc)
             return loc;
     }
     return otherside;
+}
+
+/**
+ * checks inside the maze to see whether a path is blocked for sure
+ */ 
+static bool directionBlocked(maze_t *maze, XYPos currLoc, int proposedDirection)
+{
+    return false;
 }

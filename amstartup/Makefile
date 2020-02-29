@@ -26,3 +26,4 @@ clean:
 	rm -f AMStartup.o
 	rm -rf logFiles/*.log 
 	rm -f core
+	

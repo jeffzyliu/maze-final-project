@@ -10,7 +10,9 @@
 #include <unistd.h>	  
 #include <netdb.h>	
 #include <string.h>
+#include <pthread.h> 
 
+pthread_mutex_t lock; 
 /**
  * Printing the different error messages
  */
@@ -48,15 +50,17 @@ void errorMessage (AM_Message server_message)
 /**
  * Checking if the server message is valid
  */
-AM_Message validMessage (int comm_sock, AM_Message client, int AvatarId, int Direction, AM_Message server_avatar_turn)
+AM_Message validMessageTurn (int turn, int comm_sock, AM_Message client, int AvatarId, int Direction, AM_Message server_avatar_turn)
 {
-    memset(&client, 0, sizeof(AM_Message));
-    client.type = htonl(AM_AVATAR_MOVE);
-    client.avatar_move.AvatarId= htonl(AvatarId);
-    client.avatar_move.Direction = htonl(Direction);
-    if (write(comm_sock, &client, sizeof(AM_Message)) < 0 ) {
-        fprintf(stderr, "failed to send to server\n");
-        return;
+    if (turn == 1) {
+        memset(&client, 0, sizeof(AM_Message));
+        client.type = htonl(AM_AVATAR_MOVE);
+        client.avatar_move.AvatarId= htonl(AvatarId);
+        client.avatar_move.Direction = htonl(Direction);
+        if (write(comm_sock, &client, sizeof(AM_Message)) < 0 ) {
+            fprintf(stderr, "failed to send to server\n");
+            return;
+        }
     }
     int receive = read(comm_sock, &server_avatar_turn, sizeof(AM_Message));
     if (receive < 0) {
@@ -73,6 +77,4 @@ AM_Message validMessage (int comm_sock, AM_Message client, int AvatarId, int Dir
         return;
     } 
     return server_avatar_turn;
-
 }
-

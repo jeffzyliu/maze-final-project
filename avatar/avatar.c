@@ -92,38 +92,36 @@ void *avatar (void *arg)
 
     AM_Message avatarTurn;
     int Direction = 1;
-    int turns = 0;
+    XYPos sentinel;    //the position of the avatar that doesn't move
+    sentinel.x = ntohl(pos[0].x);
+    sentinel.y = ntohl(pos[0].y);
     //temporary direction to go west. If the server responds with a valid message
     while (1) {
         if (server_avatar_turn.type == ntohl(AM_MAZE_SOLVED)) {
-            printf("Solved Maze\n");
             break;
         }
-        if (turns == 5) {
-            break;
+        if (AvatarId == 0 || avatar_moved(pos[AvatarId], sentinel) == 8) {
+            server_avatar_turn = validMessageTurn(1, comm_sock, avatarTurn, AvatarId, M_NULL_MOVE, server_avatar_turn);
+            continue;
         }
-        printf("The AvatarId is %d and the turnId is %d\n", AvatarId, TurnId);
         if (TurnId%nAvatars == AvatarId) {
             XYPos oldLoc;
             oldLoc.x = oldx;
             oldLoc.y = oldy;
-            printf("The old location is (%d, %d)\n", x, y);
-            server_avatar_turn = validMessage(comm_sock, avatarTurn, AvatarId, Direction, server_avatar_turn);
+            server_avatar_turn = validMessageTurn(1, comm_sock, avatarTurn, AvatarId, Direction, server_avatar_turn);
             XYPos newLoc;
             newLoc.x = ntohl(server_avatar_turn.avatar_turn.Pos[AvatarId].x);
             newLoc.y = ntohl(server_avatar_turn.avatar_turn.Pos[AvatarId].y);
-            printf("The new location is (%d, %d)\n", newLoc.x, newLoc.y);
             avatarTurned (filename, AvatarId, nAvatars, newLoc, oldLoc, pos);
             Direction = decide_simplerighthand(Direction, oldLoc, newLoc);
-            printf("The new direction is %d\n", Direction);
-            TurnId = ntohl(server_avatar_turn.avatar_turn.TurnId);
-            printf("The new TurnID is %d\n", TurnId);
-            oldx = ntohl(server_avatar_turn.avatar_turn.Pos[AvatarId].x);
-            oldy = ntohl(server_avatar_turn.avatar_turn.Pos[AvatarId].y);
+            oldx = newLoc.x;
+            oldy = newLoc.y;
+        } else {
+            server_avatar_turn = validMessageTurn(0, comm_sock, avatarTurn, AvatarId, Direction, server_avatar_turn);
         }
-        turns++;
-        
+        TurnId = ntohl(server_avatar_turn.avatar_turn.TurnId);
     }
+    mazeSolved(filename, ntohl(server_avatar_turn.maze_solved.nAvatars), ntohl(server_avatar_turn.maze_solved.Difficulty),ntohl(server_avatar_turn.maze_solved.nMoves), ntohl(server_avatar_turn.maze_solved.Hash));
     free(parameter);
     return NULL;
 }

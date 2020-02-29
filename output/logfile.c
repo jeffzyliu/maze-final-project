@@ -54,14 +54,26 @@ void avatarTurned (char *filename, int AvatarId, int nAvatars, XYPos newPos, XYP
         return;
     }
     char movedAvatar[100];
-    printf("the new location is %d, %d\n", newPos.x, newPos.y);
     sprintf(movedAvatar, "Avatar %d moved from %d, %d to %d, %d\n", AvatarId, oldPos.x, oldPos.y, newPos.x, newPos.y);
     fprintf(fp, "%s", movedAvatar);
     fprintf(fp, "Avatar Locations: ");
     for (int i = 0; i < nAvatars; i++) {
         fprintf(fp, "%d: (%d, %d); ", i, ntohl(pos[i].x), ntohl(pos[i].y));
     }
-    printf("out of loop\n");
     fprintf(fp, "\n");
+    fclose(fp);
+}
+
+void mazeSolved (char *filename, int nAvatars, int Difficulty, int nMoves, int Hash)
+{
+    FILE *fp;
+    fp = fopen(filename, "a");
+    if (fp == NULL) {
+        fprintf(stderr, "failed to open file\n");
+        return;
+    }
+    char solvedMessage[100];
+    sprintf(solvedMessage, "Mazed solved with %d avatars at Difficult %d in %d moves at hash %d\n", nAvatars, Difficulty, nMoves, Hash);
+    fprintf(fp, "%s", solvedMessage);
     fclose(fp);
 }

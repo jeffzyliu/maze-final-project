@@ -42,4 +42,6 @@ void startingState (char *filename, int AvatarId, int x, int y, XYPos *pos);
  */     
 void avatarTurned (char *filename, int AvatarId, int nAvatars, XYPos newPos, XYPos oldPos, XYPos *pos);
 
+void mazeSolved (char *filename, int nAvatars, int Difficulty, int nMoves, int Hash);
+
 #endif // __LOGWRITE_H

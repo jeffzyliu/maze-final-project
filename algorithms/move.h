@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include "../amazing.h"
 #include "../mazedata/maze.h"
+#include <stdbool.h>
 #include <pthread.h>
 
 
@@ -43,5 +44,16 @@ int decide_simplerighthand(int lastHeading, XYPos oldLoc, XYPos newLoc);
  * may need a mutex lock
  */ 
 int decide_maprighthand(int lastHeading, XYPos oldLoc, XYPos newLoc, maze_t *maze);
+
+/**
+ * updates the maze depending on last move
+ * 
+ * if we didn't move, set the location we were just in to have a wall in the direction we tried to move in
+ * if we did move, find the direction we just moved in
+ *   if we left a dead end (all 3 walls blocked), block it off so nobody enters it again
+ * 
+ * also blocks off the counterpart of the wall since each wall connects with one on the other side
+ */ 
+void maze_update(int lastHeading, XYPos oldLoc, XYPos newLoc, maze_t *maze);
 
 #endif // __MOVE_H

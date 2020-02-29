@@ -8,6 +8,10 @@
 #include <stdlib.h>
 #include "../amazing.h"
 #include "move.h"
+#include "../mazedata/maze.h"
+#include <pthread.h>
+
+pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
 
 static int turnLeft(int heading);
 static int turnRight(int heading);
@@ -45,11 +49,21 @@ int decide_simplerighthand(int lastHeading, XYPos *oldLoc, XYPos *newLoc)
 /**
  * todo: program this algorithm which uses the map to optimize a bit
  */ 
-int decide_maprighthand(int lastHeading, XYPos *oldLoc, XYPos *newLoc/*, (maze_t *maze*/)
+int decide_maprighthand(int lastHeading, XYPos *oldLoc, XYPos *newLoc, maze_t *maze)
 {
-    return 0;
+    pthread_mutex_lock(&mutex1);
+    pthread_mutex_unlock(&mutex1);
 }
 
+void maze_update(int lastHeading, XYPos *oldLoc, XYPos *newLoc, maze_t *maze)
+{
+    pthread_mutex_lock(&mutex1);
+    int direction = avatar_moved(oldLoc, newLoc);
+    if (direction != M_NULL_MOVE) {
+        set_neighbor(maze, oldLoc->x, oldLoc->y, direction, newLoc->x, newLoc->y);
+    }
+    pthread_mutex_unlock(&mutex1);
+}
 
 static int turnLeft(int heading)
 {

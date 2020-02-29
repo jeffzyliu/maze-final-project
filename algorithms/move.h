@@ -10,6 +10,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "../amazing.h"
+#include "../mazedata/maze.h"
+#include <pthread.h>
 
 
 /**
@@ -40,6 +42,6 @@ int decide_simplerighthand(int lastHeading, XYPos *oldLoc, XYPos *newLoc);
  * uses the maze map to expedite right hand following by not trying duplicate sides
  * may need a mutex lock
  */ 
-int decide_maprighthand(int lastHeading, XYPos *oldLoc, XYPos *newLoc/*, (maze_t *maze*/);
+int decide_maprighthand(int lastHeading, XYPos *oldLoc, XYPos *newLoc, maze_t *maze);
 
 #endif // __MOVE_H

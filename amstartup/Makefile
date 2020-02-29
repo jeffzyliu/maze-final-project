@@ -2,7 +2,7 @@
 A = ../avatar
 
 PROG = AMStartup
-OBJS = AMStartup.o ../amazing.h
+OBJS = AMStartup.o 
 LLIBS = $A/avatar.a 
 
 
@@ -15,7 +15,7 @@ MAKE = Makefile
 $(PROG): $(OBJS) $(LLIBS) 
 	 $(CC) $(CFLAGS) $(OBJS) $(LLIBS) -o $(PROG)
 
-AMStartup.o: $(LLIBS) 
+AMStartup.o: $A/avatar.h $A/messages.h ../amazing.h
 
 .PHONY: test clean
 
@@ -26,3 +26,4 @@ clean:
 	rm -f AMStartup.o
 	rm -rf logFiles/*.log 
 	rm -f core
+	

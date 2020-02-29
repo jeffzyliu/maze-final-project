@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
 
     //if we dont have the correct number of options
     if (optind != 7) {
-        fprintf(stderr, usageMessage);
+        fprintf(stderr, "%s", usageMessage);
         exit(2);
     }
     //making sure the options are integers
@@ -148,7 +148,6 @@ int main(int argc, char *argv[])
     int height = ntohl(server_message.init_ok.MazeHeight);
     int mazeport = ntohl(server_message.init_ok.MazePort);
     close(comm_sock);
-    printf("%d and height %d\n", width, height);
 
     //starting to write our logfile
     char *username = getenv("USER");
@@ -176,12 +175,11 @@ int main(int argc, char *argv[])
     int rc;
    
     for (int i = 0; i < nAvatars; i++) {
-        printf("Creating Thread %d\n", i);
         avatar_p *parameter = clientParameters(i, nAvatars, Difficulty, Hostname, mazeport, logfile);
         rc = pthread_create(&threads[i], NULL, avatar, (void *)parameter);
         if (rc) {
-         printf("Error:unable to create thread, %d\n", rc);
-         exit(-1);
+            printf("Error:unable to create thread, %d\n", rc);
+            exit(-1);
         }
     }
     for (int i = 0; i < nAvatars; i++) {

@@ -1,4 +1,6 @@
-AMStartup
+*.o
+*.a
 .vscode
 core
 vgcore*
+.DS_Store

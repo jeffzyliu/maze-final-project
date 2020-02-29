@@ -55,11 +55,12 @@ int decide_simplerighthand(int lastHeading, XYPos oldLoc, XYPos newLoc)
 int decide_maprighthand(int lastHeading, XYPos oldLoc, XYPos newLoc, maze_t *maze)
 {
     pthread_mutex_lock(&mutex1);
-    do {
+    // do {
 
-    } while ();
+    // } while ();
 
     pthread_mutex_unlock(&mutex1);
+    return 0;
 }
 
 /**

@@ -6,7 +6,16 @@
  * AUTHOR: Celina Tala, Jeff Liu, Willem Klein Wassink
  */ 
 
+#ifndef __LOGWRITE_H
+#define __LOGWRITE_H
+
+#include <pthread.h> 
+#include <stdio.h> 
+#include <stdlib.h> 
+#include <string.h> 
+#include <unistd.h> 
 #include "../amazing.h"
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
+
+void writetoFile (char *filename, int AvatarId, int x, int y, XYPos pos[]);
+
+#endif // __LOGWRITE_H

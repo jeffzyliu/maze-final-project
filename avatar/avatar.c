@@ -9,6 +9,7 @@
 #include <pthread.h>
 #include "messages.h"
 #include "../amazing.h"
+#include "../output/logfile.h"
 
 //our data struct for passing a paramter to our avatar thread for each avatar
 typedef struct avatar_paramter {
@@ -28,7 +29,9 @@ void *avatar (void *arg)
     avatar_p *parameter = (avatar_p *)arg;
     int mazeport = parameter->mazeport;
     char *hostname = parameter->hostname;
-    printf("The host name is %s\n", hostname);
+    int AvatarId = parameter->AvatarId;
+    char *filename = parameter->filename;
+    printf("The file name is %s\n", filename);
     int comm_sock = socket(AF_INET, SOCK_STREAM, 0);
     if (comm_sock < 0) {
         perror("opening socket");
@@ -50,7 +53,38 @@ void *avatar (void *arg)
         perror("connecting stream socket");
         exit(4);
     }
-    printf("Clients connected to server!\n");
+    //keep trying to send the server a ready message until it is accepted
+    AM_Message ready;
+    AM_Message server_avatar_turn;
+    do {
+        memset(&ready, 0, sizeof(AM_Message));
+        ready.type = htonl(AM_AVATAR_READY);
+        ready.avatar_ready.AvatarId= htonl(AvatarId);
+        if (write(comm_sock, &ready, sizeof(AM_Message)) < 0 ) {
+            fprintf(stderr, "failed to send to servor\n");
+            exit(5);
+        }
+        int receive = read(comm_sock, &server_avatar_turn, sizeof(AM_Message));
+        if (receive < 0) {
+            fprintf(stderr, "Failed to Receive Message from Server\n");
+            exit(6);
+        } 
+        //If it is equal to 0, then the connection closed
+        if (receive == 0) {
+            fprintf(stderr, "Connection to Server Closed\n");
+            exit(7);
+        }
+        if (IS_AM_ERROR(ntohl(server_avatar_turn.type))) {
+            errorMessage(server_avatar_turn);
+        } 
+    } while (IS_AM_ERROR(ntohl(server_avatar_turn.type)));
+
+    int TurnId = ntohl(server_avatar_turn.avatar_turn.TurnId);
+    int x = ntohl(server_avatar_turn.avatar_turn.Pos[AvatarId].x);
+    int y = ntohl(server_avatar_turn.avatar_turn.Pos[AvatarId].y);
+    printf("The turnID for avatar %d is %d\n", AvatarId, TurnId);
+    printf("The position for ID %d is at (%d, %d)\n", AvatarId, x, y );
+    writetoFile(filename, AvatarId, x, y, ntohl(server_avatar_turn.avatar_turn.Pos));
 
     free(parameter);
     return NULL;

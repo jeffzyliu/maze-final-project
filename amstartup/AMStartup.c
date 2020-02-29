@@ -155,12 +155,12 @@ int main(int argc, char *argv[])
         fprintf(stderr, "Failed to get username\n");
     }
 
-    char *logfile = malloc(strlen("logFiles/Amazing___.log") + strlen(username) + 2 * sizeof(int) + 1);
+    char *logfile = malloc(strlen("../Amazing___.log") + strlen(username) + 2 * sizeof(int) + 1);
     if (logfile == NULL) {
         fprintf(stderr, "Failed to allocate memory for file\n");
         exit(8);
     }
-    sprintf(logfile, "logFiles/Amazing_%s_%d_%d.log", username, Difficulty, nAvatars);
+    sprintf(logfile, "../Amazing_%s_%d_%d.log", username, Difficulty, nAvatars);
 
     FILE *fp;
     fp = fopen(logfile, "w");
@@ -169,7 +169,8 @@ int main(int argc, char *argv[])
     }
     time_t curtime;
     time(&curtime);
-    fprintf(fp, "%s %d %s", username, mazeport, ctime(&curtime));
+    fprintf(fp, "%s %d %s\n", username, mazeport, ctime(&curtime));
+    fprintf(fp, "*****************************************\n");
 
     pthread_t threads[nAvatars];
     int rc;

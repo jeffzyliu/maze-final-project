@@ -1,7 +1,7 @@
 #Makefile for Avatar Directory
 
 LIBS= avatar.a
-OBJS = messages.o avatar.o 
+OBJS = messages.o avatar.o ../output/logfile.o
 
 $(LIBS): $(OBJS)
 	ar cr $(LIBS) $(OBJS)

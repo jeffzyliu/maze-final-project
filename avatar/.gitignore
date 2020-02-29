@@ -1,5 +1,6 @@
-*.o
-*.a
+avatar.o
+messages.o
+core
 .vscode
 core
 vgcore*

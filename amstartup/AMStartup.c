@@ -13,6 +13,8 @@
  */
 
 #include "../amazing.h"
+#include "../avatar/messages.h"
+#include "../avatar/avatar.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>	  
@@ -21,24 +23,9 @@
 #include <time.h>
 #include <getopt.h>
 #include <pthread.h>
-#include <ifaddrs.h>
 
-//our data struct for passing a paramter to our avatar thread for each avatar
-typedef struct avatar_paramter {
-    int AvatarId;
-    int nAvatars;
-    int Difficulty;
-    char *hostname;
-    int mazeport;
-    char *filename;
-} avatar_p;
-
-avatar_p *clientParameters (int AvatarId, int nAvatar, int Difficulty, char *hostname, int mazeport, char*filename);
-void *avatar(void *parameter);
-
-int main (int argc, char *argv[])
+int main(int argc, char *argv[])
 {
-
     //Variable declarations
     char *nAvatars_input;
     char *Difficulty_input;
@@ -52,29 +39,29 @@ int main (int argc, char *argv[])
     int err = 0;
 
     //setting the options arguments
-    while ((c= getopt(argc, argv, "n:d:h:")) != -1) {
+    while ((c = getopt(argc, argv, "n:d:h:")) != -1) {
         switch (c) {
             case 'n':
                 if (optarg[0] == '-' && err == 0 ) {
-                    optopt='n';
+                    optopt = 'n';
                     err = 1;
-                } else if (err == 0){
+                } else if (err == 0) {
                     nAvatars_input = optarg;
                     break;
                 }
             case 'd':
                 if (optarg[0] == '-' && err == 0) {
-                    optopt='n';
-                    err=1;
-                } else if (err==0){
+                    optopt = 'n';
+                    err = 1;
+                } else if (err == 0){
                     Difficulty_input = optarg;
                     break;
                 }
             case 'h':
                 if (optarg[0] == '-' && err == 0) {
-                    optopt='n';
-                    err=1;
-                } else if (err==0){
+                    optopt = 'n';
+                    err = 1;
+                } else if (err == 0){
                     Hostname = optarg;
                     break;
                 }
@@ -89,7 +76,7 @@ int main (int argc, char *argv[])
     }
 
     //if we dont have the correct number of options
-    if (optind != 7){
+    if (optind != 7) {
         fprintf(stderr, usageMessage);
         exit(2);
     }
@@ -100,10 +87,6 @@ int main (int argc, char *argv[])
     }
     program = argv[0];
 
-    if (nAvatars > AM_MAX_AVATAR || Difficulty > AM_MAX_DIFFICULTY) {
-        fprintf(stderr, "Arguments out of range\n");
-        exit(8);
-    }
     //Opening our socket
     int comm_sock = socket(AF_INET, SOCK_STREAM, 0);
     if (comm_sock < 0) {
@@ -157,10 +140,9 @@ int main (int argc, char *argv[])
     }
     //if it returns an error message
     if (IS_AM_ERROR(ntohl(server_message.type))) {
-        fprintf(stderr, "Received an error message from server\n");
+        errorMessage(server_message);
         exit(8);
     } 
-    // printf("%d\n", ntohl(server_message.type));
 
     int width = ntohl(server_message.init_ok.MazeWidth);
     int height = ntohl(server_message.init_ok.MazeHeight);
@@ -174,9 +156,9 @@ int main (int argc, char *argv[])
         fprintf(stderr, "Failed to get username\n");
     }
 
-    char *logfile = malloc(strlen("logFiles/Amazing___.log") + strlen(username) + 2*sizeof(int) + 1);
+    char *logfile = malloc(strlen("logFiles/Amazing___.log") + strlen(username) + 2 * sizeof(int) + 1);
     if (logfile == NULL) {
-        fprintf(stderr, "Failed to ALlocate memory for file\n");
+        fprintf(stderr, "Failed to allocate memory for file\n");
         exit(8);
     }
     sprintf(logfile, "logFiles/Amazing_%s_%d_%d.log", username, Difficulty, nAvatars);
@@ -193,10 +175,10 @@ int main (int argc, char *argv[])
     pthread_t threads[nAvatars];
     int rc;
    
-    for (int i = 0; i < nAvatars; i++){
+    for (int i = 0; i < nAvatars; i++) {
         printf("Creating Thread %d\n", i);
         avatar_p *parameter = clientParameters(i, nAvatars, Difficulty, Hostname, mazeport, logfile);
-        rc = pthread_create(&threads[i], NULL, avatar, (void*)parameter);
+        rc = pthread_create(&threads[i], NULL, avatar, (void *)parameter);
         if (rc) {
          printf("Error:unable to create thread, %d\n", rc);
          exit(-1);
@@ -209,69 +191,4 @@ int main (int argc, char *argv[])
     fclose(fp);
     free(logfile);
     return 0;
-}
-/**
- * avatar_p *clientParameters ()
- * SUMMARY: This function creates the struct avatar_p, which is the parameter we need to
- * pass to our avatar method when we create new threads
- * 
- * PARAMETERS:
- *      int AvatariD        ID for each avatar starting at 0
- *      int nAvatars        total number of avatars
- *      int Difficulty      difficulty level
- *      char *hostname      hostname
- *      int mazeport        the port of maze location
- *      char *filename      the file we are writing to
- * 
- * RETURN:
- *      avatar_p *parameter the data struct with necessary parameters
- */          
-
-avatar_p *clientParameters (int AvatarId, int nAvatars, int Difficulty, char *hostname, int mazeport, char*filename)
-{
-    avatar_p *parameter = malloc(sizeof(avatar_p));
-    if (parameter == NULL) {
-        fprintf(stderr, "Failed to allocate memory\n");
-        exit(EXIT_FAILURE);
-    }
-    parameter->AvatarId= AvatarId;
-    parameter->nAvatars = nAvatars;
-    parameter->Difficulty = Difficulty;
-    parameter->hostname = hostname;
-    parameter->mazeport = mazeport;
-    parameter->filename = filename;
-    return parameter;
-}
-
-void *avatar (void *arg)
-{
-    avatar_p *parameter = (avatar_p *) arg;
-    int mazeport = parameter->mazeport;
-    char *hostname = parameter->hostname;
-    printf("The host name is %s\n", hostname);
-    int comm_sock = socket(AF_INET, SOCK_STREAM, 0);
-    if (comm_sock < 0) {
-        perror("opening socket");
-        exit(3);
-    }
-    struct sockaddr_in server;  // address of the server
-    server.sin_family = AF_INET;
-    server.sin_port = htons(mazeport);
-
-    struct hostent *hostp = gethostbyname(hostname);
-    if (hostp == NULL) {
-        fprintf(stderr, "unknown host '%s'\n", hostname);
-        exit(3);
-    }  
-    memcpy(&server.sin_addr, hostp->h_addr_list[0], hostp->h_length);
-
-    // 3. Connect the socket to the server   
-    if (connect(comm_sock, (struct sockaddr *) &server, sizeof(server)) < 0) {
-        perror("connecting stream socket");
-        exit(4);
-    }
-    printf("Clients connected to server!\n");
-
-    free(parameter);
-    return NULL;
 }

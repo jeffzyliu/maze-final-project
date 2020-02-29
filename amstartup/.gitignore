@@ -1,0 +1,7 @@
+AMStartup
+AMStartup.o
+.vscode
+core
+vgcore*
+.DS_Store
+logFiles

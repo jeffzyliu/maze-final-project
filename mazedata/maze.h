@@ -20,6 +20,21 @@ typedef struct maze maze_t;
 
 // ------------------- functions
 
+// ------------------- set_wall
+/* Sets a maze's neighbor to a passed-in node
+ * 
+ * Inputs:
+ *      a maze pointer
+ *      integer (x,y) coordinates for the current node
+ *      an integer 'd' representing a direction, 0 for West, 1 for North, 2 for South, 3 for East.
+ *      integer (x,y) coordinates for the new neighbor
+ * 
+ * Outputs:
+ *      False if failure (bad input for d)
+ *      True on success
+ */
+bool set_neighbor(maze_t *maze, int x, int y, const int d, int neighbor_x, int neighbor_y);
+
 // ------------------- maze_new
 /* Initializes a new maze
  * 
@@ -34,21 +49,6 @@ typedef struct maze maze_t;
  */
 maze_t *maze_new(int height, int width);
 
-// ------------------- set_wall
-/* Sets a maze's neighbor to a passed-in node
- * 
- * Inputs:
- *      a maze pointer
- *      integer (x,y) coordinates
- *      an integer 'd' representing a direction
- *      the contents of the new neighbor
- * 
- * Outputs:
- *      NULL if failure
- *      otherwise, a pointer to the updated node
- */
-mazenode_t *set_neighbor(maze_t *maze, int x, int y, const int d, mazenode_t *new_neighbor);
-
 // ------------------- wall_count
 /* Returns the number of walls a mazenode is neighbors with
  *
@@ -57,7 +57,7 @@ mazenode_t *set_neighbor(maze_t *maze, int x, int y, const int d, mazenode_t *ne
  *      integer (x,y) coordinates
  * 
  * Outputs:
- *      NULL if failure
+ *      -1 on failure
  *      number of walls in a node on success
  */
 int wall_count(maze_t *maze, int x, int y);
@@ -71,5 +71,29 @@ int wall_count(maze_t *maze, int x, int y);
  * Ignores NULL mazes    
  */
 void maze_delete(maze_t *maze);
+
+// ------------------- unit_mazenode_print
+/* Prints out the node at (x,y) in the maze
+ * 
+ * Inputs:
+ *      a pointer to a valid maze
+ *      integer x and y coordinates
+ *      a pointer to a file open for writing
+ * 
+ * Guarantees
+ *      Ignores NULL mazes
+ *      Ignores NULL file pointers
+ *      Ignores coordinates below zero and above width/height
+ */
+void unit_mazenode_print(maze_t *maze, int x, int y, FILE *fp);
+
+// ------------------- unit_maze_print
+/* Iterates over the entire maze, calling unit_mazenode_print on each location
+ * 
+ * Inputs:
+ *      a pointer to a valid maze
+ *      a pointer to a file open for writing
+ */
+void unit_maze_print(maze_t *maze, FILE *fp);
 
 #endif // __MAZE_H

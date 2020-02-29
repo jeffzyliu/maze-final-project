@@ -1,5 +1,5 @@
 /*
- * Willem Klein Wassink, Jeff Liu, Celina Tala, CS50, Winter 2020
+ * Willem Klein Wassink, CS50, Winter 2020
  * 
  * maze.c - module for encoding a maze
  * 
@@ -240,6 +240,7 @@ void unit_maze_print(maze_t *maze, FILE *fp) {
     }
 }
 
+// Puts an avatar into the maze
 bool set_avatar(maze_t *maze, int x, int y, int avatar_id) {
     if (maze != NULL) {
         if (maze->array[y][x] != NULL) {
@@ -254,3 +255,115 @@ bool set_avatar(maze_t *maze, int x, int y, int avatar_id) {
         return false;
     }
 }
+
+
+// Returns XYPos of the neighbor of a node in a given direction
+XYPos check_neighbor(maze_t *maze, int x, int y, int d) {
+    XYPos neighbor;
+    neighbor.x = maze->array[y][x]->neighbors[d]->x;
+    neighbor.y = maze->array[y][x]->neighbors[d]->y;
+    return neighbor;
+}
+
+
+
+/********************************************************
+ **************** unit testing **************************
+ ********************************************************/
+
+#ifdef UNIT_TEST
+
+int test_newmaze1() {
+    printf("Creating maze of height 3 and width 3\n");
+    maze_t *maze = maze_new(3, 3);
+    printf("----------------------------------------------------------------\n");
+
+    printf("Assessing nodes' wallcounts. Should depend on presence of border walls\n");
+    for (int y=0; y < 3; y++) {
+        printf("a\n");
+        for (int x=0; y < 3; x++) {
+            printf("b\n");
+            printf("Wallcount for (%d,%d): %d\n", x, y, wall_count(maze, x, y));
+        }
+    }
+    printf("----------------------------------------------------------------\n");
+
+    printf("Calling unit_maze_print method\n");
+    unit_maze_print(maze, stdout);
+    printf("----------------------------------------------------------------\n");
+    
+    printf("Putting some avatars in the maze: 0 at (0,0), 1 at (2,1) and 2 at (2,2)\n");
+    set_avatar(maze, 0, 0, 0);
+    set_avatar(maze, 2, 1, 1);
+    set_avatar(maze, 2, 2, 2);
+    printf("----------------------------------------------------------------\n");
+
+    // 0 for West, 1 for North, 2 for South, 3 for East.
+    printf("Putting walls and passages the maze. Shouldn't be any nulls\n");
+    // (0,0)
+    set_neighbor(maze, 0, 0, 2, 0, 0); // south wall
+    set_neighbor(maze, 0, 0, 3, 1, 0);
+
+    // (0,1)
+    set_neighbor(maze, 0, 1, 1, 0, 1); // north wall
+    set_neighbor(maze, 0, 1, 2, 1, 1);
+    set_neighbor(maze, 0, 1, 3, 0, 2);
+
+    // (0,2)
+    set_neighbor(maze, 0, 2, 1, 0, 1);
+    set_neighbor(maze, 0, 2, 3, 1, 2);
+
+    // (1,0)
+    set_neighbor(maze, 1, 0, 0, 0, 0);
+    set_neighbor(maze, 1, 0, 2, 1, 1);
+    set_neighbor(maze, 1, 0, 3, 1, 0); // east wall
+
+    // (1,1)
+    set_neighbor(maze, 1, 1, 0, 0, 1);
+    set_neighbor(maze, 1, 1, 1, 1, 0);
+    set_neighbor(maze, 1, 1, 2, 1, 1); // south wall
+    set_neighbor(maze, 1, 1, 3, 1, 1); // east wall
+
+    // (1,2)
+    set_neighbor(maze, 1, 2, 0, 0, 2);
+    set_neighbor(maze, 1, 2, 1, 1, 2); // north wall
+    set_neighbor(maze, 1, 2, 3, 2, 2);
+
+    // (2,0)
+    set_neighbor(maze, 2, 0, 0, 2, 0); // west wall
+    set_neighbor(maze, 2, 0, 2, 2, 1);
+
+    // (2,1)
+    set_neighbor(maze, 2, 1, 0, 2, 1);
+    set_neighbor(maze, 2, 1, 1, 2, 0);
+    set_neighbor(maze, 2, 1, 2, 2, 2);
+
+    // (2,2)
+    set_neighbor(maze, 2, 2, 0, 1, 2);
+    set_neighbor(maze, 2, 2, 1, 2, 1);
+    printf("----------------------------------------------------------------\n");
+
+    printf("Assessing nodes' new wallcounts. Shoul represent new maze\n");
+    for (int y=0; y < 3; y++) {
+        for (int x=0; y < 3; x++) {
+            printf("Wallcount for (%d,%d): %d\n", x, y, wall_count(maze, x, y));
+        }
+    }
+    printf("----------------------------------------------------------------\n");
+
+    printf("Calling unit_maze_print method\n");
+    unit_maze_print(maze, stdout);
+    printf("----------------------------------------------------------------\n");
+
+    printf("Deleting maze\n");
+    maze_delete(maze);
+    printf("----------------------------------------------------------------\n");
+    return 0;
+}
+
+int main() {
+    test_newmaze1();
+    exit(0);
+}
+
+#endif // UNIT_TEST

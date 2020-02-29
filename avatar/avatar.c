@@ -31,7 +31,7 @@ void *avatar (void *arg)
     char *hostname = parameter->hostname;
     int AvatarId = parameter->AvatarId;
     char *filename = parameter->filename;
-    printf("The file name is %s\n", filename);
+    printf("%d\n", mazeport);
     int comm_sock = socket(AF_INET, SOCK_STREAM, 0);
     if (comm_sock < 0) {
         perror("opening socket");
@@ -56,35 +56,19 @@ void *avatar (void *arg)
     //keep trying to send the server a ready message until it is accepted
     AM_Message ready;
     AM_Message server_avatar_turn;
-    do {
-        memset(&ready, 0, sizeof(AM_Message));
-        ready.type = htonl(AM_AVATAR_READY);
-        ready.avatar_ready.AvatarId= htonl(AvatarId);
-        if (write(comm_sock, &ready, sizeof(AM_Message)) < 0 ) {
-            fprintf(stderr, "failed to send to servor\n");
-            exit(5);
-        }
-        int receive = read(comm_sock, &server_avatar_turn, sizeof(AM_Message));
-        if (receive < 0) {
-            fprintf(stderr, "Failed to Receive Message from Server\n");
-            exit(6);
-        } 
-        //If it is equal to 0, then the connection closed
-        if (receive == 0) {
-            fprintf(stderr, "Connection to Server Closed\n");
-            exit(7);
-        }
-        if (IS_AM_ERROR(ntohl(server_avatar_turn.type))) {
-            errorMessage(server_avatar_turn);
-        } 
-    } while (IS_AM_ERROR(ntohl(server_avatar_turn.type)));
+
 
     int TurnId = ntohl(server_avatar_turn.avatar_turn.TurnId);
-    int x = ntohl(server_avatar_turn.avatar_turn.Pos[AvatarId].x);
-    int y = ntohl(server_avatar_turn.avatar_turn.Pos[AvatarId].y);
-    printf("The turnID for avatar %d is %d\n", AvatarId, TurnId);
-    printf("The position for ID %d is at (%d, %d)\n", AvatarId, x, y );
-    writetoFile(filename, AvatarId, x, y, ntohl(server_avatar_turn.avatar_turn.Pos));
+    XYPos *pos = server_avatar_turn.avatar_turn.Pos;
+    int x = ntohl(pos[AvatarId].x);
+    int y = ntohl(pos[AvatarId].y);   
+    startingState(filename, AvatarId, x, y, pos);
+
+    while (1) {
+        AM_Message
+    }
+
+
 
     free(parameter);
     return NULL;
@@ -108,3 +92,4 @@ avatar_p *clientParameters(int AvatarId, int nAvatars, int Difficulty, char *hos
     parameter->filename = filename;
     return parameter;
 }
+

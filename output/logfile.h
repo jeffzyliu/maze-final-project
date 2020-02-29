@@ -15,7 +15,18 @@
 #include <string.h> 
 #include <unistd.h> 
 #include "../amazing.h"
+#include <netinet/in.h>
 
-void writetoFile (char *filename, int AvatarId, int x, int y, XYPos pos[]);
+/**
+ * SUMMARY: this method will write the initial starting positions of all the avatars
+ * 
+ * PARAMETERS:
+ *      char *filename      the file we are writing to
+ *      int AvatarId        the Avatar that is writing to the file
+ *      int x               x position of the Avatar   
+ *      int y               y position of Avatar
+ *      XYPos *pos          array of positions of other avatars
+ */
+void startingState (char *filename, int AvatarId, int x, int y, XYPos *pos);
 
 #endif // __LOGWRITE_H

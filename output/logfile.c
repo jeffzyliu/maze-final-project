@@ -14,24 +14,27 @@
 #include "logfile.h"
 #include <pthread.h> 
 #include <unistd.h> 
+#include <netinet/in.h>
 
 
 pthread_mutex_t lock; 
-void writetoFile (char *filename, int AvatarId, int x, int y, XYPos pos[])
+/**
+ * The first few lines of the file that logs where each Avatar is inserted
+ */
+void startingState (char *filename, int AvatarId, int x, int y, XYPos *pos)
 {
     pthread_mutex_lock(&lock);
-    fprintf("%s\n", filename);
     FILE *fp;
-    fp = fopen(filename, "w");
+    fp = fopen(filename, "a");
     if (fp == NULL) {
         fprintf(stderr, "failed to open file\n");
         return;
     }
+    
     fprintf(fp, "Inserted Avatar %d at (%d, %d)\n", AvatarId, x, y);
-    int i = 0;
-    while (pos[i].x!= NULL) {
-        fprintf(fp, "%d: (%d, %d); ", AvatarId, x, y);
-        i++;
+    fprintf(fp, "Avatar Locations: ");
+    for (int i = 0; i <= AvatarId; i++) {
+        fprintf(fp, "%d: (%d, %d); ", i, ntohl(pos[i].x), ntohl(pos[i].y));
     }
     fprintf(fp, "\n");
     fclose(fp);

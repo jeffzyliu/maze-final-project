@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include "../amazing.h"
 #include <netinet/in.h>
+#include <stdbool.h>
 
 void errorMessage (AM_Message server_message)
 {
@@ -37,3 +38,31 @@ void errorMessage (AM_Message server_message)
             break;
     }
 }
+
+bool validMessage (AM_Message client, int clientType, AM_Message server)
+{
+    do {
+        memset(&client, 0, sizeof(AM_Message));
+        ready.type = htonl(AM_AVATAR_READY);
+        ready.avatar_ready.AvatarId= htonl(AvatarId);
+        if (write(comm_sock, &ready, sizeof(AM_Message)) < 0 ) {
+            fprintf(stderr, "failed to send to server\n");
+            exit(5);
+        }
+        int receive = read(comm_sock, &server_avatar_turn, sizeof(AM_Message));
+        if (receive < 0) {
+            fprintf(stderr, "Failed to Receive Message from Server\n");
+            exit(6);
+        } 
+        //If it is equal to 0, then the connection closed
+        if (receive == 0) {
+            fprintf(stderr, "Connection to Server Closed\n");
+            exit(7);
+        }
+        if (IS_AM_ERROR(ntohl(server_avatar_turn.type))) {
+            errorMessage(server_avatar_turn);
+        } 
+    } while (IS_AM_ERROR(ntohl(server_avatar_turn.type)));
+
+}
+

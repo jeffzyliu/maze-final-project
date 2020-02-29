@@ -96,4 +96,14 @@ void unit_mazenode_print(maze_t *maze, int x, int y, FILE *fp);
  */
 void unit_maze_print(maze_t *maze, FILE *fp);
 
+// ------------------- set_avatar
+/* Puts an avatar of a given ID into a location in a maze
+ * 
+ * Inputs:
+ *      a pointer to a valid maze
+ *      integer (x,y) coordinates
+ *      an integer avatar ID
+ */
+bool set_avatar(maze_t *maze, int x, int y, int avatar_id);
+
 #endif // __MAZE_H

@@ -72,6 +72,8 @@ static void mazenode_delete(mazenode_t *node) {
 }
 
 
+// ------------------- global functions
+
 // Caller passes in the maze, (x,y) coordinates for a location in it, and a pointer to the new neighbor.
 // unexplored = null, open space = pointer to next node, wall = pointer to self
 // 0 for West, 1 for North, 2 for South, 3 for East.
@@ -80,7 +82,7 @@ static void mazenode_delete(mazenode_t *node) {
 bool set_neighbor(maze_t *maze, int x, int y, const int d, int neighbor_x, int neighbor_y) {
     mazenode_t *new_neighbor = maze->array[neighbor_y][neighbor_x];
     if (d < 0 || d > 3) {
-        fprintf(stderr, "Error: 'd' must be 0 (West), 1 (North), 2 (South), or 3 (East)");
+        fprintf(stderr, "Error: 'd' must be 0 (West), 1 (North), 2 (South), or 3 (East)\n");
         return false;
     }
     maze->array[y][x]->neighbors[d] = new_neighbor;
@@ -88,12 +90,11 @@ bool set_neighbor(maze_t *maze, int x, int y, const int d, int neighbor_x, int n
 }
 
 
-// ------------------- global functions
 // Creates a new maze of set width and height, filled with mazenodes. Caller has to delete it.
 maze_t *maze_new(int height, int width) {
     maze_t *maze = malloc(sizeof(maze_t));
     if (maze == NULL) {
-        fprintf(stderr, "maze allocation failed");
+        fprintf(stderr, "maze allocation failed\n");
         return NULL;
     } else {
         maze->height = height;
@@ -133,7 +134,7 @@ maze_t *maze_new(int height, int width) {
 // Returns number of neighbors in the node that are walls.
 int wall_count(maze_t *maze, int x, int y) {
     if (maze == NULL) {
-        fprintf(stderr, "Error: NULL maze passed in");
+        fprintf(stderr, "Error: NULL maze passed in\n");
         return -1;
     }
     mazenode_t *node = maze->array[x][y];
@@ -236,5 +237,20 @@ void unit_maze_print(maze_t *maze, FILE *fp) {
         for (int x = 0; x < maze->width; x++) {
             unit_mazenode_print(maze, x, y, fp);
         }
+    }
+}
+
+bool set_avatar(maze_t *maze, int x, int y, int avatar_id) {
+    if (maze != NULL) {
+        if (maze->array[y][x] != NULL) {
+            maze->array[y][x]->avatar = avatar_id;
+            return true;
+        } else {
+            fprintf(stderr, "Error: node at location (%d,%d) is NULL\n", x, y);
+            return false;
+        }
+    } else {
+        fprintf(stderr, "Error: maze is NULL\n");
+        return false;
     }
 }

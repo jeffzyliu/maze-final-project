@@ -109,4 +109,18 @@ void unit_maze_print(maze_t *maze, FILE *fp);
  */
 bool set_avatar(maze_t *maze, int x, int y, int avatar_id);
 
+// ------------------- check_neighbor
+/* Returns an XYPos of the coordinates of the neighbor of a given node in a given direction
+ * 
+ * Inputs:
+ *      a pointer to a valid maze
+ *      integer (x,y) coordinates
+ *      an integer representing the direction
+ * 
+ * Output:
+ *      XYPos struct containing the x and y coordinates of the indicated neighbor
+ *          Same coordinates = wall
+ */
+XYPos check_neighbor(maze_t *maze, int x, int y, int d);
+
 #endif // __MAZE_H

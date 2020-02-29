@@ -1,4 +1,5 @@
-AMStartup
+*.o
+*.a
 .vscode
 core
 vgcore*

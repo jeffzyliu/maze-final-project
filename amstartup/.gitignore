@@ -4,3 +4,4 @@ AMStartup.o
 core
 vgcore*
 .DS_Store
+logFiles

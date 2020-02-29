@@ -38,7 +38,7 @@ int decide_simplerighthand(int lastHeading, XYPos *oldLoc, XYPos *newLoc)
     if (avatar_moved(oldLoc, newLoc) != M_NULL_MOVE) {
         return turnRight(lastHeading); // move success
     } else {
-     return turnLeft(lastHeading); // move failed
+        return turnLeft(lastHeading); // move failed
     }    
 }
 
@@ -62,6 +62,8 @@ static int turnLeft(int heading)
         return M_NORTH;
     case M_NORTH:
         return M_WEST;
+    default:
+        return M_NULL_MOVE;
     }
 }
 
@@ -76,5 +78,7 @@ static int turnRight(int heading)
         return M_SOUTH;
     case M_NORTH:
         return M_EAST;
+    default:
+        return M_NULL_MOVE;
     }
 }

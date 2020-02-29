@@ -8,6 +8,7 @@
 
 #include <stdio.h>
 #include <stdbool.h>
+#include <stdlib.h>
 #include "../amazing.h"
 #include "maze.h"
 
@@ -17,7 +18,7 @@ typedef struct mazenode {
         // (unexplored = null)
         // (open space = pointer to next node)
         // (wall = pointer to self)
-    mazenode_t *neighbors[4];
+    struct mazenode *neighbors[4];
 
     // For checking if the node contains an avatar.
     // -1 for no avatar. Otherwise, it's the avatar's ID.
@@ -71,6 +72,22 @@ static void mazenode_delete(mazenode_t *node) {
 }
 
 
+// Caller passes in the maze, (x,y) coordinates for a location in it, and a pointer to the new neighbor.
+// unexplored = null, open space = pointer to next node, wall = pointer to self
+// 0 for West, 1 for North, 2 for South, 3 for East.
+// Returns true on success, false on failure
+// TODO: Add additional error checks
+bool set_neighbor(maze_t *maze, int x, int y, const int d, int neighbor_x, int neighbor_y) {
+    mazenode_t *new_neighbor = maze->array[neighbor_y][neighbor_x];
+    if (d < 0 || d > 3) {
+        fprintf(stderr, "Error: 'd' must be 0 (West), 1 (North), 2 (South), or 3 (East)");
+        return false;
+    }
+    maze->array[y][x]->neighbors[d] = new_neighbor;
+    return true;
+}
+
+
 // ------------------- global functions
 // Creates a new maze of set width and height, filled with mazenodes. Caller has to delete it.
 maze_t *maze_new(int height, int width) {
@@ -83,30 +100,32 @@ maze_t *maze_new(int height, int width) {
         maze->width = width;
         mazenode_t ***array = calloc(height, sizeof(mazenode_t **));
         maze->array = array;
+
         for (int y = 0; y < height; y++) {
+            // Create each row
             mazenode_t **row = calloc(width, sizeof(mazenode_t *));
             maze->array[y] = row;
             for (int x = 0; x < width; x++) {
+                // Fill the rows
                 row[x] = mazenode_new(x, y);
+
+                // If the node is along the border, set it to a wall
+                if (x == 0) {
+                    set_neighbor(maze, x, y, 0, x, y); // Western border wall
+                }
+                if (x == width-1) {
+                    set_neighbor(maze, x, y, 3, x, y); // Eastern border wall
+                }
+                if (y == 0) {
+                    set_neighbor(maze, x, y, 1, x, y); // Northern border wall
+                }
+                if (y == height-1) {
+                    set_neighbor(maze, x, y, 2, x, y); // Southern border wall
+                }
             }
         }
         return maze;
     }
-}
-
-
-// Caller passes in the maze, (x,y) coordinates for a location in it, and a pointer to the new neighbor.
-// unexplored = null, open space = pointer to next node, wall = pointer to self
-// 0 for West, 1 for North, 2 for South, 3 for East.
-// Returns pointer to the updated node if success, NULL if failure
-mazenode_t *set_neighbor(maze_t *maze, int x, int y, const int d, mazenode_t *new_neighbor) {
-    if (d < 0 || d > 3) {
-        fprintf(stderr, "Error: 'd' must be 0 (West), 1 (North), 2 (South), or 3 (East)");
-        return NULL;
-    }
-    mazenode_t *node = maze->array[y][x];
-    node->neighbors[d] = new_neighbor;
-    return node;
 }
 
 
@@ -115,12 +134,12 @@ mazenode_t *set_neighbor(maze_t *maze, int x, int y, const int d, mazenode_t *ne
 int wall_count(maze_t *maze, int x, int y) {
     if (maze == NULL) {
         fprintf(stderr, "Error: NULL maze passed in");
-        return NULL;
+        return -1;
     }
     mazenode_t *node = maze->array[x][y];
     int wall_count = 0;
     for (int i = 0; i < 4; i++) {
-        if (node->neighbors[i] == node) {
+        if (node->neighbors[i]->x == node->x && node->neighbors[i]->y == node->y) {
             wall_count++;
         }
     }
@@ -131,8 +150,8 @@ int wall_count(maze_t *maze, int x, int y) {
 // Frees all the mazenodes in a maze
 void maze_delete(maze_t *maze) {
     if (maze != NULL) {
-        for (int y = 0; y < maze->width; y++) {
-            for (int x = 0; x < maze->height; x++) {
+        for (int y = 0; y < maze->height; y++) {
+            for (int x = 0; x < maze->width; x++) {
                 if (maze->array[y][x] != NULL) {
                     mazenode_delete(maze->array[y][x]);
                 }
@@ -141,5 +160,81 @@ void maze_delete(maze_t *maze) {
         }
         free(maze->array);
         free(maze);
+    }
+}
+
+
+// Prints each mazenode. Not final print method, intended for unit testing
+void unit_mazenode_print(maze_t *maze, int x, int y, FILE *fp) {
+    if (fp != NULL) {
+        if (maze != NULL) {
+            if (x < 0 || y < 0 || x >= maze->width || y >= maze->height) {
+                if (maze->array[y][x] != NULL) {
+                    fputc('[', fp);
+
+                    // Print the avatar status
+                    fprintf(fp, "{%d}", maze->array[y][x]->avatar);
+
+                    // Print the current node's coordinates
+                    fprintf(fp, "(%d,%d)", x, y);
+
+                    // Print the neighbors' coordinates
+                    for (int i=0; i<4; i++) {
+                        fputc('{', fp);
+                        switch(i) {
+                            case 0:         // West neighbor
+                                fputs("W:", fp);
+                                if (maze->array[y][x-1] != NULL) {
+                                    fprintf(fp, "(%d,%d)", x-1, y);
+                                } else {
+                                    fputs("(null)", fp);
+                                }
+                                break;
+                            
+                            case 1:         // North neighbor
+                                fputs("N:", fp);
+                                if (maze->array[y+1][x] != NULL) {
+                                    fprintf(fp, "(%d,%d)", x, y+1);
+                                } else {
+                                    fputs("(null)", fp);
+                                }
+                                break;
+                            
+                            case 2:         // South neighbor
+                                fputs("S:", fp);
+                                if (maze->array[y-1][x] != NULL) {
+                                    fprintf(fp, "(%d,%d)", x, y-1);
+                                } else {
+                                    fputs("(null)", fp);
+                                }
+                                break;
+                            
+                            case 3:         // East neighbor
+                                fputs("E:", fp);
+                                if (maze->array[y][x+1] != NULL) {
+                                    fprintf(fp, "(%d,%d)", x+1, y);
+                                } else {
+                                    fputs("(null)", fp);
+                                }                            
+                                break;
+                        }
+                        fputs("},", fp);
+                    }
+
+                    fputc(']', fp);
+                    fputc('\n', fp);
+                }
+            }
+        }
+    }
+}
+
+
+// Calls unit_maze_print on each node in a given maze
+void unit_maze_print(maze_t *maze, FILE *fp) {
+    for (int y = 0; y < maze->height; y++) {
+        for (int x = 0; x < maze->width; x++) {
+            unit_mazenode_print(maze, x, y, fp);
+        }
     }
 }

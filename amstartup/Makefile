@@ -1,17 +1,21 @@
+#Makefile for AMStartup
+A = ../avatar
+
 PROG = AMStartup
-OBJS = AMStartup.o
+OBJS = AMStartup.o ../amazing.h
+LLIBS = $A/avatar.a 
 
 
 #TESTING = -DMEMTEST
 
-CFLAGS = -Wall -pedantic -std=c11 -ggdb $(TESTING) -I$C -I$L
+CFLAGS = -Wall -pedantic -std=c11 -ggdb $(TESTING) -I$A -lpthread
 CC = gcc
 MAKE = Makefile
 
-$(PROG): $(OBJS)
-	 $(CC) $(CFLAGS) $^ $(LIBS) -o $@
+$(PROG): $(OBJS) $(LLIBS) 
+	 $(CC) $(CFLAGS) $(OBJS) $(LLIBS) -o $(PROG)
 
-AMStartup.o = amazing.h 
+AMStartup.o: $(LLIBS) 
 
 .PHONY: test clean
 

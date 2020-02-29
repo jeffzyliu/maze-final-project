@@ -6,7 +6,7 @@ OBJS = messages.o avatar.o
 $(LIBS): $(OBJS)
 	ar cr $(LIBS) $(OBJS)
 
-avatar.o: ../output/logfile.h
+avatar.o: ../output/logfile.h ../algorithms/move.h ../amazing.h
 
 clean:
 	rm -f *~ *.o *.dSYM

@@ -3,11 +3,17 @@
  */
 
 #include <stdio.h>
-#include <stdio.h>
+#include <stdlib.h>
 #include "../amazing.h"
 #include <netinet/in.h>
 #include <stdbool.h>
+#include <unistd.h>	  
+#include <netdb.h>	
+#include <string.h>
 
+/**
+ * Printing the different error messages
+ */
 void errorMessage (AM_Message server_message)
 {
     int errortype = ntohl(server_message.type);
@@ -39,30 +45,34 @@ void errorMessage (AM_Message server_message)
     }
 }
 
-bool validMessage (AM_Message client, int clientType, AM_Message server)
+/**
+ * Checking if the server message is valid
+ */
+AM_Message validMessage (int comm_sock, AM_Message client, int AvatarId, int Direction, AM_Message server_avatar_turn)
 {
-    do {
-        memset(&client, 0, sizeof(AM_Message));
-        ready.type = htonl(AM_AVATAR_READY);
-        ready.avatar_ready.AvatarId= htonl(AvatarId);
-        if (write(comm_sock, &ready, sizeof(AM_Message)) < 0 ) {
-            fprintf(stderr, "failed to send to server\n");
-            exit(5);
-        }
-        int receive = read(comm_sock, &server_avatar_turn, sizeof(AM_Message));
-        if (receive < 0) {
-            fprintf(stderr, "Failed to Receive Message from Server\n");
-            exit(6);
-        } 
-        //If it is equal to 0, then the connection closed
-        if (receive == 0) {
-            fprintf(stderr, "Connection to Server Closed\n");
-            exit(7);
-        }
-        if (IS_AM_ERROR(ntohl(server_avatar_turn.type))) {
-            errorMessage(server_avatar_turn);
-        } 
-    } while (IS_AM_ERROR(ntohl(server_avatar_turn.type)));
+    memset(&client, 0, sizeof(AM_Message));
+    client.type = htonl(AM_AVATAR_MOVE);
+    client.avatar_move.AvatarId= htonl(AvatarId);
+    client.avatar_move.Direction = htonl(Direction);
+    if (write(comm_sock, &client, sizeof(AM_Message)) < 0 ) {
+        fprintf(stderr, "failed to send to server\n");
+        return;
+    }
+    int receive = read(comm_sock, &server_avatar_turn, sizeof(AM_Message));
+    if (receive < 0) {
+        fprintf(stderr, "Failed to Receive Message from Server\n");
+        return;
+    } 
+    //If it is equal to 0, then the connection closed
+    if (receive == 0) {
+        fprintf(stderr, "Connection to Server Closed\n");
+        return;
+    }
+    if (IS_AM_ERROR(ntohl(server_avatar_turn.type))) {
+        errorMessage(server_avatar_turn);
+        return;
+    } 
+    return server_avatar_turn;
 
 }
 

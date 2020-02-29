@@ -9,6 +9,8 @@
 #include <pthread.h>
 #include "messages.h"
 #include "../amazing.h"
+#include "../algorithms/move.h"
+#include "../output/logfile.h"
 
 typedef struct avatar_parameter avatar_p; //our parameter for the avatar method
 

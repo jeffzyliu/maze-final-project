@@ -10,6 +10,10 @@
 #include <stdlib.h>
 #include "../amazing.h"
 #include <netinet/in.h>
+#include <string.h>
+#include <stdbool.h>
+#include <unistd.h>	  
+#include <netdb.h>	
 
 /**
  * SUMMARY: Checks the type of the message from the server and prints the correct error message
@@ -22,4 +26,5 @@
  */
 void errorMessage(AM_Message server_message);
 
+AM_Message validMessage (int comm_sock, AM_Message client, int AvatarId, int Direction, AM_Message server_avatar_turn);
 #endif //_MESSAGES_H

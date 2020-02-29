@@ -1,5 +1,5 @@
 /*
- * Willem Klein Wassink, CS50, Winter 2020
+ * Willem Klein Wassink, Jeff Liu, Celina Tala, CS50, Winter 2020
  * 
  * maze.c - module for encoding a maze
  * 
@@ -45,7 +45,6 @@ static mazenode_t *mazenode_new(int x, int y);
 // Neighbors init to NULL, caller gives (x,y), avatar init to -1
 static mazenode_t *mazenode_new(int x, int y) {
     mazenode_t *node = malloc(sizeof(mazenode_t));
-
     if (node == NULL) {
         return NULL;
     } else {
@@ -63,6 +62,11 @@ static mazenode_t *mazenode_new(int x, int y) {
 
 // Frees contents of a mazenode
 static void mazenode_delete(mazenode_t *node) {
+    node->neighbors[M_WEST] = NULL;
+    node->neighbors[M_NORTH] = NULL;
+    node->neighbors[M_SOUTH] = NULL;
+    node->neighbors[M_EAST] = NULL;
+    free(node->neighbors);
     free(node);
 }
 
@@ -72,16 +76,17 @@ static void mazenode_delete(mazenode_t *node) {
 maze_t *maze_new(int height, int width) {
     maze_t *maze = malloc(sizeof(maze_t));
     if (maze == NULL) {
+        fprintf(stderr, "maze allocation failed");
         return NULL;
     } else {
         maze->height = height;
         maze->width = width;
-        mazenode_t ***array = calloc(height, sizeof(mazenode_t[width]));
+        mazenode_t ***array = calloc(height, sizeof(mazenode_t **));
         maze->array = array;
-        for (int y=0; y<height; y++) {
-            mazenode_t **row = calloc(width, sizeof(mazenode_t));
+        for (int y = 0; y < height; y++) {
+            mazenode_t **row = calloc(width, sizeof(mazenode_t *));
             maze->array[y] = row;
-            for (int x=0; x<width; x++) {
+            for (int x = 0; x < width; x++) {
                 row[x] = mazenode_new(x, y);
             }
         }
@@ -109,12 +114,12 @@ mazenode_t *set_neighbor(maze_t *maze, int x, int y, const int d, mazenode_t *ne
 // Returns number of neighbors in the node that are walls.
 int wall_count(maze_t *maze, int x, int y) {
     if (maze == NULL) {
-        fprintf("Error: NULL maze passed in");
+        fprintf(stderr, "Error: NULL maze passed in");
         return NULL;
     }
     mazenode_t *node = maze->array[x][y];
     int wall_count = 0;
-    for (int i=0; i<4; i++) {
+    for (int i = 0; i < 4; i++) {
         if (node->neighbors[i] == node) {
             wall_count++;
         }
@@ -126,12 +131,15 @@ int wall_count(maze_t *maze, int x, int y) {
 // Frees all the mazenodes in a maze
 void maze_delete(maze_t *maze) {
     if (maze != NULL) {
-        for (int x=0; x < maze->width; x++) {
-            for (int y=0; y < maze->height; y++) {
+        for (int y = 0; y < maze->width; y++) {
+            for (int x = 0; x < maze->height; x++) {
                 if (maze->array[y][x] != NULL) {
                     mazenode_delete(maze->array[y][x]);
                 }
             }
+            free(maze->array[y]);
         }
+        free(maze->array);
         free(maze);
     }
+}

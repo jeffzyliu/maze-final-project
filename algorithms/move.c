@@ -18,12 +18,12 @@ static int turnRight(int heading);
  * if so, returns move direction
  * else returns null move
  */ 
-int avatar_moved(XYPos *oldLoc, XYPos *newLoc)
+int avatar_moved(XYPos oldLoc, XYPos newLoc)
 {
-    if (oldLoc->x != newLoc->x) {
-        return newLoc->x > oldLoc->x ? M_EAST : M_WEST;
-    } else if (oldLoc->y != newLoc->y) {
-        return newLoc->y > oldLoc->y ? M_NORTH : M_SOUTH;
+    if (oldLoc.x != newLoc.x) {
+        return newLoc.x > oldLoc.x ? M_EAST : M_WEST;
+    } else if (oldLoc.y != newLoc.y) {
+        return newLoc.y > oldLoc.y ? M_NORTH : M_SOUTH;
     } else { // no movement
         return M_NULL_MOVE; // == 8
     }
@@ -33,7 +33,7 @@ int avatar_moved(XYPos *oldLoc, XYPos *newLoc)
  * simplest right-hand-follow maze solve algorithm
  * assumes that the avatar does the moving and gives old and new positions
  */ 
-int decide_simplerighthand(int lastHeading, XYPos *oldLoc, XYPos *newLoc)
+int decide_simplerighthand(int lastHeading, XYPos oldLoc, XYPos newLoc)
 {
     if (avatar_moved(oldLoc, newLoc) != M_NULL_MOVE) {
         return turnRight(lastHeading); // move success
@@ -45,7 +45,7 @@ int decide_simplerighthand(int lastHeading, XYPos *oldLoc, XYPos *newLoc)
 /**
  * todo: program this algorithm which uses the map to optimize a bit
  */ 
-int decide_maprighthand(int lastHeading, XYPos *oldLoc, XYPos *newLoc/*, (maze_t *maze*/)
+int decide_maprighthand(int lastHeading, XYPos oldLoc, XYPos newLoc/*, (maze_t *maze*/)
 {
     return 0;
 }

@@ -18,7 +18,7 @@
  * compares locations and returns the right direction as an int
  * returns null-move if the move failed
  */ 
-int avatar_moved(XYPos *oldLoc, XYPos *newLoc);
+int avatar_moved(XYPos oldLoc, XYPos newLoc);
 
 /**
  * simplest right-hand-follow maze solve algorithm
@@ -34,12 +34,12 @@ int avatar_moved(XYPos *oldLoc, XYPos *newLoc);
  * returns:
  *   a new heading for the avatar to then send as a move request message to the server
  */
-int decide_simplerighthand(int lastHeading, XYPos *oldLoc, XYPos *newLoc);
+int decide_simplerighthand(int lastHeading, XYPos oldLoc, XYPos newLoc);
 
 /**
  * uses the maze map to expedite right hand following by not trying duplicate sides
  * may need a mutex lock
  */ 
-int decide_maprighthand(int lastHeading, XYPos *oldLoc, XYPos *newLoc/*, (maze_t *maze*/);
+int decide_maprighthand(int lastHeading, XYPos oldLoc, XYPos newLoc/*, (maze_t *maze*/);
 
 #endif // __MOVE_H

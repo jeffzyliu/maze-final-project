@@ -184,5 +184,5 @@ static XYPos otherSide(int heading, XYPos loc)
  */ 
 static bool directionBlocked(maze_t *maze, XYPos currLoc, int proposedDirection)
 {
-    return false;
+    XYPos neighbor = check_neighbor(maze, currLoc.x, currLoc.y, proposedDirection);
 }

@@ -55,7 +55,7 @@ static mazenode_t *mazenode_new(int x, int y) {
         node->neighbors[M_EAST] = NULL;
         node->x = x;
         node->y = y;
-        node->avatar = -1;
+        node->avatar = -1; // -1 means no avatar
         return node;
     }
 }
@@ -63,12 +63,7 @@ static mazenode_t *mazenode_new(int x, int y) {
 
 // Frees contents of a mazenode
 static void mazenode_delete(mazenode_t *node) {
-    node->neighbors[M_WEST] = NULL;
-    node->neighbors[M_NORTH] = NULL;
-    node->neighbors[M_SOUTH] = NULL;
-    node->neighbors[M_EAST] = NULL;
     free(node->neighbors);
-    free(node);
 }
 
 
@@ -78,14 +73,28 @@ static void mazenode_delete(mazenode_t *node) {
 // unexplored = null, open space = pointer to next node, wall = pointer to self
 // 0 for West, 1 for North, 2 for South, 3 for East.
 // Returns true on success, false on failure
-// TODO: Add additional error checks
 bool set_neighbor(maze_t *maze, int x, int y, const int d, int neighbor_x, int neighbor_y) {
-    mazenode_t *new_neighbor = maze->array[neighbor_y][neighbor_x];
+    if (maze == NULL) {
+        fprintf(stderr, "Error: NULL maze passed in");
+        return false;
+    }
+
     if (d < 0 || d > 3) {
         fprintf(stderr, "Error: 'd' must be 0 (West), 1 (North), 2 (South), or 3 (East)\n");
         return false;
     }
-    maze->array[y][x]->neighbors[d] = new_neighbor;
+
+    if (x < 0 || y < 0 || neighbor_x < 0 || neighbor_y < 0) {
+        fprintf(stderr, "Error: Coordinates cannot be negative");
+        return false;
+    }
+
+    if (x >= maze->width || y >= maze->height || neighbor_x >= maze->width || neighbor_y >= maze->height) {
+        fprintf(stderr, "Error: Coordinates must be less than height/width. Max x value: %d. Max y value: %d", maze->width-1, maze->height-1);
+        return false;
+    }
+
+    maze->array[y][x]->neighbors[d] = maze->array[neighbor_y][neighbor_x];
     return true;
 }
 
@@ -94,9 +103,12 @@ bool set_neighbor(maze_t *maze, int x, int y, const int d, int neighbor_x, int n
 maze_t *maze_new(int height, int width) {
     maze_t *maze = malloc(sizeof(maze_t));
     if (maze == NULL) {
-        fprintf(stderr, "maze allocation failed\n");
+        fprintf(stderr, "Error: maze allocation failed\n");
         return NULL;
     } else {
+        if (height < 1 || width < 1) {
+            fprintf(stderr, "Error: width and height must be at least 1");
+        }
         maze->height = height;
         maze->width = width;
         mazenode_t ***array = calloc(height, sizeof(mazenode_t **));
@@ -112,16 +124,16 @@ maze_t *maze_new(int height, int width) {
 
                 // If the node is along the border, set it to a wall
                 if (x == 0) {
-                    set_neighbor(maze, x, y, 0, x, y); // Western border wall
+                    set_neighbor(maze, x, y, M_WEST, x, y); // Western border wall
                 }
                 if (x == width-1) {
-                    set_neighbor(maze, x, y, 3, x, y); // Eastern border wall
+                    set_neighbor(maze, x, y, M_EAST, x, y); // Eastern border wall
                 }
                 if (y == 0) {
-                    set_neighbor(maze, x, y, 1, x, y); // Northern border wall
+                    set_neighbor(maze, x, y, M_SOUTH, x, y); // Southern border wall
                 }
                 if (y == height-1) {
-                    set_neighbor(maze, x, y, 2, x, y); // Southern border wall
+                    set_neighbor(maze, x, y, M_NORTH, x, y); // Northern border wall
                 }
             }
         }
@@ -137,10 +149,25 @@ int wall_count(maze_t *maze, int x, int y) {
         fprintf(stderr, "Error: NULL maze passed in\n");
         return -1;
     }
-    mazenode_t *node = maze->array[x][y];
+
+    if (x < 0 || y < 0) {
+        fprintf(stderr, "Error: Coordinates cannot be negative");
+        return false;
+    }
+
+    if (x >= maze->width || y >= maze->height) {
+        fprintf(stderr, "Error: Coordinates must be less than height/width. Max x value: %d. Max y value: %d", maze->width-1, maze->height-1);
+        return false;
+    }
+
+    mazenode_t *node = maze->array[y][x];
+
     int wall_count = 0;
     for (int i = 0; i < 4; i++) {
-        if (node->neighbors[i]->x == node->x && node->neighbors[i]->y == node->y) {
+        
+        if (node->neighbors[i] == NULL) {
+            continue;
+        } else if (node->neighbors[i]->x == node->x && node->neighbors[i]->y == node->y) {
             wall_count++;
         }
     }
@@ -169,61 +196,92 @@ void maze_delete(maze_t *maze) {
 void unit_mazenode_print(maze_t *maze, int x, int y, FILE *fp) {
     if (fp != NULL) {
         if (maze != NULL) {
-            if (x < 0 || y < 0 || x >= maze->width || y >= maze->height) {
+            if (x >= 0 || y >= 0 || x < maze->width || y < maze->height) {
                 if (maze->array[y][x] != NULL) {
                     fputc('[', fp);
 
                     // Print the avatar status
-                    fprintf(fp, "{%d}", maze->array[y][x]->avatar);
+                    fprintf(fp, " {%d} ", maze->array[y][x]->avatar);
 
                     // Print the current node's coordinates
-                    fprintf(fp, "(%d,%d)", x, y);
+                    fprintf(fp, " {(%d,%d)} ", x, y);
 
                     // Print the neighbors' coordinates
                     for (int i=0; i<4; i++) {
-                        fputc('{', fp);
+                        fputs(" {", fp);
                         switch(i) {
                             case 0:         // West neighbor
                                 fputs("W:", fp);
-                                if (maze->array[y][x-1] != NULL) {
-                                    fprintf(fp, "(%d,%d)", x-1, y);
-                                } else {
+                                if (x <= 0) {
+                                    // Border walls
+                                    fputs("(border)", fp);
+                                } else if (maze->array[y][x]->neighbors[i] == NULL) {
+                                    // Unexplored directions
                                     fputs("(null)", fp);
+                                } else if (maze->array[y][x]->neighbors[i]->x == maze->array[y][x]->x && maze->array[y][x]->neighbors[i]->y == maze->array[y][x]->y) {
+                                    // Walls (self-references)
+                                    fputs("(wall)", fp);
+                                } else {
+                                    // Comfirmed neighbors
+                                    fprintf(fp, "(%d,%d)", x-1, y);
                                 }
                                 break;
                             
                             case 1:         // North neighbor
                                 fputs("N:", fp);
-                                if (maze->array[y+1][x] != NULL) {
-                                    fprintf(fp, "(%d,%d)", x, y+1);
-                                } else {
+                                if (y >= maze->height-1) {
+                                    // Border walls
+                                    fputs("(border)", fp);
+                                } else if (maze->array[y][x]->neighbors[i] == NULL) {
+                                    // Unexplored directions
                                     fputs("(null)", fp);
+                                } else if (maze->array[y][x]->neighbors[i]->x == maze->array[y][x]->x && maze->array[y][x]->neighbors[i]->y == maze->array[y][x]->y) {
+                                    // Walls (self-references)
+                                    fputs("(wall)", fp);
+                                } else {
+                                    // Comfirmed neighbors
+                                    fprintf(fp, "(%d,%d)", x, y+1);
                                 }
                                 break;
                             
                             case 2:         // South neighbor
                                 fputs("S:", fp);
-                                if (maze->array[y-1][x] != NULL) {
-                                    fprintf(fp, "(%d,%d)", x, y-1);
-                                } else {
+                                if (y <= 0) {
+                                    // Border walls
+                                    fputs("(border)", fp);
+                                } else if (maze->array[y][x]->neighbors[i] == NULL) {
+                                    // Unexplored directions
                                     fputs("(null)", fp);
+                                } else if (maze->array[y][x]->neighbors[i]->x == maze->array[y][x]->x && maze->array[y][x]->neighbors[i]->y == maze->array[y][x]->y) {
+                                    // Walls (self-references)
+                                    fputs("(wall)", fp);
+                                } else {
+                                    // Comfirmed neighbors
+                                    fprintf(fp, "(%d,%d)", x, y-1);
                                 }
                                 break;
                             
                             case 3:         // East neighbor
                                 fputs("E:", fp);
-                                if (maze->array[y][x+1] != NULL) {
-                                    fprintf(fp, "(%d,%d)", x+1, y);
-                                } else {
+                                if (x >= maze->width-1) {
+                                    // Border walls
+                                    fputs("(border)", fp);
+                                } else if (maze->array[y][x]->neighbors[i] == NULL) {
+                                    // Unexplored directions
                                     fputs("(null)", fp);
-                                }                            
+                                } else if (maze->array[y][x]->neighbors[i]->x == maze->array[y][x]->x && maze->array[y][x]->neighbors[i]->y == maze->array[y][x]->y) {
+                                    // Walls (self-references)
+                                    fputs("(wall)", fp);
+                                } else {
+                                    // Comfirmed neighbors
+                                    fprintf(fp, "(%d,%d)", x+1, y);
+                                }
                                 break;
                         }
-                        fputs("},", fp);
+                        fputs("}", fp);
                     }
 
-                    fputc(']', fp);
-                    fputc('\n', fp);
+                    fputs(" ]\n", fp);
                 }
             }
         }
@@ -233,15 +291,33 @@ void unit_mazenode_print(maze_t *maze, int x, int y, FILE *fp) {
 
 // Calls unit_maze_print on each node in a given maze
 void unit_maze_print(maze_t *maze, FILE *fp) {
-    for (int y = 0; y < maze->height; y++) {
-        for (int x = 0; x < maze->width; x++) {
-            unit_mazenode_print(maze, x, y, fp);
+    if (maze != NULL) {
+        for (int y = 0; y < maze->height; y++) {
+            for (int x = 0; x < maze->width; x++) {
+                /*
+                if (y == 0) {
+                    printf("\nNorth neighbor: (%d,%d)\n", maze->array[y][x]->neighbors[1]->x, maze->array[y][x]->neighbors[1]->y);
+                }
+                */
+                unit_mazenode_print(maze, x, y, fp);
+            }
         }
     }
 }
 
+
 // Puts an avatar into the maze
 bool set_avatar(maze_t *maze, int x, int y, int avatar_id) {
+    if (x < 0 || y < 0) {
+        fprintf(stderr, "Error: Coordinates cannot be negative");
+        return false;
+    }
+
+    if (x >= maze->width || y >= maze->height) {
+        fprintf(stderr, "Error: Coordinates must be less than height/width. Max x value: %d. Max y value: %d", maze->width-1, maze->height-1);
+        return false;
+    }
+
     if (maze != NULL) {
         if (maze->array[y][x] != NULL) {
             maze->array[y][x]->avatar = avatar_id;
@@ -278,18 +354,16 @@ int test_newmaze1() {
     maze_t *maze = maze_new(3, 3);
     printf("----------------------------------------------------------------\n");
 
+    printf("Calling unit_maze_print method\n");
+    unit_maze_print(maze, stdout);
+    printf("----------------------------------------------------------------\n");
+
     printf("Assessing nodes' wallcounts. Should depend on presence of border walls\n");
     for (int y=0; y < 3; y++) {
-        printf("a\n");
-        for (int x=0; y < 3; x++) {
-            printf("b\n");
+        for (int x=0; x < 3; x++) {
             printf("Wallcount for (%d,%d): %d\n", x, y, wall_count(maze, x, y));
         }
     }
-    printf("----------------------------------------------------------------\n");
-
-    printf("Calling unit_maze_print method\n");
-    unit_maze_print(maze, stdout);
     printf("----------------------------------------------------------------\n");
     
     printf("Putting some avatars in the maze: 0 at (0,0), 1 at (2,1) and 2 at (2,2)\n");
@@ -300,52 +374,55 @@ int test_newmaze1() {
 
     // 0 for West, 1 for North, 2 for South, 3 for East.
     printf("Putting walls and passages the maze. Shouldn't be any nulls\n");
+    
     // (0,0)
-    set_neighbor(maze, 0, 0, 2, 0, 0); // south wall
-    set_neighbor(maze, 0, 0, 3, 1, 0);
+    set_neighbor(maze, 0, 0, M_EAST, 1, 0);
+    set_neighbor(maze, 0, 0, M_NORTH, 0, 0); // North wall
 
     // (0,1)
-    set_neighbor(maze, 0, 1, 1, 0, 1); // north wall
-    set_neighbor(maze, 0, 1, 2, 1, 1);
-    set_neighbor(maze, 0, 1, 3, 0, 2);
+    set_neighbor(maze, 0, 1, M_EAST, 1, 1);
+    set_neighbor(maze, 0, 1, M_NORTH, 0, 2);
+    set_neighbor(maze, 0, 1, M_SOUTH, 0, 1); // South wall
 
     // (0,2)
-    set_neighbor(maze, 0, 2, 1, 0, 1);
-    set_neighbor(maze, 0, 2, 3, 1, 2);
+    set_neighbor(maze, 0, 2, M_SOUTH, 0, 1);
+    set_neighbor(maze, 0, 2, M_EAST, 1, 2);
 
     // (1,0)
-    set_neighbor(maze, 1, 0, 0, 0, 0);
-    set_neighbor(maze, 1, 0, 2, 1, 1);
-    set_neighbor(maze, 1, 0, 3, 1, 0); // east wall
+    set_neighbor(maze, 1, 0, M_WEST, 0, 0);
+    set_neighbor(maze, 1, 0, M_NORTH, 1, 1);
+    set_neighbor(maze, 1, 0, M_EAST, 1, 0); // East wall
+
 
     // (1,1)
-    set_neighbor(maze, 1, 1, 0, 0, 1);
-    set_neighbor(maze, 1, 1, 1, 1, 0);
-    set_neighbor(maze, 1, 1, 2, 1, 1); // south wall
-    set_neighbor(maze, 1, 1, 3, 1, 1); // east wall
+    set_neighbor(maze, 1, 1, M_WEST, 0, 1);
+    set_neighbor(maze, 1, 1, M_SOUTH, 1, 0);
+    set_neighbor(maze, 1, 1, M_NORTH, 1, 1); // North wall
+    set_neighbor(maze, 1, 1, M_EAST, 1, 1); // East wall
 
     // (1,2)
-    set_neighbor(maze, 1, 2, 0, 0, 2);
-    set_neighbor(maze, 1, 2, 1, 1, 2); // north wall
-    set_neighbor(maze, 1, 2, 3, 2, 2);
+    set_neighbor(maze, 1, 2, M_WEST, 0, 2);
+    set_neighbor(maze, 1, 2, M_EAST, 2, 2);
+    set_neighbor(maze, 1, 2, M_SOUTH, 1, 2); // South wall
 
     // (2,0)
-    set_neighbor(maze, 2, 0, 0, 2, 0); // west wall
-    set_neighbor(maze, 2, 0, 2, 2, 1);
+    set_neighbor(maze, 2, 0, M_NORTH, 2, 1);
+    set_neighbor(maze, 2, 0, M_WEST, 2, 0); // West wall
 
     // (2,1)
-    set_neighbor(maze, 2, 1, 0, 2, 1);
-    set_neighbor(maze, 2, 1, 1, 2, 0);
-    set_neighbor(maze, 2, 1, 2, 2, 2);
+    set_neighbor(maze, 2, 1, M_SOUTH, 2, 0);
+    set_neighbor(maze, 2, 1, M_NORTH, 2, 2);
+    set_neighbor(maze, 2, 1, M_WEST, 2, 1); // West wall
 
     // (2,2)
-    set_neighbor(maze, 2, 2, 0, 1, 2);
-    set_neighbor(maze, 2, 2, 1, 2, 1);
+    set_neighbor(maze, 2, 2, M_WEST, 1, 2);
+    set_neighbor(maze, 2, 2, M_SOUTH, 2, 1);
+    
     printf("----------------------------------------------------------------\n");
 
-    printf("Assessing nodes' new wallcounts. Shoul represent new maze\n");
+    printf("Assessing nodes' new wallcounts. Should represent new maze\n");
     for (int y=0; y < 3; y++) {
-        for (int x=0; y < 3; x++) {
+        for (int x=0; x < 3; x++) {
             printf("Wallcount for (%d,%d): %d\n", x, y, wall_count(maze, x, y));
         }
     }

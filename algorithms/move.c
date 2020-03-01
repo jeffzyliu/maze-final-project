@@ -54,12 +54,13 @@ int decide_simplerighthand(int lastHeading, XYPos oldLoc, XYPos newLoc)
 }
 
 /**
- * todo: program this algorithm which uses the map to optimize a bit
+ * uses a shared explored-nodes map to never pointlessly run into a wall again
  */ 
 int decide_maprighthand(int lastHeading, XYPos oldLoc, XYPos newLoc, maze_t *maze)
 {
     pthread_mutex_lock(&mutex1);
     int proposedHeading = decide_simplerighthand(lastHeading, oldLoc, newLoc);
+    // first calculate a heading, but turn left until the direction not identified as a wall
     while (directionBlocked(maze, newLoc, proposedHeading)) {
         proposedHeading = turnLeft(proposedHeading);
     }
@@ -187,3 +188,40 @@ static bool directionBlocked(maze_t *maze, XYPos currLoc, int proposedDirection)
     XYPos neighbor = check_neighbor(maze, currLoc.x, currLoc.y, proposedDirection);
     return currLoc.x == neighbor.x && currLoc.y == neighbor.y;
 }
+
+
+/********************************************************
+ **************** unit testing **************************
+ ********************************************************/
+
+#ifdef UNIT_TEST
+
+maze_t *create_server_maze()
+{
+    printf("Creating maze of height 3 and width 3\n");
+    maze_t *servermaze = maze_new(3, 3);
+
+    
+    return servermaze;
+}
+
+void test_rhf()
+{
+    
+}
+
+void test_maprhf()
+{
+    
+}
+
+
+int main() 
+{
+    test_rhf();
+    test_maprhf();
+    return 0;
+}
+
+
+#endif // UNIT_TEST

@@ -130,10 +130,10 @@ maze_t *maze_new(int height, int width) {
                     set_neighbor(maze, x, y, M_EAST, x, y); // Eastern border wall
                 }
                 if (y == 0) {
-                    set_neighbor(maze, x, y, M_NORTH, x, y); // Southern border wall
+                    set_neighbor(maze, x, y, M_NORTH, x, y); // Northern border wall
                 }
                 if (y == height-1) {
-                    set_neighbor(maze, x, y, M_SOUTH, x, y); // Northern border wall
+                    set_neighbor(maze, x, y, M_SOUTH, x, y); // Southern border wall
                 }
             }
         }

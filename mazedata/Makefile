@@ -31,4 +31,3 @@ clean:
 	rm -f maze
 
 unit: $(PROG)
-	

@@ -89,7 +89,7 @@ void exitGame (char *filename, AM_Message finalMessage)
     int nAvatars = ntohl(finalMessage.maze_solved.nAvatars);
     int Difficulty = ntohl(finalMessage.maze_solved.Difficulty);
     int nMoves = ntohl(finalMessage.maze_solved.nMoves);
-    int Hash = ntohl(finalMessage.maze_solved.Hash);
+    unsigned int Hash = ntohl(finalMessage.maze_solved.Hash);
     FILE *fp;
     fp = fopen(filename, "a");
     if (fp == NULL) {
@@ -97,7 +97,7 @@ void exitGame (char *filename, AM_Message finalMessage)
         return;
     }
     char solvedMessage[100];
-    sprintf(solvedMessage, "Mazed solved with %d avatars at Difficult %d in %d moves at hash %d\n", nAvatars, Difficulty, nMoves, Hash);
+    sprintf(solvedMessage, "Mazed solved with %d avatars at Difficult %d in %d moves at hash %u\n", nAvatars, Difficulty, nMoves, Hash);
     fprintf(fp, "%s", solvedMessage);
     fclose(fp);
 }

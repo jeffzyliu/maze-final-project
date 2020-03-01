@@ -120,15 +120,17 @@ void *avatar (void *arg)
         TurnId = ntohl(server_avatar_turn.avatar_turn.TurnId);
         pos = server_avatar_turn.avatar_turn.Pos;
         if (TurnId%nAvatars == AvatarId) {
-            if (AvatarId == 0 || avatar_moved(pos[AvatarId], sentinel) == M_NULL_MOVE) {
+            newLoc.x = ntohl(server_avatar_turn.avatar_turn.Pos[AvatarId].x);
+            newLoc.y = ntohl(server_avatar_turn.avatar_turn.Pos[AvatarId].y);
+            if (AvatarId == 0 || avatar_moved(newLoc, sentinel) == M_NULL_MOVE) {
                 Direction = M_NULL_MOVE;
             } else {
                 //the first direction 
                 if (lastHeading == M_NULL_MOVE) {
                     Direction = M_NORTH;
                 } else {
-                    newLoc.x = ntohl(server_avatar_turn.avatar_turn.Pos[AvatarId].x);
-                    newLoc.y = ntohl(server_avatar_turn.avatar_turn.Pos[AvatarId].y);
+                    // newLoc.x = ntohl(server_avatar_turn.avatar_turn.Pos[AvatarId].x);
+                    // newLoc.y = ntohl(server_avatar_turn.avatar_turn.Pos[AvatarId].y);
                     avatarTurned (filename, AvatarId, nAvatars, newLoc, oldLoc, pos, Direction);
                     Direction = decide_simplerighthand(lastHeading, oldLoc, newLoc);
                     oldLoc = newLoc;

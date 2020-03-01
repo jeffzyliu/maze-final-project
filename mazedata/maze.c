@@ -130,10 +130,10 @@ maze_t *maze_new(int height, int width) {
                     set_neighbor(maze, x, y, M_EAST, x, y); // Eastern border wall
                 }
                 if (y == 0) {
-                    set_neighbor(maze, x, y, M_SOUTH, x, y); // Southern border wall
+                    set_neighbor(maze, x, y, M_NORTH, x, y); // Southern border wall
                 }
                 if (y == height-1) {
-                    set_neighbor(maze, x, y, M_NORTH, x, y); // Northern border wall
+                    set_neighbor(maze, x, y, M_SOUTH, x, y); // Northern border wall
                 }
             }
         }
@@ -164,7 +164,6 @@ int wall_count(maze_t *maze, int x, int y) {
 
     int wall_count = 0;
     for (int i = 0; i < 4; i++) {
-        
         if (node->neighbors[i] == NULL) {
             continue;
         } else if (node->neighbors[i]->x == node->x && node->neighbors[i]->y == node->y) {
@@ -210,7 +209,7 @@ void unit_mazenode_print(maze_t *maze, int x, int y, FILE *fp) {
                     for (int i=0; i<4; i++) {
                         fputs(" {", fp);
                         switch(i) {
-                            case 0:         // West neighbor
+                            case M_WEST:         // West neighbor
                                 fputs("W:", fp);
                                 if (x <= 0) {
                                     // Border walls
@@ -227,8 +226,8 @@ void unit_mazenode_print(maze_t *maze, int x, int y, FILE *fp) {
                                 }
                                 break;
                             
-                            case 1:         // North neighbor
-                                fputs("N:", fp);
+                            case M_SOUTH:         // South neighbor
+                                fputs("S:", fp);
                                 if (y >= maze->height-1) {
                                     // Border walls
                                     fputs("(border)", fp);
@@ -244,8 +243,8 @@ void unit_mazenode_print(maze_t *maze, int x, int y, FILE *fp) {
                                 }
                                 break;
                             
-                            case 2:         // South neighbor
-                                fputs("S:", fp);
+                            case  M_NORTH:         // North neighbor
+                                fputs("N:", fp);
                                 if (y <= 0) {
                                     // Border walls
                                     fputs("(border)", fp);
@@ -261,7 +260,7 @@ void unit_mazenode_print(maze_t *maze, int x, int y, FILE *fp) {
                                 }
                                 break;
                             
-                            case 3:         // East neighbor
+                            case M_EAST:         // East neighbor
                                 fputs("E:", fp);
                                 if (x >= maze->width-1) {
                                     // Border walls
@@ -377,46 +376,46 @@ int test_newmaze1() {
     
     // (0,0)
     set_neighbor(maze, 0, 0, M_EAST, 1, 0);
-    set_neighbor(maze, 0, 0, M_NORTH, 0, 0); // North wall
+    set_neighbor(maze, 0, 0, M_SOUTH, 0, 0); // south wall
 
     // (0,1)
     set_neighbor(maze, 0, 1, M_EAST, 1, 1);
-    set_neighbor(maze, 0, 1, M_NORTH, 0, 2);
-    set_neighbor(maze, 0, 1, M_SOUTH, 0, 1); // South wall
+    set_neighbor(maze, 0, 1, M_SOUTH, 0, 2);
+    set_neighbor(maze, 0, 1, M_NORTH, 0, 1); // NORTH wall
 
     // (0,2)
-    set_neighbor(maze, 0, 2, M_SOUTH, 0, 1);
+    set_neighbor(maze, 0, 2, M_NORTH, 0, 1);
     set_neighbor(maze, 0, 2, M_EAST, 1, 2);
 
     // (1,0)
     set_neighbor(maze, 1, 0, M_WEST, 0, 0);
-    set_neighbor(maze, 1, 0, M_NORTH, 1, 1);
+    set_neighbor(maze, 1, 0, M_SOUTH, 1, 1);
     set_neighbor(maze, 1, 0, M_EAST, 1, 0); // East wall
 
 
     // (1,1)
     set_neighbor(maze, 1, 1, M_WEST, 0, 1);
-    set_neighbor(maze, 1, 1, M_SOUTH, 1, 0);
-    set_neighbor(maze, 1, 1, M_NORTH, 1, 1); // North wall
+    set_neighbor(maze, 1, 1, M_NORTH, 1, 0);
+    set_neighbor(maze, 1, 1, M_SOUTH, 1, 1); // SOUTH wall
     set_neighbor(maze, 1, 1, M_EAST, 1, 1); // East wall
 
     // (1,2)
     set_neighbor(maze, 1, 2, M_WEST, 0, 2);
     set_neighbor(maze, 1, 2, M_EAST, 2, 2);
-    set_neighbor(maze, 1, 2, M_SOUTH, 1, 2); // South wall
+    set_neighbor(maze, 1, 2, M_NORTH, 1, 2); // NORTH wall
 
     // (2,0)
-    set_neighbor(maze, 2, 0, M_NORTH, 2, 1);
+    set_neighbor(maze, 2, 0, M_SOUTH, 2, 1);
     set_neighbor(maze, 2, 0, M_WEST, 2, 0); // West wall
 
     // (2,1)
-    set_neighbor(maze, 2, 1, M_SOUTH, 2, 0);
-    set_neighbor(maze, 2, 1, M_NORTH, 2, 2);
+    set_neighbor(maze, 2, 1, M_NORTH, 2, 0);
+    set_neighbor(maze, 2, 1, M_SOUTH, 2, 2);
     set_neighbor(maze, 2, 1, M_WEST, 2, 1); // West wall
 
     // (2,2)
     set_neighbor(maze, 2, 2, M_WEST, 1, 2);
-    set_neighbor(maze, 2, 2, M_SOUTH, 2, 1);
+    set_neighbor(maze, 2, 2, M_NORTH, 2, 1);
     
     printf("----------------------------------------------------------------\n");
 

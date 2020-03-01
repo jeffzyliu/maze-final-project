@@ -7,6 +7,7 @@
 #include <netdb.h>	
 #include <string.h>
 #include <pthread.h>
+#include <stdbool.h>
 #include "messages.h"
 #include "../amazing.h"
 #include "../output/logfile.h"
@@ -20,7 +21,10 @@ typedef struct avatar_paramter {
     char *hostname;
     int mazeport;
     char *filename;
+    AM_Message *finalMessage;
 } avatar_p;
+
+static bool isGameOver (AM_Message server_avatar_turn);
 
 /**
  * The main avatar function that each thread calls
@@ -33,6 +37,7 @@ void *avatar (void *arg)
     int AvatarId = parameter->AvatarId;
     char *filename = parameter->filename;
     int nAvatars = parameter->nAvatars;
+    AM_Message *finalMessage = parameter->finalMessage;
     printf("%d\n", mazeport);
     int comm_sock = socket(AF_INET, SOCK_STREAM, 0);
     if (comm_sock < 0) {
@@ -84,44 +89,61 @@ void *avatar (void *arg)
     //getting the server response 
     int TurnId = ntohl(server_avatar_turn.avatar_turn.TurnId);
     XYPos *pos = server_avatar_turn.avatar_turn.Pos;
-    int oldx = ntohl(pos[AvatarId].x);
-    int oldy = ntohl(pos[AvatarId].y);   
+    int startingX = ntohl(pos[AvatarId].x);
+    int startingY = ntohl(pos[AvatarId].y);   
 
     //writing the starting state to our log file
-    startingState(filename, AvatarId, oldx, oldy, pos);
+    startingState(filename, AvatarId, startingX, startingY, pos);
 
     AM_Message avatarTurn;
-    int Direction = 1;
+    int lastHeading = M_NULL_MOVE;
+    int Direction;
     XYPos sentinel;    //the position of the avatar that doesn't move
     sentinel.x = ntohl(pos[0].x);
     sentinel.y = ntohl(pos[0].y);
+    XYPos oldLoc;
+    oldLoc.x = startingX;
+    oldLoc.y = startingY;
+    XYPos newLoc;
+    newLoc.x = startingX;
+    newLoc.y = startingY;
     //temporary direction to go west. If the server responds with a valid message
     while (1) {
-        if (server_avatar_turn.type == ntohl(AM_MAZE_SOLVED)) {
+        if (isGameOver(server_avatar_turn)) {
             break;
         }
-        if (AvatarId == 0 || avatar_moved(pos[AvatarId], sentinel) == 8) {
-            server_avatar_turn = validMessageTurn(1, comm_sock, avatarTurn, AvatarId, M_NULL_MOVE, server_avatar_turn);
-            continue;
-        }
-        if (TurnId%nAvatars == AvatarId) {
-            XYPos oldLoc;
-            oldLoc.x = oldx;
-            oldLoc.y = oldy;
-            server_avatar_turn = validMessageTurn(1, comm_sock, avatarTurn, AvatarId, Direction, server_avatar_turn);
-            XYPos newLoc;
-            newLoc.x = ntohl(server_avatar_turn.avatar_turn.Pos[AvatarId].x);
-            newLoc.y = ntohl(server_avatar_turn.avatar_turn.Pos[AvatarId].y);
-            avatarTurned (filename, AvatarId, nAvatars, newLoc, oldLoc, pos);
-            Direction = decide_simplerighthand(Direction, oldLoc, newLoc);
-            oldx = newLoc.x;
-            oldy = newLoc.y;
-        } else {
-            server_avatar_turn = validMessageTurn(0, comm_sock, avatarTurn, AvatarId, Direction, server_avatar_turn);
+        if (ntohl(server_avatar_turn.type) != AM_AVATAR_TURN) {
+            //handle error later
+            server_avatar_turn = receiveMessage(comm_sock, server_avatar_turn);
+            continue;   
         }
         TurnId = ntohl(server_avatar_turn.avatar_turn.TurnId);
+        pos = server_avatar_turn.avatar_turn.Pos;
+        if (TurnId%nAvatars == AvatarId) {
+            if (AvatarId == 0 || avatar_moved(pos[AvatarId], sentinel) == M_NULL_MOVE) {
+                Direction = M_NULL_MOVE;
+            } else {
+                //the first direction 
+                if (lastHeading == M_NULL_MOVE) {
+                    Direction = M_NORTH;
+                } else {
+                    newLoc.x = ntohl(server_avatar_turn.avatar_turn.Pos[AvatarId].x);
+                    newLoc.y = ntohl(server_avatar_turn.avatar_turn.Pos[AvatarId].y);
+                    avatarTurned (filename, AvatarId, nAvatars, newLoc, oldLoc, pos, Direction);
+                    Direction = decide_simplerighthand(lastHeading, oldLoc, newLoc);
+                    oldLoc = newLoc;
+                }
+                lastHeading = Direction;
+            }
+            validMessageTurn(1, comm_sock, avatarTurn, AvatarId, Direction, server_avatar_turn);
+        } 
+        server_avatar_turn = receiveMessage(comm_sock, server_avatar_turn);
     }
-    mazeSolved(filename, ntohl(server_avatar_turn.maze_solved.nAvatars), ntohl(server_avatar_turn.maze_solved.Difficulty),ntohl(server_avatar_turn.maze_solved.nMoves), ntohl(server_avatar_turn.maze_solved.Hash));
+    finalMessage = &server_avatar_turn;
+    if (ntohl(server_avatar_turn.type) == AM_MAZE_SOLVED && ntohl(server_avatar_turn.maze_solved.nMoves)%nAvatars==AvatarId) {
+        avatarTurned (filename, AvatarId, nAvatars, sentinel, oldLoc, pos, Direction);
+        exitGame(filename, server_avatar_turn);
+    }
     free(parameter);
     return NULL;
 }
@@ -129,7 +151,7 @@ void *avatar (void *arg)
 /**
  * Creating the parameter we need for our avatar method
  */
-avatar_p *clientParameters(int AvatarId, int nAvatars, int Difficulty, char *hostname, int mazeport, char *filename)
+avatar_p *clientParameters(int AvatarId, int nAvatars, int Difficulty, char *hostname, int mazeport, char *filename, AM_Message *finalMessage)
 {
     avatar_p *parameter = malloc(sizeof(avatar_p));
     if (parameter == NULL) {
@@ -142,6 +164,11 @@ avatar_p *clientParameters(int AvatarId, int nAvatars, int Difficulty, char *hos
     parameter->hostname = hostname;
     parameter->mazeport = mazeport;
     parameter->filename = filename;
+    parameter->finalMessage = finalMessage;
     return parameter;
 }
 
+static bool isGameOver (AM_Message server_avatar_turn)
+{
+    return server_avatar_turn.type == ntohl(AM_MAZE_SOLVED) || server_avatar_turn.type == ntohl(AM_SOCKET_BREAK) || server_avatar_turn.type == ntohl(AM_TOO_MANY_MOVES) || server_avatar_turn.type == ntohl(AM_SERVER_TIMEOUT);
+}

@@ -15,6 +15,7 @@
 #include "../amazing.h"
 #include "../avatar/messages.h"
 #include "../avatar/avatar.h"
+#include "../output/logfile.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>	  
@@ -176,9 +177,11 @@ int main(int argc, char *argv[])
 
     pthread_t threads[nAvatars];
     int rc;
+    AM_Message *finalMessage = malloc(sizeof(AM_Message*));
+    finalMessage->type = AM_NO_GAME;
    
     for (int i = 0; i < nAvatars; i++) {
-        avatar_p *parameter = clientParameters(i, nAvatars, Difficulty, Hostname, mazeport, logfile);
+        avatar_p *parameter = clientParameters(i, nAvatars, Difficulty, Hostname, mazeport, logfile, finalMessage);
         rc = pthread_create(&threads[i], NULL, avatar, (void *)parameter);
         if (rc) {
             printf("Error:unable to create thread, %d\n", rc);
@@ -188,7 +191,7 @@ int main(int argc, char *argv[])
     for (int i = 0; i < nAvatars; i++) {
         pthread_join(threads[i], NULL);
     }
-
+    // exitGame(logfile, *finalMessage);
     free(logfile);
     return 0;
 }

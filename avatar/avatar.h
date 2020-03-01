@@ -7,6 +7,7 @@
 #include <netdb.h>	
 #include <string.h>
 #include <pthread.h>
+#include <stdbool.h>
 #include "messages.h"
 #include "../amazing.h"
 #include "../algorithms/move.h"
@@ -41,6 +42,6 @@ void *avatar (void *arg);
 //  * RETURN:
 //  *      avatar_p *parameter the data struct with necessary parameters
 //  */
-avatar_p *clientParameters(int AvatarId, int nAvatars, int Difficulty, char *hostname, int mazeport, char *filename);
+avatar_p *clientParameters(int AvatarId, int nAvatars, int Difficulty, char *hostname, int mazeport, char *filename, AM_Message *finalMessage);
 
 #endif //__AVATAR_H

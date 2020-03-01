@@ -50,7 +50,7 @@ void errorMessage (AM_Message server_message)
 /**
  * Checking if the server message is valid
  */
-AM_Message validMessageTurn (int turn, int comm_sock, AM_Message client, int AvatarId, int Direction, AM_Message server_avatar_turn)
+void validMessageTurn (int turn, int comm_sock, AM_Message client, int AvatarId, int Direction, AM_Message server_avatar_turn)
 {
     if (turn == 1) {
         memset(&client, 0, sizeof(AM_Message));
@@ -59,22 +59,20 @@ AM_Message validMessageTurn (int turn, int comm_sock, AM_Message client, int Ava
         client.avatar_move.Direction = htonl(Direction);
         if (write(comm_sock, &client, sizeof(AM_Message)) < 0 ) {
             fprintf(stderr, "failed to send to server\n");
-            return;
         }
     }
+}
+
+AM_Message receiveMessage (int comm_sock, AM_Message server_avatar_turn)
+{
     int receive = read(comm_sock, &server_avatar_turn, sizeof(AM_Message));
-    if (receive < 0) {
-        fprintf(stderr, "Failed to Receive Message from Server\n");
-        return;
-    } 
-    //If it is equal to 0, then the connection closed
-    if (receive == 0) {
+    //If it is less than or equal to 0, then the connection closed
+    if (receive <= 0) {
         fprintf(stderr, "Connection to Server Closed\n");
-        return;
+        server_avatar_turn.type = AM_SOCKET_BREAK;
     }
     if (IS_AM_ERROR(ntohl(server_avatar_turn.type))) {
         errorMessage(server_avatar_turn);
-        return;
     } 
     return server_avatar_turn;
 }

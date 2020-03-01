@@ -45,7 +45,7 @@ void startingState (char *filename, int AvatarId, int x, int y, XYPos *pos)
 /**
  * the method that calls if the avatar is able to successfully move
  */
-void avatarTurned (char *filename, int AvatarId, int nAvatars, XYPos newPos, XYPos oldPos, XYPos *pos)
+void avatarTurned (char *filename, int AvatarId, int nAvatars, XYPos newPos, XYPos oldPos, XYPos *pos, int d)
 {
     FILE *fp;
     fp = fopen(filename, "a");
@@ -54,8 +54,24 @@ void avatarTurned (char *filename, int AvatarId, int nAvatars, XYPos newPos, XYP
         return;
     }
     char movedAvatar[100];
-    sprintf(movedAvatar, "Avatar %d moved from %d, %d to %d, %d\n", AvatarId, oldPos.x, oldPos.y, newPos.x, newPos.y);
-    fprintf(fp, "%s", movedAvatar);
+    char avatarStay[100];
+    char *Direction;
+    if (newPos.x == oldPos.x && newPos.y == oldPos.y) {
+        if (d == 0) {
+            Direction = "West";
+        } else if (d == 1) {
+            Direction = "North";
+        } else if (d == 2) {
+            Direction = "South";
+        } else {
+            Direction = "East";
+        }
+        sprintf(avatarStay, "Avatar %d hit %s wall\n", AvatarId, Direction);
+        fprintf(fp, "%s", avatarStay);
+    } else {
+        sprintf(movedAvatar, "Avatar %d moved from %d, %d to %d, %d\n", AvatarId, oldPos.x, oldPos.y, newPos.x, newPos.y);
+        fprintf(fp, "%s", movedAvatar);
+    }
     fprintf(fp, "Avatar Locations: ");
     for (int i = 0; i < nAvatars; i++) {
         fprintf(fp, "%d: (%d, %d); ", i, ntohl(pos[i].x), ntohl(pos[i].y));
@@ -64,8 +80,16 @@ void avatarTurned (char *filename, int AvatarId, int nAvatars, XYPos newPos, XYP
     fclose(fp);
 }
 
-void mazeSolved (char *filename, int nAvatars, int Difficulty, int nMoves, int Hash)
+
+/**
+ * Writing to our file when we solved the maze
+ */
+void exitGame (char *filename, AM_Message finalMessage)
 {
+    int nAvatars = ntohl(finalMessage.maze_solved.nAvatars);
+    int Difficulty = ntohl(finalMessage.maze_solved.Difficulty);
+    int nMoves = ntohl(finalMessage.maze_solved.nMoves);
+    int Hash = ntohl(finalMessage.maze_solved.Hash);
     FILE *fp;
     fp = fopen(filename, "a");
     if (fp == NULL) {

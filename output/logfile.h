@@ -40,8 +40,8 @@ void startingState (char *filename, int AvatarId, int x, int y, XYPos *pos);
  *      XYPos oldPos        the old position of the avatar
  *      XYPos *pos          array of positions of other avatars
  */     
-void avatarTurned (char *filename, int AvatarId, int nAvatars, XYPos newPos, XYPos oldPos, XYPos *pos);
+void avatarTurned (char *filename, int AvatarId, int nAvatars, XYPos newPos, XYPos oldPos, XYPos *pos, int d);
 
-void mazeSolved (char *filename, int nAvatars, int Difficulty, int nMoves, int Hash);
+void exitGame (char *filename, AM_Message finalMessage);
 
 #endif // __LOGWRITE_H

@@ -42,5 +42,8 @@ void errorMessage(AM_Message server_message);
  *      AM_Message server   the message received by the server
  */
 
-AM_Message validMessageTurn (int turn, int comm_sock, AM_Message client, int AvatarId, int Direction, AM_Message server_avatar_turn);
+void validMessageTurn (int turn, int comm_sock, AM_Message client, int AvatarId, int Direction, AM_Message server_avatar_turn);
+
+AM_Message receiveMessage (int comm_sock, AM_Message server_avatar_turn);
+
 #endif //_MESSAGES_H

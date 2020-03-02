@@ -3,37 +3,85 @@
  */
 
 #include <stdio.h>
-#include <stdio.h>
+#include <stdlib.h>
 #include "../amazing.h"
 #include <netinet/in.h>
+#include <stdbool.h>
+#include <unistd.h>	  
+#include <netdb.h>	
+#include <string.h>
+#include <pthread.h> 
 
-void errorMessage (AM_Message server_message)
+pthread_mutex_t lock; 
+/**
+ * Printing the different error messages
+ */
+void errorMessage (char *filename, AM_Message server_message)
 {
+    FILE *fp;
     int errortype = ntohl(server_message.type);
     switch(errortype) {
         case AM_INIT_FAILED:
-            fprintf(stderr, "AM_INIT is not processed by server\n");
-            break;
+            if (ntohl(server_message.init_failed.ErrNum) == AM_INIT_TOO_MANY_AVATARS) {
+                fprintf(stderr, "Avatar out of range\n");
+            } else if (ntohl(server_message.init_failed.ErrNum)== AM_INIT_BAD_DIFFICULTY) {
+                fprintf(stderr, "Difficulty out of range\n");
+            }
+            return;
+        fp = fopen(filename, "a");
+        if (fp == NULL ){
+            fprintf(fp, "failed to open file\n");
+        }
         case AM_NO_SUCH_AVATAR:
-            fprintf(stderr, "Received message from an Unknown AvatarId\n");
+            fprintf(fp, "Received message from an Unknown AvatarId\n");
             break;
         case AM_UNKNOWN_MSG_TYPE:
-            fprintf(stderr, "Can't understand message\n");
+            fprintf(fp, "Can't understand message\n");
             break;
         case AM_UNEXPECTED_MSG_TYPE:
-            fprintf(stderr, "Message type unexpected\n");
+            fprintf(fp, "Message type unexpected\n");
             break;
         case AM_TOO_MANY_MOVES:
-            fprintf(stderr, "Moves exceeded maximum number\n");
+            fprintf(fp, "Moves exceeded maximum number\n");
             break;
         case AM_SERVER_TIMEOUT:
-            fprintf(stderr, "Time elapsed between messages exceeded limit\n");
+            fprintf(fp, "Time elapsed between messages exceeded limit\n");
             break;
         case AM_SERVER_DISK_QUOTA:
-            fprintf(stderr, "Server can't write or create to a file\n");
+            fprintf(fp, "Server can't write or create to a file\n");
             break;
         case AM_SERVER_OUT_OF_MEM:
-            fprintf(stderr, "Server cannot allocate enough memory to serve a maze\n");
+            fprintf(fp, "Server cannot allocate enough memory to serve a maze\n");
             break;
     }
+    fclose(fp);
+}
+
+/**
+ * Checking if the server message is valid
+ */
+int validMessageTurn (int comm_sock, AM_Message client, int AvatarId, int Direction, AM_Message server_avatar_turn)
+{
+    memset(&client, 0, sizeof(AM_Message));
+    client.type = htonl(AM_AVATAR_MOVE);
+    client.avatar_move.AvatarId= htonl(AvatarId);
+    client.avatar_move.Direction = htonl(Direction);
+    if (write(comm_sock, &client, sizeof(AM_Message)) < 0 ) {
+        fprintf(stderr, "failed to send to server\n");
+        return 7;
+    }
+}
+
+AM_Message receiveMessage (char *filename, int comm_sock, AM_Message server_avatar_turn)
+{
+    int receive = read(comm_sock, &server_avatar_turn, sizeof(AM_Message));
+    //If it is less than or equal to 0, then the connection closed
+    if (receive <= 0) {
+        fprintf(stderr, "Connection to Server Closed\n");
+        server_avatar_turn.type = AM_SOCKET_BREAK;
+    }
+    if (IS_AM_ERROR(ntohl(server_avatar_turn.type))) {
+        errorMessage(filename, server_avatar_turn);
+    } 
+    return server_avatar_turn;
 }

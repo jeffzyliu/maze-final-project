@@ -15,6 +15,7 @@
 #include "../amazing.h"
 #include "../avatar/messages.h"
 #include "../avatar/avatar.h"
+#include "../output/logfile.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>	  
@@ -23,6 +24,8 @@
 #include <time.h>
 #include <getopt.h>
 #include <pthread.h>
+
+int exitCode;
 
 int main(int argc, char *argv[])
 {
@@ -77,7 +80,7 @@ int main(int argc, char *argv[])
 
     //if we dont have the correct number of options
     if (optind != 7) {
-        fprintf(stderr, usageMessage);
+        fprintf(stderr, "%s", usageMessage);
         exit(2);
     }
     //making sure the options are integers
@@ -91,7 +94,7 @@ int main(int argc, char *argv[])
     int comm_sock = socket(AF_INET, SOCK_STREAM, 0);
     if (comm_sock < 0) {
         perror("opening socket");
-        exit(3);
+        exit(4);
     }
     struct sockaddr_in server;  // address of the server
     server.sin_family = AF_INET;
@@ -100,27 +103,24 @@ int main(int argc, char *argv[])
     struct hostent *hostp = gethostbyname(Hostname);
     if (hostp == NULL) {
         fprintf(stderr, "%s: unknown host '%s'\n", program, Hostname);
-        exit(3);
+        exit(5);
     }  
     memcpy(&server.sin_addr, hostp->h_addr_list[0], hostp->h_length);
 
     // 3. Connect the socket to that server   
     if (connect(comm_sock, (struct sockaddr *) &server, sizeof(server)) < 0) {
         perror("connecting stream socket");
-        exit(4);
+        exit(6);
     }
-    printf("Connected!\n");
-
     //The AM_INIT message the client sends to the server after parameter validation
     AM_Message init_message;
     memset(&init_message, 0, sizeof(AM_Message));
     init_message.type = htonl(AM_INIT);
     init_message.init.nAvatars = htonl(nAvatars);
     init_message.init.Difficulty = htonl(Difficulty);
-    printf("Try to send AM_INIT message to the server now \n");
     if (write(comm_sock, &init_message, sizeof(AM_Message)) < 0) {
-        fprintf(stderr, "error\n");
-        exit(5);
+        fprintf(stderr, "failed to send to server\n");
+        exit(7);
     }
     printf("Sent\n");
 
@@ -128,67 +128,61 @@ int main(int argc, char *argv[])
     AM_Message server_message;  
     int receive = read(comm_sock, &server_message, sizeof(AM_Message));
 
-    //If it is less than 0, then the connection failed
-    if (receive < 0) {
-        fprintf(stderr, "Failed to Receive Message from Server\n");
-        exit(6);
-    } 
-    //If it is equal to 0, then the connection closed
-    if (receive == 0) {
+    //If it is less than or equal to 0, then the connection failed
+    if (receive <= 0) {
         fprintf(stderr, "Connection to Server Closed\n");
-        exit(7);
-    }
+        exit(8);
+    } 
     //if it returns an error message
     if (IS_AM_ERROR(ntohl(server_message.type))) {
-        errorMessage(server_message);
-        exit(8);
+        errorMessage(NULL, server_message);
+        exit(9);
     } 
 
     int width = ntohl(server_message.init_ok.MazeWidth);
     int height = ntohl(server_message.init_ok.MazeHeight);
     int mazeport = ntohl(server_message.init_ok.MazePort);
     close(comm_sock);
-    printf("%d and height %d\n", width, height);
-
     //starting to write our logfile
     char *username = getenv("USER");
     if (username == NULL) {
         fprintf(stderr, "Failed to get username\n");
+        exit(10);
     }
 
-    char *logfile = malloc(strlen("logFiles/Amazing___.log") + strlen(username) + 2 * sizeof(int) + 1);
+    char *logfile = malloc(strlen("../logOutput/Amazing___.log") + strlen(username) + 2 * sizeof(int) + 1);
     if (logfile == NULL) {
         fprintf(stderr, "Failed to allocate memory for file\n");
-        exit(8);
+        exit(10);
     }
-    sprintf(logfile, "logFiles/Amazing_%s_%d_%d.log", username, Difficulty, nAvatars);
+    sprintf(logfile, "../logOutput/Amazing_%s_%d_%d.log", username, Difficulty, nAvatars);
 
     FILE *fp;
     fp = fopen(logfile, "w");
     if (fp == NULL) {
         fprintf(stderr, "error opening file\n");
+        exit(11);
     }
     time_t curtime;
     time(&curtime);
     fprintf(fp, "%s %d %s", username, mazeport, ctime(&curtime));
+    fprintf(fp, "*****************************************\n");
+    fclose(fp);
 
     pthread_t threads[nAvatars];
     int rc;
-   
     for (int i = 0; i < nAvatars; i++) {
-        printf("Creating Thread %d\n", i);
         avatar_p *parameter = clientParameters(i, nAvatars, Difficulty, Hostname, mazeport, logfile);
         rc = pthread_create(&threads[i], NULL, avatar, (void *)parameter);
         if (rc) {
-         printf("Error:unable to create thread, %d\n", rc);
-         exit(-1);
+            printf("Error:unable to create thread, %d\n", rc);
+            exit(12);
         }
     }
     for (int i = 0; i < nAvatars; i++) {
-        pthread_join(threads[i], NULL);
+        pthread_join(threads[i], (void**)&exitCode);
     }
-
-    fclose(fp);
+    
     free(logfile);
-    return 0;
+    return exitCode;
 }

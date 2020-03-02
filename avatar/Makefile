@@ -3,6 +3,9 @@
 LIBS= avatar.a
 OBJS = messages.o avatar.o 
 
+CC = gcc
+CFLAGS = -Wall -pedantic -std=c11 -ggdb
+
 $(LIBS): $(OBJS)
 	ar cr $(LIBS) $(OBJS)
 

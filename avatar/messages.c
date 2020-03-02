@@ -18,7 +18,7 @@ pthread_mutex_t lock;
  */
 void errorMessage (char *filename, AM_Message server_message)
 {
-    FILE *fp;
+    FILE *fp = NULL;
     int errortype = ntohl(server_message.type);
     switch(errortype) {
         case AM_INIT_FAILED:
@@ -70,6 +70,7 @@ int validMessageTurn (int comm_sock, AM_Message client, int AvatarId, int Direct
         fprintf(stderr, "failed to send to server\n");
         return 7;
     }
+    return 0;
 }
 
 AM_Message receiveMessage (char *filename, int comm_sock, AM_Message server_avatar_turn)

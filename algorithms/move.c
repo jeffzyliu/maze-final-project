@@ -194,14 +194,62 @@ static bool directionBlocked(maze_t *maze, XYPos currLoc, int proposedDirection)
  **************** unit testing **************************
  ********************************************************/
 
-#ifdef UNIT_TEST
+#ifdef ALG_TEST
 
 maze_t *create_server_maze()
 {
     printf("Creating maze of height 3 and width 3\n");
     maze_t *servermaze = maze_new(3, 3);
-
     
+    printf("Setting avatar at 0,2.\n");
+    set_avatar(servermaze, 0, 2, 0);
+
+    printf("Putting walls and passages in the servermaze.\n");
+    
+    // (0,0)
+    set_neighbor(servermaze, 0, 0, M_EAST, 1, 0);
+    set_neighbor(servermaze, 0, 0, M_SOUTH, 0, 1);
+
+    // (0,1)
+    set_neighbor(servermaze, 0, 1, M_EAST, 0, 1); // east wall
+    set_neighbor(servermaze, 0, 1, M_SOUTH, 0, 2);
+    set_neighbor(servermaze, 0, 1, M_NORTH, 0, 0);
+
+    // (0,2)
+    set_neighbor(servermaze, 0, 2, M_NORTH, 0, 1);
+    set_neighbor(servermaze, 0, 2, M_EAST, 0, 2); // east wall
+
+    // (1,0)
+    set_neighbor(servermaze, 1, 0, M_WEST, 0, 0);
+    set_neighbor(servermaze, 1, 0, M_SOUTH, 1, 1);
+    set_neighbor(servermaze, 1, 0, M_EAST, 1, 0); // East wall
+
+    // (1,1)
+    set_neighbor(servermaze, 1, 1, M_WEST, 1, 1); // west wall
+    set_neighbor(servermaze, 1, 1, M_NORTH, 1, 0);
+    set_neighbor(servermaze, 1, 1, M_SOUTH, 1, 2); 
+    set_neighbor(servermaze, 1, 1, M_EAST, 2, 1);
+
+    // (1,2)
+    set_neighbor(servermaze, 1, 2, M_WEST, 1, 2); // west wall
+    set_neighbor(servermaze, 1, 2, M_EAST, 2, 2);
+    set_neighbor(servermaze, 1, 2, M_NORTH, 1, 1); 
+
+    // (2,0)
+    set_neighbor(servermaze, 2, 0, M_SOUTH, 2, 1);
+    set_neighbor(servermaze, 2, 0, M_WEST, 2, 0); // West wall
+
+    // (2,1)
+    set_neighbor(servermaze, 2, 1, M_NORTH, 2, 0);
+    set_neighbor(servermaze, 2, 1, M_SOUTH, 2, 1); // south wall
+    set_neighbor(servermaze, 2, 1, M_WEST, 1, 1); 
+
+    // (2,2)
+    set_neighbor(servermaze, 2, 2, M_WEST, 1, 2);
+    set_neighbor(servermaze, 2, 2, M_NORTH, 2, 2); // north wall
+
+    unit_maze_print(servermaze, stdout);
+
     return servermaze;
 }
 
@@ -218,10 +266,11 @@ void test_maprhf()
 
 int main() 
 {
+    maze_t *servermaze = create_server_maze();
     test_rhf();
     test_maprhf();
+    maze_delete(servermaze);
     return 0;
 }
 
-
-#endif // UNIT_TEST
+#endif // ALG_TEST

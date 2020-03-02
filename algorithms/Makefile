@@ -9,7 +9,8 @@ OBJS = move.o
 LLIBS = $M/mazedata.a
 
 # Used for assembling it as an executable for unit testing
-CFLAGS = -Wall -pedantic -std=c11 -ggdb -DALG_TEST -I$M
+# uncomment define to test
+CFLAGS = -Wall -pedantic -std=c11 -ggdb -I$M # -DALG_TEST 
 CC = gcc
 
 $(LIBS): $(OBJS)

@@ -139,8 +139,8 @@ int main(int argc, char *argv[])
         exit(9);
     } 
 
-    int width = ntohl(server_message.init_ok.MazeWidth);
-    int height = ntohl(server_message.init_ok.MazeHeight);
+    // int width = ntohl(server_message.init_ok.MazeWidth);
+    // int height = ntohl(server_message.init_ok.MazeHeight);
     int mazeport = ntohl(server_message.init_ok.MazePort);
     close(comm_sock);
     //starting to write our logfile

@@ -95,6 +95,7 @@ void *avatar (void *arg)
     startingState(filename, AvatarId, startingX, startingY, pos);
 
     AM_Message avatarTurn;
+    avatarTurn.type = AM_UNKNOWN_MSG_TYPE;
     int lastHeading = M_NULL_MOVE;
     int Direction;
     XYPos sentinel;    //the position of the avatar that doesn't move

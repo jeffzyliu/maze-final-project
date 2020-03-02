@@ -25,6 +25,8 @@
 #include <getopt.h>
 #include <pthread.h>
 
+int exitCode;
+
 int main(int argc, char *argv[])
 {
     //Variable declarations
@@ -110,16 +112,14 @@ int main(int argc, char *argv[])
         perror("connecting stream socket");
         exit(6);
     }
-    printf("Connected!\n");
     //The AM_INIT message the client sends to the server after parameter validation
     AM_Message init_message;
     memset(&init_message, 0, sizeof(AM_Message));
     init_message.type = htonl(AM_INIT);
     init_message.init.nAvatars = htonl(nAvatars);
     init_message.init.Difficulty = htonl(Difficulty);
-    printf("Try to send AM_INIT message to the server now \n");
     if (write(comm_sock, &init_message, sizeof(AM_Message)) < 0) {
-        fprintf(stderr, "error\n");
+        fprintf(stderr, "failed to send to server\n");
         exit(7);
     }
     printf("Sent\n");
@@ -180,9 +180,9 @@ int main(int argc, char *argv[])
         }
     }
     for (int i = 0; i < nAvatars; i++) {
-        pthread_join(threads[i], NULL);
+        pthread_join(threads[i], (void**)&exitCode);
     }
-    // exitGame(logfile, *finalMessage);
+    
     free(logfile);
-    return 0;
+    return exitCode;
 }

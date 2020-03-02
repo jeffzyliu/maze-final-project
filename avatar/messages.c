@@ -60,7 +60,7 @@ void errorMessage (char *filename, AM_Message server_message)
 /**
  * Checking if the server message is valid
  */
-void validMessageTurn (int comm_sock, AM_Message client, int AvatarId, int Direction, AM_Message server_avatar_turn)
+int validMessageTurn (int comm_sock, AM_Message client, int AvatarId, int Direction, AM_Message server_avatar_turn)
 {
     memset(&client, 0, sizeof(AM_Message));
     client.type = htonl(AM_AVATAR_MOVE);
@@ -68,6 +68,7 @@ void validMessageTurn (int comm_sock, AM_Message client, int AvatarId, int Direc
     client.avatar_move.Direction = htonl(Direction);
     if (write(comm_sock, &client, sizeof(AM_Message)) < 0 ) {
         fprintf(stderr, "failed to send to server\n");
+        return 7;
     }
 }
 

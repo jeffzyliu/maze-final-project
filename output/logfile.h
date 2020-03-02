@@ -16,6 +16,7 @@
 #include <unistd.h> 
 #include "../amazing.h"
 #include <netinet/in.h>
+#include <stdbool.h>
 
 /**
  * SUMMARY: this method will write the initial starting positions of all the avatars
@@ -40,7 +41,7 @@ void startingState (char *filename, int AvatarId, int x, int y, XYPos *pos);
  *      XYPos oldPos        the old position of the avatar
  *      XYPos *pos          array of positions of other avatars
  */     
-void avatarTurned (char *filename, int AvatarId, int nAvatars, XYPos newPos, XYPos oldPos, XYPos *pos, int d);
+void avatarTurned (int last, char *filename, int AvatarId, int nAvatars, XYPos newPos, XYPos oldPos, XYPos *pos, int d);
 
 void exitGame (char *filename, AM_Message finalMessage);
 

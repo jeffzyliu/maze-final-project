@@ -24,12 +24,12 @@ typedef struct avatar_paramter {
 } avatar_p;
 
 static bool isGameOver (AM_Message server_avatar_turn);
-
 /**
  * The main avatar function that each thread calls
  */
 void *avatar (void *arg)
 {
+    int exit;
     avatar_p *parameter = (avatar_p *)arg;
     int mazeport = parameter->mazeport;
     char *hostname = parameter->hostname;
@@ -39,7 +39,8 @@ void *avatar (void *arg)
     int comm_sock = socket(AF_INET, SOCK_STREAM, 0);
     if (comm_sock < 0) {
         perror("opening socket");
-        exit(3);
+        exit = 4;
+        pthread_exit(&exit);
     }
     struct sockaddr_in server;  // address of the server
     server.sin_family = AF_INET;
@@ -48,14 +49,16 @@ void *avatar (void *arg)
     struct hostent *hostp = gethostbyname(hostname);
     if (hostp == NULL) {
         fprintf(stderr, "unknown host '%s'\n", hostname);
-        exit(3);
+        exit = 5;
+        pthread_exit(&exit);
     }  
     memcpy(&server.sin_addr, hostp->h_addr_list[0], hostp->h_length);
 
     // 3. Connect the socket to the server   
     if (connect(comm_sock, (struct sockaddr *)&server, sizeof(server)) < 0) {
         perror("connecting stream socket");
-        exit(4);
+        exit = 6;
+        pthread_exit(&exit);
     }
     //keep trying to send the server a ready message until it is accepted
     AM_Message ready;
@@ -66,18 +69,17 @@ void *avatar (void *arg)
         ready.avatar_ready.AvatarId= htonl(AvatarId);
         if (write(comm_sock, &ready, sizeof(AM_Message)) < 0 ) {
             fprintf(stderr, "failed to send to server\n");
-            exit(5);
+            close(comm_sock);
+            exit = 7;
+            pthread_exit(&exit);
         }
         int receive = read(comm_sock, &server_avatar_turn, sizeof(AM_Message));
-        if (receive < 0) {
-            fprintf(stderr, "Failed to Receive Message from Server\n");
-            exit(6);
-        } 
-        //If it is equal to 0, then the connection closed
-        if (receive == 0) {
+        if (receive <= 0) {
             fprintf(stderr, "Connection to Server Closed\n");
-            exit(7);
-        }
+            exit = 8;
+            close(comm_sock);
+            pthread_exit(&exit);
+        } 
         if (IS_AM_ERROR(ntohl(server_avatar_turn.type))) {
             errorMessage(filename, server_avatar_turn);
         } 
@@ -111,6 +113,11 @@ void *avatar (void *arg)
         }
         if (ntohl(server_avatar_turn.type) != AM_AVATAR_TURN) {
             //handle error later
+            if (ntohl(server_avatar_turn.type == AM_SOCKET_BREAK)) {
+                close(comm_sock);
+                exit = 8;
+                pthread_exit(&exit);
+            }
             server_avatar_turn = receiveMessage(comm_sock, server_avatar_turn);
             continue;   
         }
@@ -126,21 +133,26 @@ void *avatar (void *arg)
                 if (lastHeading == M_NULL_MOVE) {
                     Direction = M_NORTH;
                 } else {
-                    avatarTurned (filename, AvatarId, nAvatars, newLoc, oldLoc, pos, Direction);
+                    avatarTurned (0, filename, AvatarId, nAvatars, newLoc, oldLoc, pos, Direction);
                     Direction = decide_simplerighthand(lastHeading, oldLoc, newLoc);
                     oldLoc = newLoc;
                 }
                 lastHeading = Direction;
             }
-            validMessageTurn(comm_sock, avatarTurn, AvatarId, Direction, server_avatar_turn);
+            exit = validMessageTurn(comm_sock, avatarTurn, AvatarId, Direction, server_avatar_turn);
+            if (exit == 7) {
+                close(comm_sock);
+                pthread_exit(&exit);
+            }
         } 
         server_avatar_turn = receiveMessage(comm_sock, server_avatar_turn);
     }
     if (ntohl(server_avatar_turn.type) == AM_MAZE_SOLVED && ntohl(server_avatar_turn.maze_solved.nMoves)%nAvatars==AvatarId) {
-        avatarTurned (filename, AvatarId, nAvatars, sentinel, oldLoc, pos, Direction);
+        avatarTurned (1, filename, AvatarId, nAvatars, sentinel, oldLoc, pos, Direction);
         exitGame(filename, server_avatar_turn);
     }
     free(parameter);
+    close(comm_sock);
     return NULL;
 }
 

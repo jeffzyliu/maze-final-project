@@ -57,6 +57,6 @@ int decide_maprighthand(int lastHeading, XYPos oldLoc, XYPos newLoc, maze_t *maz
  * 
  * also blocks off the counterpart of the wall since each wall connects with one on the other side
  */ 
-void maze_update(int lastHeading, XYPos oldLoc, XYPos newLoc, maze_t *maze);
+void maze_update(int lastHeading, XYPos oldLoc, XYPos newLoc, maze_t *maze, int avatarID);
 
 #endif // __MOVE_H

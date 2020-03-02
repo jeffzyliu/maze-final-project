@@ -74,7 +74,7 @@ int decide_maprighthand(int lastHeading, XYPos oldLoc, XYPos newLoc, maze_t *maz
  * 
  * sets both sides
  */ 
-void maze_update(int lastHeading, XYPos oldLoc, XYPos newLoc, maze_t *maze)
+void maze_update(int lastHeading, XYPos oldLoc, XYPos newLoc, maze_t *maze, int avatarID)
 {
     pthread_mutex_lock(&mutex1);
     int direction = avatar_moved(oldLoc, newLoc);
@@ -93,6 +93,8 @@ void maze_update(int lastHeading, XYPos oldLoc, XYPos newLoc, maze_t *maze)
         
         set_neighbor(maze, otherside.x, otherside.y, turnAround(lastHeading), otherside.x, otherside.y); // cannot come through
     }
+    set_avatar(maze, oldLoc.x, oldLoc.y, -1);
+    set_avatar(maze, newLoc.x, newLoc.y, avatarID);
     pthread_mutex_unlock(&mutex1);
 }
 
@@ -329,19 +331,20 @@ void test_maprhf(maze_t *servermaze, XYPos target)
     oldLoc.x = avatar.x;
     oldLoc.y = avatar.y - 1;
     maze_t *avatarmaze = maze_new(3, 3);
+    set_avatar(avatarmaze, 0, 2, 0);
 
     int turnCount;
     for (turnCount = 0; turnCount < 20 && avatar_moved(target, avatar) != M_NULL_MOVE; turnCount++) {
         if (turnCount != 0) {
             avatar_moved(oldLoc, avatar) != 8 ? printf(" (success)") : printf(" (failed)");
-            maze_update(lastHeading, oldLoc, avatar, avatarmaze);
+            maze_update(lastHeading, oldLoc, avatar, avatarmaze, 0);
         }
         lastHeading = decide_maprighthand(lastHeading, oldLoc, avatar, avatarmaze);
         oldLoc = avatar;
         printf("\nturn %d: avatar at (%d,%d) attempting to move %s", turnCount, avatar.x, avatar.y, direction_to_string(lastHeading));
         avatar = check_neighbor(servermaze, avatar.x, avatar.y, lastHeading);
     }
-    maze_update(lastHeading, oldLoc, avatar, avatarmaze);
+    maze_update(lastHeading, oldLoc, avatar, avatarmaze, 0);
     printf(" (success)\ngame ended at (%d,%d) [expected 2,0] in %d turns [expected 13]\n", avatar.x, avatar.y, turnCount);
     printf("\ncheck resultant maze for correct markings and dead-end-blocking:\n");
     unit_maze_print(avatarmaze, stdout);

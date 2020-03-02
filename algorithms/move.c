@@ -253,31 +253,82 @@ maze_t *create_server_maze()
     return servermaze;
 }
 
+char *direction_to_string(int direction)
+{
+    switch (direction)
+    {
+        case M_SOUTH:
+            return "south";
+        case M_NORTH:
+            return "north";
+        case M_EAST:
+            return "east";
+        case M_WEST:
+            return "west";
+        default:
+            return "not a direction";
+    }
+}
+
 void test_rhf(maze_t *servermaze, XYPos target)
 {
+    printf("\ntesting simple right hand follow on the created maze");
     XYPos avatar;
     avatar.x = 0;
     avatar.y = 2;
 
     int lastHeading = M_SOUTH;
-    int 
+    XYPos oldLoc;
+    oldLoc.x = avatar.x;
+    oldLoc.y = avatar.y - 1;
 
     int turnCount;
     for (turnCount = 0; avatar_moved(target, avatar) != M_NULL_MOVE; turnCount++) {
-
+        if (turnCount != 0) {
+            avatar_moved(oldLoc, avatar) != 8 ? printf(" (success)") : printf(" (failed)");
+        }
+        lastHeading = decide_simplerighthand(lastHeading, oldLoc, avatar);
+        oldLoc = avatar;
+        printf("\nturn %d: avatar at (%d,%d) attempting to move %s", turnCount, avatar.x, avatar.y, direction_to_string(lastHeading));
+        avatar = check_neighbor(servermaze, avatar.x, avatar.y, lastHeading);
     }
+    printf(" (success)\ngame ended at (%d,%d) [expected 2,0] in %d turns [expected 22]\n", avatar.x, avatar.y, turnCount);
 }
 
 void test_maprhf(maze_t *servermaze, XYPos target)
 {
-    
+    printf("\ntesting enhanced right hand follow on the created maze");
+    XYPos avatar;
+    avatar.x = 0;
+    avatar.y = 2;
+
+    int lastHeading = M_SOUTH;
+    XYPos oldLoc;
+    oldLoc.x = avatar.x;
+    oldLoc.y = avatar.y - 1;
+    maze_t *avatarmaze = maze_new(3, 3);
+
+    int turnCount;
+    for (turnCount = 0; avatar_moved(target, avatar) != M_NULL_MOVE; turnCount++) {
+        if (turnCount != 0) {
+            avatar_moved(oldLoc, avatar) != 8 ? printf(" (success)") : printf(" (failed)");
+            maze_update(lastHeading, oldLoc, avatar, avatarmaze);
+        }
+        lastHeading = decide_maprighthand(lastHeading, oldLoc, avatar, avatarmaze);
+        oldLoc = avatar;
+        printf("\nturn %d: avatar at (%d,%d) attempting to move %s", turnCount, avatar.x, avatar.y, direction_to_string(lastHeading));
+        avatar = check_neighbor(servermaze, avatar.x, avatar.y, lastHeading);
+    }
+    printf(" (success)\ngame ended at (%d,%d) [expected 2,0] in %d turns [expected 13]\n", avatar.x, avatar.y, turnCount);
+    unit_maze_print(avatarmaze, stdout);
+    maze_delete(avatarmaze);
 }
 
 /**
  * test all algorithms on a maze that looks like this:
  * 
  * +----+----+----+
- * |         |    |
+ * |         | ## |
  * +    +    +    +
  * |    |         |
  * +    +    +----+

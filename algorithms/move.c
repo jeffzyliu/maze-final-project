@@ -34,7 +34,7 @@ int avatar_moved(XYPos oldLoc, XYPos newLoc)
     if (oldLoc.x != newLoc.x) {
         return newLoc.x > oldLoc.x ? M_EAST : M_WEST;
     } else if (oldLoc.y != newLoc.y) {
-        return newLoc.y > oldLoc.y ? M_NORTH : M_SOUTH;
+        return newLoc.y > oldLoc.y ? M_SOUTH : M_NORTH;
     } else { // no movement
         return M_NULL_MOVE; // == 8
     }
@@ -78,6 +78,7 @@ void maze_update(int lastHeading, XYPos oldLoc, XYPos newLoc, maze_t *maze)
 {
     pthread_mutex_lock(&mutex1);
     int direction = avatar_moved(oldLoc, newLoc);
+    if (oldLoc.y == 3 || newLoc.y == 3) printf("%d,%d\n", oldLoc.y, newLoc.y);
     if (direction != M_NULL_MOVE) { // moved in a direction, set new path in direction moved
         if (wall_count(maze, oldLoc.x, oldLoc.y) >= 3) { // exited a dead-end, mark as closed
             set_neighbor(maze, oldLoc.x, oldLoc.y, direction, oldLoc.x, oldLoc.y); // cannot go forward
@@ -87,9 +88,10 @@ void maze_update(int lastHeading, XYPos oldLoc, XYPos newLoc, maze_t *maze)
             set_neighbor(maze, newLoc.x, newLoc.y, turnAround(direction), oldLoc.x, oldLoc.y); // can go back
         }
     } else { // didn't move, set last heading to wall
-        set_neighbor(maze, oldLoc.x, oldLoc.y, lastHeading, oldLoc.x, oldLoc.y); // cannot go through
         XYPos otherside = otherSide(lastHeading, oldLoc);
-        set_neighbor(maze, otherside.x, otherside.x, turnAround(lastHeading), otherside.x, otherside.y); // cannot come through
+        set_neighbor(maze, oldLoc.x, oldLoc.y, lastHeading, oldLoc.x, oldLoc.y); // cannot go through
+        
+        set_neighbor(maze, otherside.x, otherside.y, turnAround(lastHeading), otherside.x, otherside.y); // cannot come through
     }
     pthread_mutex_unlock(&mutex1);
 }
@@ -164,7 +166,7 @@ static XYPos otherSide(int heading, XYPos loc)
             break;
         case M_SOUTH:
             otherside.x = loc.x;
-            otherside.y = loc.y - 1;
+            otherside.y = loc.y + 1;
             break;
         case M_EAST:
             otherside.x = loc.x + 1;
@@ -172,7 +174,7 @@ static XYPos otherSide(int heading, XYPos loc)
             break;
         case M_NORTH:
             otherside.x = loc.x;
-            otherside.y = loc.y + 1;
+            otherside.y = loc.y - 1;
             break;
         default:
             return loc;
@@ -196,6 +198,16 @@ static bool directionBlocked(maze_t *maze, XYPos currLoc, int proposedDirection)
 
 #ifdef ALG_TEST
 
+/**
+ * creates a new maze that looks like this:
+ * +----+----+----+
+ * |         | ## |
+ * +    +    +    +
+ * |    |         |
+ * +    +    +----+
+ * | 0  |         |
+ * +----+----+----+
+ */ 
 maze_t *create_server_maze()
 {
     printf("Creating maze of height 3 and width 3\n");
@@ -253,6 +265,9 @@ maze_t *create_server_maze()
     return servermaze;
 }
 
+/**
+ * helper method to print out status reports without logfile.c
+ */ 
 char *direction_to_string(int direction)
 {
     switch (direction)
@@ -270,6 +285,9 @@ char *direction_to_string(int direction)
     }
 }
 
+/**
+ * tests the basic RHF alg
+ */ 
 void test_rhf(maze_t *servermaze, XYPos target)
 {
     printf("\ntesting simple right hand follow on the created maze");
@@ -295,6 +313,10 @@ void test_rhf(maze_t *servermaze, XYPos target)
     printf(" (success)\ngame ended at (%d,%d) [expected 2,0] in %d turns [expected 22]\n", avatar.x, avatar.y, turnCount);
 }
 
+/**
+ * tests the enhanced alg
+ * does not test for mutex locking and starvation
+ */ 
 void test_maprhf(maze_t *servermaze, XYPos target)
 {
     printf("\ntesting enhanced right hand follow on the created maze");
@@ -309,7 +331,7 @@ void test_maprhf(maze_t *servermaze, XYPos target)
     maze_t *avatarmaze = maze_new(3, 3);
 
     int turnCount;
-    for (turnCount = 0; avatar_moved(target, avatar) != M_NULL_MOVE; turnCount++) {
+    for (turnCount = 0; turnCount < 20 && avatar_moved(target, avatar) != M_NULL_MOVE; turnCount++) {
         if (turnCount != 0) {
             avatar_moved(oldLoc, avatar) != 8 ? printf(" (success)") : printf(" (failed)");
             maze_update(lastHeading, oldLoc, avatar, avatarmaze);
@@ -319,21 +341,15 @@ void test_maprhf(maze_t *servermaze, XYPos target)
         printf("\nturn %d: avatar at (%d,%d) attempting to move %s", turnCount, avatar.x, avatar.y, direction_to_string(lastHeading));
         avatar = check_neighbor(servermaze, avatar.x, avatar.y, lastHeading);
     }
+    maze_update(lastHeading, oldLoc, avatar, avatarmaze);
     printf(" (success)\ngame ended at (%d,%d) [expected 2,0] in %d turns [expected 13]\n", avatar.x, avatar.y, turnCount);
+    printf("\ncheck resultant maze for correct markings and dead-end-blocking:\n");
     unit_maze_print(avatarmaze, stdout);
     maze_delete(avatarmaze);
 }
 
 /**
- * test all algorithms on a maze that looks like this:
- * 
- * +----+----+----+
- * |         | ## |
- * +    +    +    +
- * |    |         |
- * +    +    +----+
- * | 0  |         |
- * +----+----+----+
+ * test all algorithms on a maze specified in create_server_maze
  */ 
 int main() 
 {

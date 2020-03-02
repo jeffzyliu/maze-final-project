@@ -90,7 +90,7 @@ bool set_neighbor(maze_t *maze, int x, int y, const int d, int neighbor_x, int n
     }
 
     if (x >= maze->width || y >= maze->height || neighbor_x >= maze->width || neighbor_y >= maze->height) {
-        fprintf(stderr, "Error: Coordinates must be less than height/width. Max x value: %d. Max y value: %d", maze->width-1, maze->height-1);
+        fprintf(stderr, "Error: Coordinates must be less than height/width. Max x value: %d. Max y value: %d, (%d,%d)", maze->width-1, maze->height-1, x, y);
         return false;
     }
 
@@ -335,6 +335,11 @@ bool set_avatar(maze_t *maze, int x, int y, int avatar_id) {
 // Returns XYPos of the neighbor of a node in a given direction
 XYPos check_neighbor(maze_t *maze, int x, int y, int d) {
     XYPos neighbor;
+    if (maze->array[y][x]->neighbors[d] == NULL) {
+        neighbor.x = -1;
+        neighbor.y = -1;
+        return neighbor;
+    }
     neighbor.x = maze->array[y][x]->neighbors[d]->x;
     neighbor.y = maze->array[y][x]->neighbors[d]->y;
     return neighbor;
@@ -429,6 +434,15 @@ int test_newmaze1() {
 
     printf("Calling unit_maze_print method\n");
     unit_maze_print(maze, stdout);
+    printf("----------------------------------------------------------------\n");
+
+    printf("Testing check_neighbor function\n");
+    XYPos neighbor = check_neighbor(maze, 0, 0, M_NORTH);
+    printf("north of (0,0) is (%d,%d)\n", neighbor.x, neighbor.y);
+    neighbor = check_neighbor(maze, 0, 0, M_SOUTH);
+    printf("south of (0,0) is (%d,%d)\n", neighbor.x, neighbor.y);
+    neighbor = check_neighbor(maze, 0, 0, M_EAST);
+    printf("east of (0,0) is (%d,%d)\n", neighbor.x, neighbor.y);
     printf("----------------------------------------------------------------\n");
 
     printf("Deleting maze\n");

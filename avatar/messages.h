@@ -25,7 +25,7 @@
  * RETURN:
  *      none:
  */
-void errorMessage(AM_Message server_message);
+void errorMessage(char *filename, AM_Message server_message);
 
 /**
  * SUMMARY: check to see if the server message is valid when an avatar attempts to move
@@ -42,7 +42,7 @@ void errorMessage(AM_Message server_message);
  *      AM_Message server   the message received by the server
  */
 
-void validMessageTurn (int turn, int comm_sock, AM_Message client, int AvatarId, int Direction, AM_Message server_avatar_turn);
+void validMessageTurn (int comm_sock, AM_Message client, int AvatarId, int Direction, AM_Message server_avatar_turn);
 
 AM_Message receiveMessage (int comm_sock, AM_Message server_avatar_turn);
 

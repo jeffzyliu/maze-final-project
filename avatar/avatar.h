@@ -42,6 +42,6 @@ void *avatar (void *arg);
 //  * RETURN:
 //  *      avatar_p *parameter the data struct with necessary parameters
 //  */
-avatar_p *clientParameters(int AvatarId, int nAvatars, int Difficulty, char *hostname, int mazeport, char *filename, AM_Message *finalMessage);
+avatar_p *clientParameters(int AvatarId, int nAvatars, int Difficulty, char *hostname, int mazeport, char *filename);
 
 #endif //__AVATAR_H

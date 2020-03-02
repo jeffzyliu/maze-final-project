@@ -148,7 +148,8 @@ typedef struct AM_Message
 
 // ---------------- Public Variables
 /* add your variables here if any*/
-
+#define AM_SOCKET_BREAK             0x88888888
+#define AM_NO_GAME                  0x88888880
 // ---------------- Prototypes/Macros
 #define IS_AM_ERROR(code) ((code) & (AM_ERROR_MASK))
 

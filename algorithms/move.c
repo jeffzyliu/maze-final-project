@@ -253,22 +253,48 @@ maze_t *create_server_maze()
     return servermaze;
 }
 
-void test_rhf()
+void test_rhf(maze_t *servermaze, XYPos target)
+{
+    XYPos avatar;
+    avatar.x = 0;
+    avatar.y = 2;
+
+    int lastHeading = M_SOUTH;
+    int 
+
+    int turnCount;
+    for (turnCount = 0; avatar_moved(target, avatar) != M_NULL_MOVE; turnCount++) {
+
+    }
+}
+
+void test_maprhf(maze_t *servermaze, XYPos target)
 {
     
 }
 
-void test_maprhf()
-{
-    
-}
-
-
+/**
+ * test all algorithms on a maze that looks like this:
+ * 
+ * +----+----+----+
+ * |         |    |
+ * +    +    +    +
+ * |    |         |
+ * +    +    +----+
+ * | 0  |         |
+ * +----+----+----+
+ */ 
 int main() 
 {
     maze_t *servermaze = create_server_maze();
-    test_rhf();
-    test_maprhf();
+    XYPos target;
+    target.x = 2;
+    target.y = 0;
+
+    test_rhf(servermaze, target);
+
+    test_maprhf(servermaze, target);
+
     maze_delete(servermaze);
     return 0;
 }

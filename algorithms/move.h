@@ -1,5 +1,7 @@
 /**
- * move.h
+ * move.h 
+ * author: Jeff Liu, Willem Klein Wassink, Celina tala
+ * 
  * 
  * module about move information and algorithms
  */ 
@@ -13,7 +15,6 @@
 #include "../mazedata/maze.h"
 #include <stdbool.h>
 #include <pthread.h>
-
 
 /**
  * checks if an avatar moved and returns its direction
@@ -41,7 +42,9 @@ int decide_simplerighthand(int lastHeading, XYPos oldLoc, XYPos newLoc);
 
 /**
  * uses the maze map to expedite right hand following by not trying duplicate sides
- * may need a mutex lock
+ * 
+ * calls decide_simplerighthand first
+ * after, repeatedly turns left if necessary until the direction heads into an unknown path or a known open path
  */ 
 int decide_maprighthand(int lastHeading, XYPos oldLoc, XYPos newLoc, maze_t *maze);
 
@@ -54,6 +57,6 @@ int decide_maprighthand(int lastHeading, XYPos oldLoc, XYPos newLoc, maze_t *maz
  * 
  * also blocks off the counterpart of the wall since each wall connects with one on the other side
  */ 
-void maze_update(int lastHeading, XYPos oldLoc, XYPos newLoc, maze_t *maze);
+void maze_update(int lastHeading, XYPos oldLoc, XYPos newLoc, maze_t *maze, int avatarID);
 
 #endif // __MOVE_H

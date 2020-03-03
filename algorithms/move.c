@@ -12,11 +12,9 @@
 #include "../amazing.h"
 #include "../mazedata/maze.h"
 #include <stdbool.h>
-#include <pthread.h>
 #include "move.h"
 
-pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
-
+// helper function primitives
 static int turnLeft(int heading);
 static int turnRight(int heading);
 static int turnAround(int heading);
@@ -58,13 +56,11 @@ int decide_simplerighthand(int lastHeading, XYPos oldLoc, XYPos newLoc)
  */ 
 int decide_maprighthand(int lastHeading, XYPos oldLoc, XYPos newLoc, maze_t *maze)
 {
-    pthread_mutex_lock(&mutex1);
     int proposedHeading = decide_simplerighthand(lastHeading, oldLoc, newLoc);
     // first calculate a heading, but turn left until the direction not identified as a wall
     while (directionBlocked(maze, newLoc, proposedHeading)) {
         proposedHeading = turnLeft(proposedHeading);
     }
-    pthread_mutex_unlock(&mutex1);
     return proposedHeading;
 }
 
@@ -76,9 +72,7 @@ int decide_maprighthand(int lastHeading, XYPos oldLoc, XYPos newLoc, maze_t *maz
  */ 
 void maze_update(int lastHeading, XYPos oldLoc, XYPos newLoc, maze_t *maze, int avatarID)
 {
-    pthread_mutex_lock(&mutex1);
     int direction = avatar_moved(oldLoc, newLoc);
-    if (oldLoc.y == 3 || newLoc.y == 3) printf("%d,%d\n", oldLoc.y, newLoc.y);
     if (direction != M_NULL_MOVE) { // moved in a direction, set new path in direction moved
         if (wall_count(maze, oldLoc.x, oldLoc.y) >= 3) { // exited a dead-end, mark as closed
             set_neighbor(maze, oldLoc.x, oldLoc.y, direction, oldLoc.x, oldLoc.y); // cannot go forward
@@ -93,9 +87,8 @@ void maze_update(int lastHeading, XYPos oldLoc, XYPos newLoc, maze_t *maze, int 
         
         set_neighbor(maze, otherside.x, otherside.y, turnAround(lastHeading), otherside.x, otherside.y); // cannot come through
     }
-    set_avatar(maze, oldLoc.x, oldLoc.y, -1);
-    set_avatar(maze, newLoc.x, newLoc.y, avatarID);
-    pthread_mutex_unlock(&mutex1);
+    set_avatar(maze, oldLoc.x, oldLoc.y, avatarID, false);
+    set_avatar(maze, newLoc.x, newLoc.y, avatarID, true);
 }
 
 /**
@@ -213,10 +206,10 @@ static bool directionBlocked(maze_t *maze, XYPos currLoc, int proposedDirection)
 maze_t *create_server_maze()
 {
     printf("Creating maze of height 3 and width 3\n");
-    maze_t *servermaze = maze_new(3, 3);
+    maze_t *servermaze = maze_new(3, 3, 1);
     
     printf("Setting avatar at 0,2.\n");
-    set_avatar(servermaze, 0, 2, 0);
+    set_avatar(servermaze, 0, 2, 0, true);
 
     printf("Putting walls and passages in the servermaze.\n");
     
@@ -330,8 +323,8 @@ void test_maprhf(maze_t *servermaze, XYPos target)
     XYPos oldLoc;
     oldLoc.x = avatar.x;
     oldLoc.y = avatar.y - 1;
-    maze_t *avatarmaze = maze_new(3, 3);
-    set_avatar(avatarmaze, 0, 2, 0);
+    maze_t *avatarmaze = maze_new(3, 3, 1);
+    set_avatar(avatarmaze, 0, 2, 0, true);
 
     int turnCount;
     for (turnCount = 0; turnCount < 20 && avatar_moved(target, avatar) != M_NULL_MOVE; turnCount++) {

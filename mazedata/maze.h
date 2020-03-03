@@ -50,7 +50,7 @@ bool set_neighbor(maze_t *maze, int x, int y, const int d, int neighbor_x, int n
  * Caller responsibilities:
  *      Deleting the maze later with maze_delete
  */
-maze_t *maze_new(int height, int width);
+maze_t *maze_new(int height, int width, int numAvatars);
 
 // ------------------- wall_count
 /* Returns the number of walls a mazenode is neighbors with
@@ -100,6 +100,14 @@ void unit_mazenode_print(maze_t *maze, int x, int y, FILE *fp);
 void unit_maze_print(maze_t *maze, FILE *fp);
 
 // ------------------- set_avatar
+/** get_avatar
+ * gets the avatar with the lowest ID at given x,y
+ * 
+ * if no avatar is found, returns -1
+ * else returns the lowest avatarID
+ */ 
+int get_avatar(maze_t *maze, int x, int y);
+// ------------------- set_avatar
 /* Puts an avatar of a given ID into a location in a maze
  * 
  * Inputs:
@@ -107,7 +115,7 @@ void unit_maze_print(maze_t *maze, FILE *fp);
  *      integer (x,y) coordinates
  *      an integer avatar ID
  */
-bool set_avatar(maze_t *maze, int x, int y, int avatar_id);
+bool set_avatar(maze_t *maze, int x, int y, int avatar_id, bool status);
 
 // ------------------- check_neighbor
 /* Returns an XYPos of the coordinates of the neighbor of a given node in a given direction

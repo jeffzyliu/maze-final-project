@@ -3,6 +3,9 @@
 LIBS= output.a
 OBJS = logfile.o ui.o
 
+CC = gcc
+CFLAGS = -Wall -pedantic -std=c11 -ggdb
+
 $(LIBS): $(OBJS)
 	ar cr $(LIBS) $(OBJS)
 

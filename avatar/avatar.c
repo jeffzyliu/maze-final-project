@@ -99,6 +99,7 @@ void *avatar (void *arg)
 
     AM_Message avatarTurn;
     int lastHeading = M_NORTH;
+    avatarTurn.type = AM_UNKNOWN_MSG_TYPE;
     int Direction;
     XYPos sentinel;    //the position of the avatar that doesn't move
     sentinel.x = ntohl(pos[0].x);

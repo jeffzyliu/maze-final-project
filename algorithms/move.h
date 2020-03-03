@@ -14,7 +14,6 @@
 #include "../amazing.h"
 #include "../mazedata/maze.h"
 #include <stdbool.h>
-#include <pthread.h>
 
 /**
  * checks if an avatar moved and returns its direction

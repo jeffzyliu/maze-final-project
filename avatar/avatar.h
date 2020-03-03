@@ -1,3 +1,12 @@
+/**
+ * Willem Klein Wassink, Jeff Liu, and Celina Tala, CS50 Winter 2020
+ * 
+ * Avatar.h - header file for the individual avatars
+ * 
+ * Each avatar corresponds to one client in our multithreaded environment. It 
+ * receives and sends messages to the server until an error occurs or the maze is solved
+ */
+
 #ifndef __AVATAR_H
 #define __AVATAR_H
 
@@ -13,35 +22,36 @@
 #include "../algorithms/move.h"
 #include "../output/logfile.h"
 
-typedef struct avatar_parameter avatar_p; //our parameter for the avatar method
+//our parameter for the avatar method
+typedef struct avatar_parameter avatar_p; 
 
-/**
- * SUMMARY: The main avatar function that each thread calls
+/**************  avatar
+ * The main avatar function that each thread calls
  * 
- * PARAMETER:
- *      void *arg      all the parameters needed to start multithreading socket reading
+ * Inputs:
+ *      a parameter struct which includes all variables needed to start multithreading socket reading
  * 
- * RETURN:
- *      NONE
+ * Outputs:
+ *      The exit code if relevant
+ *      else none
  */
 void *avatar (void *arg);
 
-// /**
-//  * avatar_p *clientParameters()
-//  * SUMMARY: This function creates the struct avatar_p, which is the parameter we need to
-//  * pass to our avatar method when we create new threads
-//  * 
-//  * PARAMETERS:
-//  *      int AvatariD        ID for each avatar starting at 0
-//  *      int nAvatars        total number of avatars
-//  *      int Difficulty      difficulty level
-//  *      char *hostname      hostname
-//  *      int mazeport        the port of maze location
-//  *      char *filename      the file we are writing to
-//  * 
-//  * RETURN:
-//  *      avatar_p *parameter the data struct with necessary parameters
-//  */
+/************ clientParameters()
+ * This function creates the struct avatar_p, which is the parameter we need to
+ * pass to our avatar method when we create new threads
+ * 
+ * Inputs:
+ *      int AvatariD        ID for each avatar starting at 0
+ *      int nAvatars        total number of avatars
+ *      int Difficulty      difficulty level
+ *      char *hostname      hostname
+ *      int mazeport        the port of maze location
+ *      char *filename      the file we are writing to
+ * 
+ * Outputs:
+ *      the data struct avatar_p with necessary parameters
+ */
 avatar_p *clientParameters(int AvatarId, int nAvatars, int Difficulty, char *hostname, int mazeport, char *filename);
 
 #endif //__AVATAR_H

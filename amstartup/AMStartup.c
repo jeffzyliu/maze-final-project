@@ -27,6 +27,9 @@
 
 int exitCode;
 
+/**
+ * The main function where we parse command line arguments and start off our threads
+ */
 int main(int argc, char *argv[])
 {
     //Variable declarations
@@ -88,6 +91,7 @@ int main(int argc, char *argv[])
         fprintf(stderr, "Please input integer for parameters\n");
         exit(3);
     }
+    //the name of the program
     program = argv[0];
 
     //Opening our socket
@@ -138,7 +142,7 @@ int main(int argc, char *argv[])
         errorMessage(NULL, server_message);
         exit(9);
     } 
-
+    //getting the information from the server message
     int width = ntohl(server_message.init_ok.MazeWidth);
     int height = ntohl(server_message.init_ok.MazeHeight);
     int mazeport = ntohl(server_message.init_ok.MazePort);
@@ -169,6 +173,7 @@ int main(int argc, char *argv[])
     fprintf(fp, "*****************************************\n");
     fclose(fp);
 
+    //creating our threads corresponding to each avatar in our game
     pthread_t threads[nAvatars];
     int rc;
     for (int i = 0; i < nAvatars; i++) {

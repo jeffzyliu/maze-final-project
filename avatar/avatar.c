@@ -23,7 +23,10 @@ typedef struct avatar_paramter {
     char *filename;
 } avatar_p;
 
+// -------------------------- local function prototypes
 static bool isGameOver (AM_Message server_avatar_turn);
+
+/******************* Local Functions
 /**
  * The main avatar function that each thread calls
  */
@@ -95,14 +98,14 @@ void *avatar (void *arg)
     startingState(filename, AvatarId, startingX, startingY, pos);
 
     AM_Message avatarTurn;
-    int lastHeading = M_NULL_MOVE;
+    int lastHeading = M_NORTH;
     int Direction;
     XYPos sentinel;    //the position of the avatar that doesn't move
     sentinel.x = ntohl(pos[0].x);
     sentinel.y = ntohl(pos[0].y);
     XYPos oldLoc;
     oldLoc.x = startingX;
-    oldLoc.y = startingY;
+    oldLoc.y = startingY+1;
     XYPos newLoc;
     newLoc.x = startingX;
     newLoc.y = startingY;
@@ -129,14 +132,9 @@ void *avatar (void *arg)
             if (AvatarId == 0 || avatar_moved(newLoc, sentinel) == M_NULL_MOVE) {
                 Direction = M_NULL_MOVE;
             } else {
-                //the first direction 
-                if (lastHeading == M_NULL_MOVE) {
-                    Direction = M_NORTH;
-                } else {
-                    avatarTurned (0, filename, AvatarId, nAvatars, newLoc, oldLoc, pos, Direction);
-                    Direction = decide_simplerighthand(lastHeading, oldLoc, newLoc);
-                    oldLoc = newLoc;
-                }
+                avatarTurned (0, filename, AvatarId, nAvatars, newLoc, oldLoc, pos, Direction);
+                Direction = decide_simplerighthand(lastHeading, oldLoc, newLoc);
+                oldLoc = newLoc;
                 lastHeading = Direction;
             }
             exit = validMessageTurn(comm_sock, avatarTurn, AvatarId, Direction, server_avatar_turn);
@@ -175,6 +173,9 @@ avatar_p *clientParameters(int AvatarId, int nAvatars, int Difficulty, char *hos
     return parameter;
 }
 
+/**
+ * Function that checks if the game is over
+ */
 static bool isGameOver (AM_Message server_avatar_turn)
 {
     return server_avatar_turn.type == ntohl(AM_MAZE_SOLVED) || server_avatar_turn.type == ntohl(AM_SOCKET_BREAK) || server_avatar_turn.type == ntohl(AM_TOO_MANY_MOVES) || server_avatar_turn.type == ntohl(AM_SERVER_TIMEOUT);

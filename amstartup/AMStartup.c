@@ -5,10 +5,6 @@
  *
  * DESCRIPTION : This is the AMStartup.c file where the program connects with the server 
  *                and starts threads
- *              
- *
- * PUBLIC FUNCTIONS:
- *      
  *
  */
 
@@ -142,15 +138,9 @@ int main(int argc, char *argv[])
         errorMessage(NULL, server_message);
         exit(9);
     } 
-<<<<<<< HEAD
-    //getting the information from the server message
-    int width = ntohl(server_message.init_ok.MazeWidth);
-    int height = ntohl(server_message.init_ok.MazeHeight);
-=======
 
     // int width = ntohl(server_message.init_ok.MazeWidth);
     // int height = ntohl(server_message.init_ok.MazeHeight);
->>>>>>> a4edb628d242f94ca85034a5419bb08c67b6de36
     int mazeport = ntohl(server_message.init_ok.MazePort);
     close(comm_sock);
     //starting to write our logfile
@@ -195,5 +185,6 @@ int main(int argc, char *argv[])
     }
     
     free(logfile);
+    printf("%d\n", exitCode);
     return exitCode;
 }

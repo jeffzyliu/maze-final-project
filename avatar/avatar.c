@@ -27,12 +27,13 @@ typedef struct avatar_paramter {
 static bool isGameOver (AM_Message server_avatar_turn);
 
 /******************* Local Functions
-/**
  * The main avatar function that each thread calls
  */
 void *avatar (void *arg)
 {
     int exit;
+    exit = 6;
+    pthread_exit(&exit);
     avatar_p *parameter = (avatar_p *)arg;
     int mazeport = parameter->mazeport;
     char *hostname = parameter->hostname;
@@ -133,7 +134,7 @@ void *avatar (void *arg)
             if (AvatarId == 0 || avatar_moved(newLoc, sentinel) == M_NULL_MOVE) {
                 Direction = M_NULL_MOVE;
             } else {
-                avatarTurned (0, filename, AvatarId, nAvatars, newLoc, oldLoc, pos, Direction);
+                avatarTurned (false, filename, AvatarId, nAvatars, newLoc, oldLoc, pos, Direction);
                 Direction = decide_simplerighthand(lastHeading, oldLoc, newLoc);
                 oldLoc = newLoc;
                 lastHeading = Direction;
@@ -147,7 +148,7 @@ void *avatar (void *arg)
         server_avatar_turn = receiveMessage(comm_sock, server_avatar_turn);
     }
     if (ntohl(server_avatar_turn.type) == AM_MAZE_SOLVED && ntohl(server_avatar_turn.maze_solved.nMoves)%nAvatars==AvatarId) {
-        avatarTurned (1, filename, AvatarId, nAvatars, sentinel, oldLoc, pos, Direction);
+        avatarTurned (true, filename, AvatarId, nAvatars, sentinel, oldLoc, pos, Direction);
         exitGame(filename, server_avatar_turn);
     }
     free(parameter);

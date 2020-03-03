@@ -49,7 +49,7 @@ void startingState (char *filename, int AvatarId, int x, int y, XYPos *pos)
 /**
  * the method that calls if the avatar is able to successfully move
  */
-void avatarTurned (int last, char *filename, int AvatarId, int nAvatars, XYPos newPos, XYPos oldPos, XYPos *pos, int d)
+void avatarTurned (bool last, char *filename, int AvatarId, int nAvatars, XYPos newPos, XYPos oldPos, XYPos *pos, int d)
 {
     FILE *fp;
     fp = fopen(filename, "a");
@@ -77,7 +77,7 @@ void avatarTurned (int last, char *filename, int AvatarId, int nAvatars, XYPos n
         fprintf(fp, "%s", movedAvatar);
     }
     fprintf(fp, "Avatar Locations: ");
-    if (last == 1) {
+    if (last) {
         for (int i = 0; i < nAvatars; i++) {
             fprintf(fp, "%d: (%d, %d); ", i, newPos.x, newPos.y);
         }

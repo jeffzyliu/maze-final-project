@@ -73,7 +73,6 @@ int decide_maprighthand(int lastHeading, XYPos oldLoc, XYPos newLoc, maze_t *maz
 void maze_update(int lastHeading, XYPos oldLoc, XYPos newLoc, maze_t *maze, int avatarID)
 {
     int direction = avatar_moved(oldLoc, newLoc);
-    if (oldLoc.y == 3 || newLoc.y == 3) printf("%d,%d\n", oldLoc.y, newLoc.y);
     if (direction != M_NULL_MOVE) { // moved in a direction, set new path in direction moved
         if (wall_count(maze, oldLoc.x, oldLoc.y) >= 3) { // exited a dead-end, mark as closed
             set_neighbor(maze, oldLoc.x, oldLoc.y, direction, oldLoc.x, oldLoc.y); // cannot go forward

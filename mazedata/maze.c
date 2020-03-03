@@ -20,9 +20,8 @@ typedef struct mazenode {
         // (wall = pointer to self)
     struct mazenode *neighbors[4];
 
-    // For checking if the node contains an avatar.
-    // -1 for no avatar. Otherwise, it's the avatar's ID.
-    int avatar;
+    // array of booleans to show whether each avatarID is present
+    bool avatars[10];
 
     // (x,y) coordnates
     int x;
@@ -33,6 +32,7 @@ typedef struct mazenode {
 typedef struct maze {
     int height;
     int width;
+    int numAvatars;
     mazenode_t ***array;    // 2d array of mazenodes. Index like this: array[y][x]
 } maze_t;
 
@@ -55,7 +55,9 @@ static mazenode_t *mazenode_new(int x, int y) {
         node->neighbors[M_EAST] = NULL;
         node->x = x;
         node->y = y;
-        node->avatar = -1; // -1 means no avatar
+        for (int ID = 0; ID < 10; ID++) {
+            node->avatars[ID] = false;
+        }
         return node;
     }
 }
@@ -100,7 +102,7 @@ bool set_neighbor(maze_t *maze, int x, int y, const int d, int neighbor_x, int n
 
 
 // Creates a new maze of set width and height, filled with mazenodes. Caller has to delete it.
-maze_t *maze_new(int height, int width) {
+maze_t *maze_new(int height, int width, int numAvatars) {
     maze_t *maze = malloc(sizeof(maze_t));
     if (maze == NULL) {
         fprintf(stderr, "Error: maze allocation failed\n");
@@ -111,6 +113,7 @@ maze_t *maze_new(int height, int width) {
         }
         maze->height = height;
         maze->width = width;
+        maze->numAvatars = numAvatars;
         mazenode_t ***array = calloc(height, sizeof(mazenode_t **));
         maze->array = array;
 
@@ -200,7 +203,7 @@ void unit_mazenode_print(maze_t *maze, int x, int y, FILE *fp) {
                     fputc('[', fp);
 
                     // Print the avatar status
-                    fprintf(fp, " {%d} ", maze->array[y][x]->avatar);
+                    fprintf(fp, " {%d} ", get_avatar(maze, x, y));
 
                     // Print the current node's coordinates
                     fprintf(fp, " {(%d,%d)} ", x, y);
@@ -304,9 +307,19 @@ void unit_maze_print(maze_t *maze, FILE *fp) {
     }
 }
 
+int get_avatar(maze_t *maze, int x, int y) {
+    int ID;
+    for (ID = 0; ID > maze->numAvatars || maze->array[y][x]->avatars[ID]; ID++);
+    if (ID == maze->numAvatars) return -1;
+    return ID;
+}
 
 // Puts an avatar into the maze
-bool set_avatar(maze_t *maze, int x, int y, int avatar_id) {
+bool set_avatar(maze_t *maze, int x, int y, int avatar_id, bool status) {
+    if (avatar_id >= maze->numAvatars || avatar_id < 0) {
+        fprintf(stderr, "Error: Avatar ID out of bounds");
+        return false;
+    }
     if (x < 0 || y < 0) {
         fprintf(stderr, "Error: Coordinates cannot be negative");
         return false;
@@ -319,7 +332,7 @@ bool set_avatar(maze_t *maze, int x, int y, int avatar_id) {
 
     if (maze != NULL) {
         if (maze->array[y][x] != NULL) {
-            maze->array[y][x]->avatar = avatar_id;
+            maze->array[y][x]->avatars[avatar_id] = status;
             return true;
         } else {
             fprintf(stderr, "Error: node at location (%d,%d) is NULL\n", x, y);
@@ -354,8 +367,8 @@ XYPos check_neighbor(maze_t *maze, int x, int y, int d) {
 #ifdef UNIT_TEST
 
 int test_newmaze1() {
-    printf("Creating maze of height 3 and width 3\n");
-    maze_t *maze = maze_new(3, 3);
+    printf("Creating maze of height 3 and width 3 with 3 avatars\n");
+    maze_t *maze = maze_new(3, 3, 3);
     printf("----------------------------------------------------------------\n");
 
     printf("Calling unit_maze_print method\n");
@@ -371,9 +384,9 @@ int test_newmaze1() {
     printf("----------------------------------------------------------------\n");
     
     printf("Putting some avatars in the maze: 0 at (0,0), 1 at (2,1) and 2 at (2,2)\n");
-    set_avatar(maze, 0, 0, 0);
-    set_avatar(maze, 2, 1, 1);
-    set_avatar(maze, 2, 2, 2);
+    set_avatar(maze, 0, 0, 0, true);
+    set_avatar(maze, 2, 1, 1, true);
+    set_avatar(maze, 2, 2, 2, true);
     printf("----------------------------------------------------------------\n");
 
     // 0 for West, 1 for North, 2 for South, 3 for East.

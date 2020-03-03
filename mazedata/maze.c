@@ -309,7 +309,7 @@ void unit_maze_print(maze_t *maze, FILE *fp) {
 
 int get_avatar(maze_t *maze, int x, int y) {
     int ID;
-    for (ID = 0; ID > maze->numAvatars || maze->array[y][x]->avatars[ID]; ID++);
+    for (ID = 0; ID < maze->numAvatars && !maze->array[y][x]->avatars[ID]; ID++);
     if (ID == maze->numAvatars) return -1;
     return ID;
 }

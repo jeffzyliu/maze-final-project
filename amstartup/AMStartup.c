@@ -5,10 +5,6 @@
  *
  * DESCRIPTION : This is the AMStartup.c file where the program connects with the server 
  *                and starts threads
- *              
- *
- * PUBLIC FUNCTIONS:
- *      
  *
  */
 
@@ -16,6 +12,7 @@
 #include "../avatar/messages.h"
 #include "../avatar/avatar.h"
 #include "../output/logfile.h"
+#include "../mazedata/maze.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>	  
@@ -25,6 +22,11 @@
 #include <getopt.h>
 #include <pthread.h>
 
+int exitCode;
+
+/**
+ * The main function where we parse command line arguments and start off our threads
+ */
 int main(int argc, char *argv[])
 {
     //Variable declarations
@@ -86,6 +88,7 @@ int main(int argc, char *argv[])
         fprintf(stderr, "Please input integer for parameters\n");
         exit(3);
     }
+    //the name of the program
     program = argv[0];
 
     //Opening our socket
@@ -110,16 +113,14 @@ int main(int argc, char *argv[])
         perror("connecting stream socket");
         exit(6);
     }
-    printf("Connected!\n");
     //The AM_INIT message the client sends to the server after parameter validation
     AM_Message init_message;
     memset(&init_message, 0, sizeof(AM_Message));
     init_message.type = htonl(AM_INIT);
     init_message.init.nAvatars = htonl(nAvatars);
     init_message.init.Difficulty = htonl(Difficulty);
-    printf("Try to send AM_INIT message to the server now \n");
     if (write(comm_sock, &init_message, sizeof(AM_Message)) < 0) {
-        fprintf(stderr, "error\n");
+        fprintf(stderr, "failed to send to server\n");
         exit(7);
     }
     printf("Sent\n");
@@ -169,10 +170,19 @@ int main(int argc, char *argv[])
     fprintf(fp, "*****************************************\n");
     fclose(fp);
 
+    //create our global maze
+    maze_t *maze = maze_new(height, width, nAvatars);
+    if (maze == NULL) {
+        fprintf(stderr, "Failed to create maze\n");
+        exit(10);
+    }
+    printf("Maze created\n");
+
+    //creating our threads corresponding to each avatar in our game
     pthread_t threads[nAvatars];
     int rc;
     for (int i = 0; i < nAvatars; i++) {
-        avatar_p *parameter = clientParameters(i, nAvatars, Difficulty, Hostname, mazeport, logfile);
+        avatar_p *parameter = clientParameters(i, nAvatars, Difficulty, Hostname, mazeport, logfile, maze);
         rc = pthread_create(&threads[i], NULL, avatar, (void *)parameter);
         if (rc) {
             printf("Error:unable to create thread, %d\n", rc);
@@ -180,9 +190,10 @@ int main(int argc, char *argv[])
         }
     }
     for (int i = 0; i < nAvatars; i++) {
-        pthread_join(threads[i], NULL);
+        pthread_join(threads[i], (void**)&exitCode);
     }
-    // exitGame(logfile, *finalMessage);
+    
     free(logfile);
-    return 0;
+    maze_delete(maze);
+    return exitCode;
 }

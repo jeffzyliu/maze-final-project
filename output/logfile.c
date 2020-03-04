@@ -15,6 +15,7 @@
 #include <pthread.h> 
 #include <unistd.h> 
 #include <netinet/in.h>
+#include <stdbool.h>
 
 
 pthread_mutex_t lock; 
@@ -33,6 +34,9 @@ void startingState (char *filename, int AvatarId, int x, int y, XYPos *pos)
     char startposition[100];
     sprintf(startposition, "Inserted %d at %d,%d\n", AvatarId, x, y);
     fprintf(fp, "%s", startposition);
+    if (AvatarId == 0) {
+        fprintf(fp, "Avatar 0 will not move and all other avatars will move here\n");
+    }
     fprintf(fp, "Avatar Locations: ");
     for (int i = 0; i <= AvatarId; i++) {
         fprintf(fp, "%d: (%d, %d); ", i, ntohl(pos[i].x), ntohl(pos[i].y));
@@ -45,12 +49,12 @@ void startingState (char *filename, int AvatarId, int x, int y, XYPos *pos)
 /**
  * the method that calls if the avatar is able to successfully move
  */
-void avatarTurned (char *filename, int AvatarId, int nAvatars, XYPos newPos, XYPos oldPos, XYPos *pos, int d)
+void avatarTurned (bool last, char *filename, int AvatarId, int nAvatars, XYPos newPos, XYPos oldPos, XYPos *pos, int d)
 {
     FILE *fp;
     fp = fopen(filename, "a");
     if (fp == NULL) {
-        fprintf(stderr, "Failed to open faile\n");
+        fprintf(stderr, "Failed to open file\n");
         return;
     }
     char movedAvatar[100];
@@ -73,9 +77,15 @@ void avatarTurned (char *filename, int AvatarId, int nAvatars, XYPos newPos, XYP
         fprintf(fp, "%s", movedAvatar);
     }
     fprintf(fp, "Avatar Locations: ");
-    for (int i = 0; i < nAvatars; i++) {
-        fprintf(fp, "%d: (%d, %d); ", i, ntohl(pos[i].x), ntohl(pos[i].y));
-    }
+    if (last) {
+        for (int i = 0; i < nAvatars; i++) {
+            fprintf(fp, "%d: (%d, %d); ", i, newPos.x, newPos.y);
+        }
+    } else {
+        for (int i = 0; i < nAvatars; i++) {
+            fprintf(fp, "%d: (%d, %d); ", i, ntohl(pos[i].x), ntohl(pos[i].y));
+        }
+    }  
     fprintf(fp, "\n");
     fclose(fp);
 }

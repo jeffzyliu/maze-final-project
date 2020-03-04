@@ -1,9 +1,10 @@
 /**
  * logfile.h
  * 
+ * Jeff Liu, Willem Klein Wassink, Celina tala
+ * 
  * collection of function(s) to print updates to the log file from avatars
  * 
- * AUTHOR: Celina Tala, Jeff Liu, Willem Klein Wassink
  */ 
 
 #ifndef __LOGWRITE_H
@@ -16,11 +17,12 @@
 #include <unistd.h> 
 #include "../amazing.h"
 #include <netinet/in.h>
+#include <stdbool.h>
 
 /**
- * SUMMARY: this method will write the initial starting positions of all the avatars
+ * this method will write the initial starting positions of all the avatars
  * 
- * PARAMETERS:
+ * Input:
  *      char *filename      the file we are writing to
  *      int AvatarId        the Avatar that is writing to the file
  *      int x               x position of the Avatar   
@@ -30,9 +32,10 @@
 void startingState (char *filename, int AvatarId, int x, int y, XYPos *pos);
 
 /**
- * SUMMARY: This prints the method when each avatar tries to move
+ * This prints the update when each avatar tries to move
  * 
- * PARAMETERS:
+ * Inputs:
+ *      bool last           boolean if it is the last move
  *      char *filename      the file we are writing to
  *      int AvatarId        the Avatar that is writing to the file
  *      int nAvatars        total number of Avatars
@@ -40,7 +43,15 @@ void startingState (char *filename, int AvatarId, int x, int y, XYPos *pos);
  *      XYPos oldPos        the old position of the avatar
  *      XYPos *pos          array of positions of other avatars
  */     
-void avatarTurned (char *filename, int AvatarId, int nAvatars, XYPos newPos, XYPos oldPos, XYPos *pos, int d);
+void avatarTurned (bool last, char *filename, int AvatarId, int nAvatars, XYPos newPos, XYPos oldPos, XYPos *pos, int d);
+
+/**
+ * This prints a message whenever the game exists
+ * 
+ * Inputs:
+ *      char *filename          the file we are writing to
+ *      AM_Message finalmessage the finalMessage sent by the server
+ */
 
 void exitGame (char *filename, AM_Message finalMessage);
 

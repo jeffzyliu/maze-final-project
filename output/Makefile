@@ -12,6 +12,7 @@ CC = gcc
 MAKE = make
 
 # Dependencies
+
 $(LIBS): $(OBJS)
 	ar cr $(LIBS) $(OBJS)
 

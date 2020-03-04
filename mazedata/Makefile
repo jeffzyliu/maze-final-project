@@ -9,7 +9,7 @@ LIB = mazedata.a
 
 # Used for assembling it as an executable for unit testing
 # uncomment out, clean, and remake for unit testing
-CFLAGS = -Wall -pedantic -std=c11 -ggdb # -DUNIT_TEST 
+CFLAGS = -Wall -pedantic -std=c11 -ggdb #-DUNIT_TEST 
 CC = gcc
 MAKE = make
 

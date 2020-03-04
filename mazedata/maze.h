@@ -99,6 +99,7 @@ void unit_mazenode_print(maze_t *maze, int x, int y, FILE *fp);
  */
 void unit_maze_print(maze_t *maze, FILE *fp);
 
+// ------------------- set_avatar
 /** get_avatar
  * gets the avatar with the lowest ID at given x,y
  * 
@@ -106,7 +107,6 @@ void unit_maze_print(maze_t *maze, FILE *fp);
  * else returns the lowest avatarID
  */ 
 int get_avatar(maze_t *maze, int x, int y);
-
 // ------------------- set_avatar
 /* Puts an avatar of a given ID into a location in a maze
  * 

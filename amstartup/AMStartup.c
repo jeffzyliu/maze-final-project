@@ -5,10 +5,6 @@
  *
  * DESCRIPTION : This is the AMStartup.c file where the program connects with the server 
  *                and starts threads
- *              
- *
- * PUBLIC FUNCTIONS:
- *      
  *
  */
 
@@ -16,6 +12,7 @@
 #include "../avatar/messages.h"
 #include "../avatar/avatar.h"
 #include "../output/logfile.h"
+#include "../mazedata/maze.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>	  
@@ -27,6 +24,9 @@
 
 int exitCode;
 
+/**
+ * The main function where we parse command line arguments and start off our threads
+ */
 int main(int argc, char *argv[])
 {
     //Variable declarations
@@ -88,6 +88,7 @@ int main(int argc, char *argv[])
         fprintf(stderr, "Please input integer for parameters\n");
         exit(3);
     }
+    //the name of the program
     program = argv[0];
 
     //Opening our socket
@@ -139,8 +140,8 @@ int main(int argc, char *argv[])
         exit(9);
     } 
 
-    // int width = ntohl(server_message.init_ok.MazeWidth);
-    // int height = ntohl(server_message.init_ok.MazeHeight);
+    int width = ntohl(server_message.init_ok.MazeWidth);
+    int height = ntohl(server_message.init_ok.MazeHeight);
     int mazeport = ntohl(server_message.init_ok.MazePort);
     close(comm_sock);
     //starting to write our logfile
@@ -169,10 +170,19 @@ int main(int argc, char *argv[])
     fprintf(fp, "*****************************************\n");
     fclose(fp);
 
+    //create our global maze
+    maze_t *maze = maze_new(height, width, nAvatars);
+    if (maze == NULL) {
+        fprintf(stderr, "Failed to create maze\n");
+        exit(10);
+    }
+    printf("Maze created\n");
+
+    //creating our threads corresponding to each avatar in our game
     pthread_t threads[nAvatars];
     int rc;
     for (int i = 0; i < nAvatars; i++) {
-        avatar_p *parameter = clientParameters(i, nAvatars, Difficulty, Hostname, mazeport, logfile);
+        avatar_p *parameter = clientParameters(i, nAvatars, Difficulty, Hostname, mazeport, logfile, maze);
         rc = pthread_create(&threads[i], NULL, avatar, (void *)parameter);
         if (rc) {
             printf("Error:unable to create thread, %d\n", rc);
@@ -184,5 +194,6 @@ int main(int argc, char *argv[])
     }
     
     free(logfile);
+    maze_delete(maze);
     return exitCode;
 }

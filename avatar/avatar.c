@@ -12,6 +12,7 @@
 #include "../amazing.h"
 #include "../output/logfile.h"
 #include "../algorithms/move.h"
+#include "../mazedata/maze.h"
 
 //our data struct for passing a paramter to our avatar thread for each avatar
 typedef struct avatar_paramter {
@@ -21,6 +22,7 @@ typedef struct avatar_paramter {
     char *hostname;
     int mazeport;
     char *filename;
+    maze_t *maze;
 } avatar_p;
 
 // -------------------------- local function prototypes
@@ -32,14 +34,13 @@ static bool isGameOver (AM_Message server_avatar_turn);
 void *avatar (void *arg)
 {
     int exit;
-    exit = 6;
-    pthread_exit(&exit);
     avatar_p *parameter = (avatar_p *)arg;
     int mazeport = parameter->mazeport;
     char *hostname = parameter->hostname;
     int AvatarId = parameter->AvatarId;
     char *filename = parameter->filename;
     int nAvatars = parameter->nAvatars;
+    maze_t *maze = parameter->maze;
     int comm_sock = socket(AF_INET, SOCK_STREAM, 0);
     if (comm_sock < 0) {
         perror("opening socket");
@@ -93,10 +94,16 @@ void *avatar (void *arg)
     int TurnId = ntohl(server_avatar_turn.avatar_turn.TurnId);
     XYPos *pos = server_avatar_turn.avatar_turn.Pos;
     int startingX = ntohl(pos[AvatarId].x);
-    int startingY = ntohl(pos[AvatarId].y);   
+    int startingY = ntohl(pos[AvatarId].y);  
 
     //writing the starting state to our log file
     startingState(filename, AvatarId, startingX, startingY, pos);
+    //inserting all of the starting avatars into our maze
+    if (AvatarId == nAvatars-1) {
+        for (int i = 0; i < nAvatars; i++) {
+            set_avatar(maze, ntohl(pos[i].x),ntohl(pos[i].y), i, true);
+        }
+    }
 
     AM_Message avatarTurn;
     int lastHeading = M_NORTH;
@@ -111,6 +118,7 @@ void *avatar (void *arg)
     XYPos newLoc;
     newLoc.x = startingX;
     newLoc.y = startingY;
+    int turnCount = 0;
     //temporary direction to go west. If the server responds with a valid message
     while (1) {
         if (isGameOver(server_avatar_turn)) {
@@ -134,10 +142,14 @@ void *avatar (void *arg)
             if (AvatarId == 0 || avatar_moved(newLoc, sentinel) == M_NULL_MOVE) {
                 Direction = M_NULL_MOVE;
             } else {
+                if (turnCount != 0) {
+                    maze_update(lastHeading, oldLoc, newLoc, maze, AvatarId);
+                }
                 avatarTurned (false, filename, AvatarId, nAvatars, newLoc, oldLoc, pos, Direction);
-                Direction = decide_simplerighthand(lastHeading, oldLoc, newLoc);
+                Direction = decide_maprighthand(lastHeading, oldLoc, newLoc, maze);
                 oldLoc = newLoc;
                 lastHeading = Direction;
+                turnCount++;
             }
             exit = validMessageTurn(comm_sock, avatarTurn, AvatarId, Direction, server_avatar_turn);
             if (exit == 7) {
@@ -159,7 +171,7 @@ void *avatar (void *arg)
 /**
  * Creating the parameter we need for our avatar method
  */
-avatar_p *clientParameters(int AvatarId, int nAvatars, int Difficulty, char *hostname, int mazeport, char *filename)
+avatar_p *clientParameters(int AvatarId, int nAvatars, int Difficulty, char *hostname, int mazeport, char *filename, maze_t *maze)
 {
     avatar_p *parameter = malloc(sizeof(avatar_p));
     if (parameter == NULL) {
@@ -172,6 +184,7 @@ avatar_p *clientParameters(int AvatarId, int nAvatars, int Difficulty, char *hos
     parameter->hostname = hostname;
     parameter->mazeport = mazeport;
     parameter->filename = filename;
+    parameter->maze = maze;
     return parameter;
 }
 

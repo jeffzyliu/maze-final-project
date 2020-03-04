@@ -21,6 +21,7 @@
 #include "../amazing.h"
 #include "../algorithms/move.h"
 #include "../output/logfile.h"
+#include "../mazedata/maze.h"
 
 //our parameter for the avatar method
 typedef struct avatar_parameter avatar_p; 
@@ -52,6 +53,6 @@ void *avatar (void *arg);
  * Outputs:
  *      the data struct avatar_p with necessary parameters
  */
-avatar_p *clientParameters(int AvatarId, int nAvatars, int Difficulty, char *hostname, int mazeport, char *filename);
+avatar_p *clientParameters(int AvatarId, int nAvatars, int Difficulty, char *hostname, int mazeport, char *filename, maze_t *maze);
 
 #endif //__AVATAR_H

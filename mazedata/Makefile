@@ -4,7 +4,7 @@
 
 # Object files
 PROG = maze
-OBJS = maze.o
+OBJS = maze.o 
 LIB = mazedata.a
 
 # Used for assembling it as an executable for unit testing

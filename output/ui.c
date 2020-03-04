@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "ui.h"
+#include "../mazedata/maze.c"
 
 void print_ui(maze_t *maze)
 {
@@ -47,7 +48,7 @@ void print_ui(maze_t *maze)
         printf("%3d|", y); // Row number
         for (int x=0; x < maze->width; x++) {
             // Print node contents
-            if (maze->array[y][x] == -1) {
+            if (maze->array[y][x]->avatar == -1) {
                 printf(" %d ", maze->array[y][x]->avatar); // TODO: Change this to match Jeff's boolean list implementation
             } else {
                 printf("   ");
@@ -67,7 +68,7 @@ void print_ui(maze_t *maze)
         }
         printf("\n");
     }
-
+    
     // print "     " (5 spaces)
     // for each column
         // print " N  " where N  is row number
@@ -87,7 +88,120 @@ void print_ui(maze_t *maze)
         // for each column
             // print "   +"
         // print "\n"
-    
 
     printf("****************************************\n\n");
 }
+
+
+#ifdef UNIT_TEST
+
+int test_uimaze1() {
+    printf("Creating maze of height 3 and width 3\n");
+    maze_t *maze = maze_new(3, 3);
+    printf("----------------------------------------------------------------\n");
+
+    printf("Printing maze UI\n");
+    print_ui(maze);
+    printf("----------------------------------------------------------------\n");
+
+    /*
+    printf("Calling unit_maze_print method\n");
+    unit_maze_print(maze, stdout);
+    printf("----------------------------------------------------------------\n");
+
+    printf("Assessing nodes' wallcounts. Should depend on presence of border walls\n");
+    for (int y=0; y < 3; y++) {
+        for (int x=0; x < 3; x++) {
+            printf("Wallcount for (%d,%d): %d\n", x, y, wall_count(maze, x, y));
+        }
+    }
+    printf("----------------------------------------------------------------\n");
+    
+    printf("Putting some avatars in the maze: 0 at (0,0), 1 at (2,1) and 2 at (2,2)\n");
+    set_avatar(maze, 0, 0, 0);
+    set_avatar(maze, 2, 1, 1);
+    set_avatar(maze, 2, 2, 2);
+    printf("----------------------------------------------------------------\n");
+
+    // 0 for West, 1 for North, 2 for South, 3 for East.
+    printf("Putting walls and passages the maze. Shouldn't be any nulls\n");
+    
+    // (0,0)
+    set_neighbor(maze, 0, 0, M_EAST, 1, 0);
+    set_neighbor(maze, 0, 0, M_SOUTH, 0, 0); // south wall
+
+    // (0,1)
+    set_neighbor(maze, 0, 1, M_EAST, 1, 1);
+    set_neighbor(maze, 0, 1, M_SOUTH, 0, 2);
+    set_neighbor(maze, 0, 1, M_NORTH, 0, 1); // NORTH wall
+
+    // (0,2)
+    set_neighbor(maze, 0, 2, M_NORTH, 0, 1);
+    set_neighbor(maze, 0, 2, M_EAST, 1, 2);
+
+    // (1,0)
+    set_neighbor(maze, 1, 0, M_WEST, 0, 0);
+    set_neighbor(maze, 1, 0, M_SOUTH, 1, 1);
+    set_neighbor(maze, 1, 0, M_EAST, 1, 0); // East wall
+
+
+    // (1,1)
+    set_neighbor(maze, 1, 1, M_WEST, 0, 1);
+    set_neighbor(maze, 1, 1, M_NORTH, 1, 0);
+    set_neighbor(maze, 1, 1, M_SOUTH, 1, 1); // SOUTH wall
+    set_neighbor(maze, 1, 1, M_EAST, 1, 1); // East wall
+
+    // (1,2)
+    set_neighbor(maze, 1, 2, M_WEST, 0, 2);
+    set_neighbor(maze, 1, 2, M_EAST, 2, 2);
+    set_neighbor(maze, 1, 2, M_NORTH, 1, 2); // NORTH wall
+
+    // (2,0)
+    set_neighbor(maze, 2, 0, M_SOUTH, 2, 1);
+    set_neighbor(maze, 2, 0, M_WEST, 2, 0); // West wall
+
+    // (2,1)
+    set_neighbor(maze, 2, 1, M_NORTH, 2, 0);
+    set_neighbor(maze, 2, 1, M_SOUTH, 2, 2);
+    set_neighbor(maze, 2, 1, M_WEST, 2, 1); // West wall
+
+    // (2,2)
+    set_neighbor(maze, 2, 2, M_WEST, 1, 2);
+    set_neighbor(maze, 2, 2, M_NORTH, 2, 1);
+    
+    printf("----------------------------------------------------------------\n");
+
+    printf("Assessing nodes' new wallcounts. Should represent new maze\n");
+    for (int y=0; y < 3; y++) {
+        for (int x=0; x < 3; x++) {
+            printf("Wallcount for (%d,%d): %d\n", x, y, wall_count(maze, x, y));
+        }
+    }
+    printf("----------------------------------------------------------------\n");
+
+    printf("Calling unit_maze_print method\n");
+    unit_maze_print(maze, stdout);
+    printf("----------------------------------------------------------------\n");
+
+    printf("Testing check_neighbor function\n");
+    XYPos neighbor = check_neighbor(maze, 0, 0, M_NORTH);
+    printf("north of (0,0) is (%d,%d)\n", neighbor.x, neighbor.y);
+    neighbor = check_neighbor(maze, 0, 0, M_SOUTH);
+    printf("south of (0,0) is (%d,%d)\n", neighbor.x, neighbor.y);
+    neighbor = check_neighbor(maze, 0, 0, M_EAST);
+    printf("east of (0,0) is (%d,%d)\n", neighbor.x, neighbor.y);
+    printf("----------------------------------------------------------------\n");
+    */
+
+    printf("Deleting maze\n");
+    maze_delete(maze);
+    printf("----------------------------------------------------------------\n");
+    return 0;
+}
+
+int main() {
+    test_uimaze1();
+    exit(0);
+}
+
+#endif // UNIT_TEST

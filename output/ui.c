@@ -29,13 +29,13 @@ void print_ui(maze_t *maze)
     // TODO: When you get to printing the avatar ID, comment that out. Jeff's might change implementation
 
     printf("Status message\n");
-    printf("     ");
+    printf("    ");
 
     // Initial column numbers
     for (int x=0; x < maze->width; x++) {
         printf(" %d  ", x);
     }
-    printf("\n+");
+    printf("\n   +");
 
     // Upper border
     for (int x=0; x < maze->width; x++) {
@@ -45,11 +45,11 @@ void print_ui(maze_t *maze)
 
     // Each row
     for (int y=0; y < maze->height; y++) {
-        printf("%3d|", y); // Row number
+        printf("%-3d|", y); // Row number
         for (int x=0; x < maze->width; x++) {
             // Print node contents
-            if (maze->array[y][x]->avatar == -1) {
-                printf(" %d ", maze->array[y][x]->avatar); // TODO: Change this to match Jeff's boolean list implementation
+            if (get_avatar(maze, x, y) != -1) {
+                printf(" %d ", get_avatar(maze, x, y)); // TODO: Change this to match Jeff's boolean list implementation
             } else {
                 printf("   ");
             }
@@ -63,8 +63,15 @@ void print_ui(maze_t *maze)
         }
 
         // Print row dividers
-        for (int x=0; x < maze->width; x++) {
-            printf("   +");
+        printf("   +");
+        if (y == maze->height-1) {
+            for (int x=0; x < maze->width; x++) {
+                printf("---+");
+            }
+        } else {
+            for (int x=0; x < maze->width; x++) {
+                printf("   +");
+            }
         }
         printf("\n");
     }
@@ -97,14 +104,14 @@ void print_ui(maze_t *maze)
 
 int test_uimaze1() {
     printf("Creating maze of height 3 and width 3\n");
-    maze_t *maze = maze_new(3, 3);
+    maze_t *maze = maze_new(3, 3, 3);
     printf("----------------------------------------------------------------\n");
 
     printf("Printing maze UI\n");
     print_ui(maze);
     printf("----------------------------------------------------------------\n");
 
-    /*
+    
     printf("Calling unit_maze_print method\n");
     unit_maze_print(maze, stdout);
     printf("----------------------------------------------------------------\n");
@@ -118,9 +125,13 @@ int test_uimaze1() {
     printf("----------------------------------------------------------------\n");
     
     printf("Putting some avatars in the maze: 0 at (0,0), 1 at (2,1) and 2 at (2,2)\n");
-    set_avatar(maze, 0, 0, 0);
-    set_avatar(maze, 2, 1, 1);
-    set_avatar(maze, 2, 2, 2);
+    set_avatar(maze, 0, 0, 0, true);
+    set_avatar(maze, 2, 1, 1, true);
+    set_avatar(maze, 2, 2, 2, true);
+    printf("----------------------------------------------------------------\n");
+
+    printf("Printing maze UI w/ avatars\n");
+    print_ui(maze);
     printf("----------------------------------------------------------------\n");
 
     // 0 for West, 1 for North, 2 for South, 3 for East.
@@ -191,7 +202,10 @@ int test_uimaze1() {
     neighbor = check_neighbor(maze, 0, 0, M_EAST);
     printf("east of (0,0) is (%d,%d)\n", neighbor.x, neighbor.y);
     printf("----------------------------------------------------------------\n");
-    */
+    
+    printf("Printing maze UI w/ walls\n");
+    print_ui(maze);
+    printf("----------------------------------------------------------------\n");
 
     printf("Deleting maze\n");
     maze_delete(maze);

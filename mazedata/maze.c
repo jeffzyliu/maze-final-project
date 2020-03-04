@@ -464,9 +464,10 @@ int test_newmaze1() {
     return 0;
 }
 
+/*
 int main() {
     test_newmaze1();
     exit(0);
 }
-
+*/
 #endif // UNIT_TEST

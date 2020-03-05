@@ -74,6 +74,7 @@ void print_ui(maze_t *maze, char *status)
             }
         }
         printf("\n");
+        unit_maze_print(maze, stdout);
     }
     
     // print "     " (5 spaces)

@@ -11,6 +11,7 @@
 #include "messages.h"
 #include "../amazing.h"
 #include "../output/logfile.h"
+#include "../output/ui.h"
 #include "../algorithms/move.h"
 #include "../mazedata/maze.h"
 
@@ -33,7 +34,7 @@ static bool isGameOver (AM_Message server_avatar_turn);
  */
 void *avatar (void *arg)
 {
-    int exit;
+    int exitCode;
     avatar_p *parameter = (avatar_p *)arg;
     int mazeport = parameter->mazeport;
     char *hostname = parameter->hostname;
@@ -41,11 +42,12 @@ void *avatar (void *arg)
     char *filename = parameter->filename;
     int nAvatars = parameter->nAvatars;
     maze_t *maze = parameter->maze;
+    
     int comm_sock = socket(AF_INET, SOCK_STREAM, 0);
     if (comm_sock < 0) {
         perror("opening socket");
-        exit = 4;
-        pthread_exit(&exit);
+        exitCode = 4;
+        pthread_exit(&exitCode);
     }
     struct sockaddr_in server;  // address of the server
     server.sin_family = AF_INET;
@@ -54,16 +56,16 @@ void *avatar (void *arg)
     struct hostent *hostp = gethostbyname(hostname);
     if (hostp == NULL) {
         fprintf(stderr, "unknown host '%s'\n", hostname);
-        exit = 5;
-        pthread_exit(&exit);
+        exitCode = 5;
+        pthread_exit(&exitCode);
     }  
     memcpy(&server.sin_addr, hostp->h_addr_list[0], hostp->h_length);
 
     // 3. Connect the socket to the server   
     if (connect(comm_sock, (struct sockaddr *)&server, sizeof(server)) < 0) {
         perror("connecting stream socket");
-        exit = 6;
-        pthread_exit(&exit);
+        exitCode = 6;
+        pthread_exit(&exitCode);
     }
     //keep trying to send the server a ready message until it is accepted
     AM_Message ready;
@@ -75,15 +77,15 @@ void *avatar (void *arg)
         if (write(comm_sock, &ready, sizeof(AM_Message)) < 0 ) {
             fprintf(stderr, "failed to send to server\n");
             close(comm_sock);
-            exit = 7;
-            pthread_exit(&exit);
+            exitCode = 7;
+            pthread_exit(&exitCode);
         }
         int receive = read(comm_sock, &server_avatar_turn, sizeof(AM_Message));
         if (receive <= 0) {
             fprintf(stderr, "Connection to Server Closed\n");
-            exit = 8;
+            exitCode = 8;
             close(comm_sock);
-            pthread_exit(&exit);
+            pthread_exit(&exitCode);
         } 
         if (IS_AM_ERROR(ntohl(server_avatar_turn.type))) {
             errorMessage(filename, server_avatar_turn);
@@ -96,14 +98,14 @@ void *avatar (void *arg)
     int startingX = ntohl(pos[AvatarId].x);
     int startingY = ntohl(pos[AvatarId].y);  
 
-    //writing the starting state to our log file
-    startingState(filename, AvatarId, startingX, startingY, pos);
     //inserting all of the starting avatars into our maze
     if (AvatarId == nAvatars-1) {
         for (int i = 0; i < nAvatars; i++) {
             set_avatar(maze, ntohl(pos[i].x),ntohl(pos[i].y), i, true);
         }
     }
+    //writing the starting state to our log file
+    startingState(filename, AvatarId, startingX, startingY, pos, maze);
 
     AM_Message avatarTurn;
     int lastHeading = M_NORTH;
@@ -125,12 +127,6 @@ void *avatar (void *arg)
             break;
         }
         if (ntohl(server_avatar_turn.type) != AM_AVATAR_TURN) {
-            //handle error later
-            if (ntohl(server_avatar_turn.type == AM_SOCKET_BREAK)) {
-                close(comm_sock);
-                exit = 8;
-                pthread_exit(&exit);
-            }
             server_avatar_turn = receiveMessage(comm_sock, server_avatar_turn);
             continue;   
         }
@@ -145,26 +141,35 @@ void *avatar (void *arg)
                 if (turnCount != 0) {
                     maze_update(lastHeading, oldLoc, newLoc, maze, AvatarId);
                 }
-                avatarTurned (false, filename, AvatarId, nAvatars, newLoc, oldLoc, pos, Direction);
+                avatarTurned (false, filename, AvatarId, nAvatars, newLoc, oldLoc, pos, Direction, maze);
                 Direction = decide_maprighthand(lastHeading, oldLoc, newLoc, maze);
                 oldLoc = newLoc;
                 lastHeading = Direction;
                 turnCount++;
             }
-            exit = validMessageTurn(comm_sock, avatarTurn, AvatarId, Direction, server_avatar_turn);
-            if (exit == 7) {
+            exitCode = validMessageTurn(comm_sock, avatarTurn, AvatarId, Direction, server_avatar_turn);
+            if (exitCode == 7) {
                 close(comm_sock);
-                pthread_exit(&exit);
+                pthread_exit(&exitCode);
             }
         } 
         server_avatar_turn = receiveMessage(comm_sock, server_avatar_turn);
     }
     if (ntohl(server_avatar_turn.type) == AM_MAZE_SOLVED && ntohl(server_avatar_turn.maze_solved.nMoves)%nAvatars==AvatarId) {
-        avatarTurned (true, filename, AvatarId, nAvatars, sentinel, oldLoc, pos, Direction);
+        avatarTurned (true, filename, AvatarId, nAvatars, sentinel, oldLoc, pos, Direction, maze);
         exitGame(filename, server_avatar_turn);
+    } 
+    if (ntohl(server_avatar_turn.type)!= AM_MAZE_SOLVED) {
+        free(parameter);
+        close(comm_sock);
+        exit(exitCode);
     }
     free(parameter);
     close(comm_sock);
+    if (ntohl(server_avatar_turn.type) != AM_MAZE_SOLVED) {
+        exitCode = 13;
+    }
+    pthread_exit(&exitCode);
     return NULL;
 }
 

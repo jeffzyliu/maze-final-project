@@ -8,6 +8,7 @@
  */ 
 
 #include "../amazing.h"
+#include "ui.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -16,13 +17,14 @@
 #include <unistd.h> 
 #include <netinet/in.h>
 #include <stdbool.h>
+#include "../mazedata/maze.h"
 
 
 pthread_mutex_t lock; 
 /**
  * The first few lines of the file that logs where each Avatar is inserted
  */
-void startingState (char *filename, int AvatarId, int x, int y, XYPos *pos)
+void startingState (char *filename, int AvatarId, int x, int y, XYPos *pos, maze_t *maze)
 {
     pthread_mutex_lock(&lock);
     FILE *fp;
@@ -43,13 +45,14 @@ void startingState (char *filename, int AvatarId, int x, int y, XYPos *pos)
     }
     fprintf(fp, "\n");
     fclose(fp);
+    print_ui(maze, startposition);
     pthread_mutex_unlock(&lock); 
 }
 
 /**
  * the method that calls if the avatar is able to successfully move
  */
-void avatarTurned (bool last, char *filename, int AvatarId, int nAvatars, XYPos newPos, XYPos oldPos, XYPos *pos, int d)
+void avatarTurned (bool last, char *filename, int AvatarId, int nAvatars, XYPos newPos, XYPos oldPos, XYPos *pos, int d, maze_t *maze)
 {
     FILE *fp;
     fp = fopen(filename, "a");
@@ -72,9 +75,11 @@ void avatarTurned (bool last, char *filename, int AvatarId, int nAvatars, XYPos 
         }
         sprintf(avatarStay, "Avatar %d hit %s wall\n", AvatarId, Direction);
         fprintf(fp, "%s", avatarStay);
+        print_ui(maze, avatarStay);
     } else {
         sprintf(movedAvatar, "Avatar %d moved from %d, %d to %d, %d\n", AvatarId, oldPos.x, oldPos.y, newPos.x, newPos.y);
         fprintf(fp, "%s", movedAvatar);
+        print_ui(maze, movedAvatar);
     }
     fprintf(fp, "Avatar Locations: ");
     if (last) {

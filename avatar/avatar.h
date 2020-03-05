@@ -20,6 +20,7 @@
 #include "messages.h"
 #include "../amazing.h"
 #include "../algorithms/move.h"
+#include "../output/ui.h"
 #include "../output/logfile.h"
 #include "../mazedata/maze.h"
 

@@ -17,4 +17,4 @@
  * prints out the UI to 
  * 
  */ 
-void print_ui(maze_t *maze);
+void print_ui(maze_t *maze, char *status);

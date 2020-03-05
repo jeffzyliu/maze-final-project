@@ -73,7 +73,7 @@ int validMessageTurn (int comm_sock, AM_Message client, int AvatarId, int Direct
     return 0;
 }
 
-AM_Message receiveMessage (char *filename, int comm_sock, AM_Message server_avatar_turn)
+AM_Message receiveMessage (char *filename, int comm_sock, AM_Message server_avatar_turn, int AvatarId, int TurnId)
 {
     int receive = read(comm_sock, &server_avatar_turn, sizeof(AM_Message));
     //If it is less than or equal to 0, then the connection closed
@@ -81,8 +81,8 @@ AM_Message receiveMessage (char *filename, int comm_sock, AM_Message server_avat
         fprintf(stderr, "Connection to Server Closed\n");
         server_avatar_turn.type = AM_SOCKET_BREAK;
     }
-    if (IS_AM_ERROR(ntohl(server_avatar_turn.type))) {
-        errorMessage(filename, server_avatar_turn);
-    } 
+    // if (IS_AM_ERROR(ntohl(server_avatar_turn.type))) {
+    //     errorMessage(filename, server_avatar_turn);
+    // } 
     return server_avatar_turn;
 }

@@ -20,6 +20,7 @@
 #include <stdbool.h>
 #include "ui.h"
 #include "../mazedata/maze.h"
+#include "../avatar/messages.h"
 
 /**
  * this method will write the initial starting positions of all the avatars

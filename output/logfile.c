@@ -18,6 +18,7 @@
 #include <netinet/in.h>
 #include <stdbool.h>
 #include "../mazedata/maze.h"
+#include "../avatar/messages.h"
 
 
 pthread_mutex_t lock; 
@@ -75,11 +76,11 @@ void avatarTurned (bool last, char *filename, int AvatarId, int nAvatars, XYPos 
         }
         sprintf(avatarStay, "Avatar %d hit %s wall\n", AvatarId, Direction);
         fprintf(fp, "%s", avatarStay);
-        print_ui(maze, avatarStay);
+        // print_ui(maze, avatarStay);
     } else {
         sprintf(movedAvatar, "Avatar %d moved from %d, %d to %d, %d\n", AvatarId, oldPos.x, oldPos.y, newPos.x, newPos.y);
         fprintf(fp, "%s", movedAvatar);
-        print_ui(maze, movedAvatar);
+        // print_ui(maze, movedAvatar);
     }
     fprintf(fp, "Avatar Locations: ");
     if (last) {
@@ -101,18 +102,23 @@ void avatarTurned (bool last, char *filename, int AvatarId, int nAvatars, XYPos 
  */
 void exitGame (char *filename, AM_Message finalMessage)
 {
-    int nAvatars = ntohl(finalMessage.maze_solved.nAvatars);
-    int Difficulty = ntohl(finalMessage.maze_solved.Difficulty);
-    int nMoves = ntohl(finalMessage.maze_solved.nMoves);
-    int Hash = ntohl(finalMessage.maze_solved.Hash);
-    FILE *fp;
-    fp = fopen(filename, "a");
-    if (fp == NULL) {
-        fprintf(stderr, "failed to open file\n");
-        return;
+    if (ntohl(finalMessage.type) == AM_MAZE_SOLVED) {
+        FILE *fp;
+        fp = fopen(filename, "a");
+        if (fp == NULL) {
+            fprintf(stderr, "failed to open file\n");
+            return;
+        }
+        int nAvatars = ntohl(finalMessage.maze_solved.nAvatars);
+        int Difficulty = ntohl(finalMessage.maze_solved.Difficulty);
+        int nMoves = ntohl(finalMessage.maze_solved.nMoves);
+        int Hash = ntohl(finalMessage.maze_solved.Hash);
+        char solvedMessage[100];
+        sprintf(solvedMessage, "Mazed solved with %d avatars at Difficulty %d in %d moves at hash %u\n", nAvatars, Difficulty, nMoves, Hash);
+        fprintf(fp, "%s", solvedMessage);
+        fclose(fp);
+    } else {
+        errorMessage(filename, finalMessage);
     }
-    char solvedMessage[100];
-    sprintf(solvedMessage, "Mazed solved with %d avatars at Difficult %d in %d moves at hash %u\n", nAvatars, Difficulty, nMoves, Hash);
-    fprintf(fp, "%s", solvedMessage);
-    fclose(fp);
 }
+

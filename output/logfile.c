@@ -104,7 +104,7 @@ void exitGame (char *filename, AM_Message finalMessage)
     int nAvatars = ntohl(finalMessage.maze_solved.nAvatars);
     int Difficulty = ntohl(finalMessage.maze_solved.Difficulty);
     int nMoves = ntohl(finalMessage.maze_solved.nMoves);
-    unsigned int Hash = ntohl(finalMessage.maze_solved.Hash);
+    int Hash = ntohl(finalMessage.maze_solved.Hash);
     FILE *fp;
     fp = fopen(filename, "a");
     if (fp == NULL) {

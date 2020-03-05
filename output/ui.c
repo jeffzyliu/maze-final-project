@@ -74,7 +74,7 @@ void print_ui(maze_t *maze, char *status)
             }
         }
         printf("\n");
-        unit_maze_print(maze, stdout);
+        
     }
     
     // print "     " (5 spaces)
@@ -96,7 +96,7 @@ void print_ui(maze_t *maze, char *status)
         // for each column
             // print "   +"
         // print "\n"
-
+    unit_maze_print(maze, stdout);
     printf("****************************************\n\n");
 }
 

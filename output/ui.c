@@ -26,8 +26,6 @@ void print_ui(maze_t *maze)
 
     // waiting on maze_t to finish this
 
-    // TODO: When you get to printing the avatar ID, comment that out. Jeff's might change implementation
-
     printf("Status message\n");
     printf("    ");
 
@@ -49,27 +47,29 @@ void print_ui(maze_t *maze)
         for (int x=0; x < maze->width; x++) {
             // Print node contents
             if (get_avatar(maze, x, y) != -1) {
-                printf(" %d ", get_avatar(maze, x, y)); // TODO: Change this to match Jeff's boolean list implementation
+                printf(" %d ", get_avatar(maze, x, y));
             } else {
                 printf("   ");
             }
-
+            
             // Print column dividers
-            if (x == maze->width-1) {
-                printf("|\n");
+            if (is_wall(maze, x, y, M_EAST) == 0) { // If there's a wall to the east
+                printf("|");
             } else {
                 printf(" ");
+            }
+
+            if (x == maze->width-1) {
+                printf("\n");
             }
         }
 
         // Print row dividers
         printf("   +");
-        if (y == maze->height-1) {
-            for (int x=0; x < maze->width; x++) {
+        for (int x=0; x < maze->width; x++) {
+            if (y == maze->height-1 || is_wall(maze, x, y, M_SOUTH) == 0) { // If there's a wall to the
                 printf("---+");
-            }
-        } else {
-            for (int x=0; x < maze->width; x++) {
+            } else {
                 printf("   +");
             }
         }

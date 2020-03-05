@@ -26,5 +26,6 @@ clean:
 	rm -f *~ *.o *.dSYM
 	rm -f $(LIBS)
 	rm -f $(OBJS)
+	rm -f $(PROG)
 
 unit: $(PROG)

@@ -131,4 +131,22 @@ bool set_avatar(maze_t *maze, int x, int y, int avatar_id, bool status);
  */
 XYPos check_neighbor(maze_t *maze, int x, int y, int d);
 
+// ------------------- is_wall
+/* Returns an int value based on the result. Indicates whether or not a node has a wall in a certain direction
+ *
+ * Inputs:
+ *      a pointer to a valid maze
+ *      integer (x,y) coordinates
+ *      an integer representing the direction
+ * 
+ * Outputs:
+ *      0 for if there is a wall
+ *      1 for if there is not a wall
+ *      2 for NULL maze
+ *      3 for inappropriate direction
+ *      4 for negative coordinates
+ *      5 for too high coordinates
+ */
+int is_wall(maze_t *maze, int x, int y, const int d);
+
 #endif // __MAZE_H

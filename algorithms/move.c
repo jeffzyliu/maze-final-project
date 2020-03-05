@@ -74,7 +74,8 @@ void maze_update(int lastHeading, XYPos oldLoc, XYPos newLoc, maze_t *maze, int 
 {
     int direction = avatar_moved(oldLoc, newLoc);
     if (direction != M_NULL_MOVE) { // moved in a direction, set new path in direction moved
-        if (wall_count(maze, oldLoc.x, oldLoc.y) >= 3 && get_avatar(maze, oldLoc.x, oldLoc.y) == -1) { // exited a dead-end, mark as closed
+        if (wall_count(maze, oldLoc.x, oldLoc.y) >= 3/* && get_avatar(maze, oldLoc.x, oldLoc.y) == -1*/) { // exited a dead-end, mark as closed
+            printf("supposed dead end at %d,%d, getavatar =  %d\n", oldLoc.x, oldLoc.y, get_avatar(maze, oldLoc.x, oldLoc.y));
             // check for contains avatar to not trap anyone behind
             set_neighbor(maze, oldLoc.x, oldLoc.y, direction, oldLoc.x, oldLoc.y); // cannot go forward
             set_neighbor(maze, newLoc.x, newLoc.y, turnAround(direction), newLoc.x, newLoc.y); // cannot go back

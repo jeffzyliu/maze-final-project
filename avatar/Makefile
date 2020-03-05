@@ -9,7 +9,7 @@ CFLAGS = -Wall -pedantic -std=c11 -ggdb
 $(LIBS): $(OBJS)
 	ar cr $(LIBS) $(OBJS)
 
-avatar.o: ../output/logfile.h ../algorithms/move.h ../amazing.h
+avatar.o: ../output/logfile.h ../output/ui.h ../algorithms/move.h ../amazing.h 
 
 clean:
 	rm -f *~ *.o *.dSYM

@@ -18,6 +18,8 @@
 #include "../amazing.h"
 #include <netinet/in.h>
 #include <stdbool.h>
+#include "ui.h"
+#include "../mazedata/maze.h"
 
 /**
  * this method will write the initial starting positions of all the avatars
@@ -29,7 +31,7 @@
  *      int y               y position of Avatar
  *      XYPos *pos          array of positions of other avatars
  */
-void startingState (char *filename, int AvatarId, int x, int y, XYPos *pos);
+void startingState (char *filename, int AvatarId, int x, int y, XYPos *pos, maze_t *maze);
 
 /**
  * This prints the update when each avatar tries to move
@@ -43,7 +45,7 @@ void startingState (char *filename, int AvatarId, int x, int y, XYPos *pos);
  *      XYPos oldPos        the old position of the avatar
  *      XYPos *pos          array of positions of other avatars
  */     
-void avatarTurned (bool last, char *filename, int AvatarId, int nAvatars, XYPos newPos, XYPos oldPos, XYPos *pos, int d);
+void avatarTurned (bool last, char *filename, int AvatarId, int nAvatars, XYPos newPos, XYPos oldPos, XYPos *pos, int d, maze_t *maze);
 
 /**
  * This prints a message whenever the game exists

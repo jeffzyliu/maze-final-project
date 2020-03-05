@@ -15,7 +15,7 @@
 #include "ui.h"
 #include "../mazedata/maze.c"
 
-void print_ui(maze_t *maze)
+void print_ui(maze_t *maze, char *status)
 {
     printf("****************************************\n");
 
@@ -26,7 +26,7 @@ void print_ui(maze_t *maze)
 
     // waiting on maze_t to finish this
 
-    printf("Status message\n");
+    printf("%s\n", status);
     printf("    ");
 
     // Initial column numbers

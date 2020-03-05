@@ -12,6 +12,8 @@
 #include "../amazing.h"
 #include "maze.h"
 
+// TODO: Safety checks, make sure that x, y, d, etc are appropriate
+
 // ------------------- global types
 typedef struct mazenode {
     // Array of 4 mazenodes. Index 0 is west, 1 is north, 2 is south, 3 is east
@@ -307,12 +309,15 @@ void unit_maze_print(maze_t *maze, FILE *fp) {
     }
 }
 
+
+// Returns the avatar value of the node at (x,y)
 int get_avatar(maze_t *maze, int x, int y) {
     int ID;
     for (ID = 0; ID < maze->numAvatars && !maze->array[y][x]->avatars[ID]; ID++);
     if (ID == maze->numAvatars) return -1;
     return ID;
 }
+
 
 // Puts an avatar into the maze
 bool set_avatar(maze_t *maze, int x, int y, int avatar_id, bool status) {
@@ -356,6 +361,42 @@ XYPos check_neighbor(maze_t *maze, int x, int y, int d) {
     neighbor.x = maze->array[y][x]->neighbors[d]->x;
     neighbor.y = maze->array[y][x]->neighbors[d]->y;
     return neighbor;
+}
+
+
+// Returns 0 if neighbor in direction d is a wall, 1 if it is not a wall
+// 2 For null maze
+// 3 for inappropriate direction
+// 4 for negative coordinates
+// 5 for coordinates greater than height
+int is_wall(maze_t *maze, int x, int y, const int d) {
+
+    if (maze == NULL) {
+        fprintf(stderr, "Error: NULL maze passed in\n");
+        return 2;
+    }
+
+    if (d < 0 || d > 3) {
+        fprintf(stderr, "Error: 'd' must be 0 (West), 1 (North), 2 (South), or 3 (East)\n");
+        return 3;
+    }
+
+    if (x < 0 || y < 0) {
+        fprintf(stderr, "Error: Coordinates cannot be negative\n");
+        return 4;
+    }
+
+    if (x >= maze->width || y >= maze->height) {
+        fprintf(stderr, "Error: Coordinates must be less than height/width. Max x value: %d. Max y value: %d, (%d,%d)\n", maze->width-1, maze->height-1, x, y);
+        return 5;
+    }
+
+    // If the neighbor in the appropriate direction has matching coordinates...
+    if( (maze->array[y][x]->neighbors[d] != NULL) && (maze->array[y][x]->neighbors[d]->x == x) && (maze->array[y][x]->neighbors[d]->y == y) ) {
+        return 0; // It's a wall
+    } else {
+        return 1; // If they don't match, it's not a wall
+    }
 }
 
 
@@ -464,9 +505,10 @@ int test_newmaze1() {
     return 0;
 }
 
+/*
 int main() {
     test_newmaze1();
     exit(0);
 }
-
+*/
 #endif // UNIT_TEST

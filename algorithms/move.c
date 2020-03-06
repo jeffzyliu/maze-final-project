@@ -73,6 +73,8 @@ int decide_maprighthand(int lastHeading, XYPos oldLoc, XYPos newLoc, maze_t *maz
 void maze_update(int lastHeading, XYPos oldLoc, XYPos newLoc, maze_t *maze, int avatarID)
 {
     int direction = avatar_moved(oldLoc, newLoc);
+    set_avatar(maze, oldLoc.x, oldLoc.y, avatarID, false);
+    set_avatar(maze, newLoc.x, newLoc.y, avatarID, true);
     if (direction != M_NULL_MOVE) { // moved in a direction, set new path in direction moved
         if (wall_count(maze, oldLoc.x, oldLoc.y) >= 3 && get_avatar(maze, oldLoc.x, oldLoc.y) == -1) { // exited a dead-end, mark as closed
             // check for contains avatar to not trap anyone behind
@@ -88,8 +90,6 @@ void maze_update(int lastHeading, XYPos oldLoc, XYPos newLoc, maze_t *maze, int 
         
         set_neighbor(maze, otherside.x, otherside.y, turnAround(lastHeading), otherside.x, otherside.y); // cannot come through
     }
-    set_avatar(maze, oldLoc.x, oldLoc.y, avatarID, false);
-    set_avatar(maze, newLoc.x, newLoc.y, avatarID, true);
 }
 
 /**

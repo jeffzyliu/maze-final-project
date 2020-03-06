@@ -22,7 +22,6 @@
 
 
 pthread_mutex_t lock; 
-pthread_mutex_t lock2;
 /**
  * The first few lines of the file that logs where each Avatar is inserted
  */
@@ -56,12 +55,10 @@ void startingState (char *filename, int AvatarId, int x, int y, XYPos *pos, maze
  */
 void avatarTurned (bool last, char *filename, int AvatarId, int nAvatars, XYPos newPos, XYPos oldPos, XYPos *pos, int d, maze_t *maze)
 {
-    pthread_mutex_lock(&lock2);
     FILE *fp;
     fp = fopen(filename, "a");
     if (fp == NULL) {
         fprintf(stderr, "Failed to open file\n");
-        pthread_mutex_unlock(&lock2);
         return;
     }
     char movedAvatar[100];
@@ -97,7 +94,6 @@ void avatarTurned (bool last, char *filename, int AvatarId, int nAvatars, XYPos 
     }  
     fprintf(fp, "\n");
     fclose(fp);
-    pthread_mutex_unlock(&lock2);
 }
 
 

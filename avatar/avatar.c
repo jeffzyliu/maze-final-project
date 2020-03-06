@@ -164,7 +164,6 @@ void *avatar (void *arg)
     }
     if (ntohl(server_avatar_turn.type) == AM_MAZE_SOLVED) {
         maze_update(lastHeading, oldLoc, sentinel, maze, AvatarId);
-        avatarTurned (false, filename, AvatarId, nAvatars, sentinel, oldLoc, pos, Direction, maze);
         if (ntohl(server_avatar_turn.maze_solved.nMoves)%nAvatars==AvatarId) {
             avatarTurned (true, filename, AvatarId, nAvatars, sentinel, oldLoc, pos, Direction, maze);
             exitGame(filename, server_avatar_turn, maze);

@@ -28,6 +28,8 @@ typedef struct avatar_paramter {
 
 // -------------------------- local function prototypes
 static bool isGameOver (AM_Message server_avatar_turn);
+bool status = true;
+bool last = true;
 
 /******************* Local Functions
  * The main avatar function that each thread calls
@@ -78,6 +80,7 @@ void *avatar (void *arg)
             fprintf(stderr, "failed to send to server\n");
             close(comm_sock);
             exitCode = 7;
+            status = false;
             pthread_exit(&exitCode);
         }
         int receive = read(comm_sock, &server_avatar_turn, sizeof(AM_Message));
@@ -85,12 +88,13 @@ void *avatar (void *arg)
             fprintf(stderr, "Connection to Server Closed\n");
             exitCode = 8;
             close(comm_sock);
+            status = false;
             pthread_exit(&exitCode);
         } 
         if (IS_AM_ERROR(ntohl(server_avatar_turn.type))) {
             errorMessage(filename, server_avatar_turn);
         } 
-    } while (IS_AM_ERROR(ntohl(server_avatar_turn.type)));
+    } while (IS_AM_ERROR(ntohl(server_avatar_turn.type)) & status);
 
     //getting the server response 
     int TurnId = ntohl(server_avatar_turn.avatar_turn.TurnId);
@@ -122,11 +126,12 @@ void *avatar (void *arg)
     newLoc.y = startingY;
     int turnCount = 0;
     //temporary direction to go west. If the server responds with a valid message
-    while (1) {
+    while (status) {
         if (isGameOver(server_avatar_turn)) {
             break;
         }
         if (ntohl(server_avatar_turn.type) != AM_AVATAR_TURN) {
+            errorMessage(filename, server_avatar_turn);
             server_avatar_turn = receiveMessage(comm_sock, server_avatar_turn);
             continue;   
         }
@@ -150,25 +155,29 @@ void *avatar (void *arg)
             exitCode = validMessageTurn(comm_sock, avatarTurn, AvatarId, Direction, server_avatar_turn);
             if (exitCode == 7) {
                 close(comm_sock);
+                status = false;
+                free(parameter);
                 pthread_exit(&exitCode);
             }
         } 
         server_avatar_turn = receiveMessage(comm_sock, server_avatar_turn);
     }
-    if (ntohl(server_avatar_turn.type) == AM_MAZE_SOLVED && ntohl(server_avatar_turn.maze_solved.nMoves)%nAvatars==AvatarId) {
-        avatarTurned (true, filename, AvatarId, nAvatars, sentinel, oldLoc, pos, Direction, maze);
-        exitGame(filename, server_avatar_turn);
-    } 
-    if (ntohl(server_avatar_turn.type)!= AM_MAZE_SOLVED) {
-        free(parameter);
-        close(comm_sock);
-        exit(exitCode);
+    if (ntohl(server_avatar_turn.type) == AM_MAZE_SOLVED) {
+        maze_update(lastHeading, oldLoc, sentinel, maze, AvatarId);
+        if (ntohl(server_avatar_turn.maze_solved.nMoves)%nAvatars==AvatarId) {
+            avatarTurned (true, filename, AvatarId, nAvatars, sentinel, oldLoc, pos, Direction, maze);
+            exitGame(filename, server_avatar_turn, maze);
+        }
+        exitCode = 0; 
+    }  
+    if (ntohl(server_avatar_turn.type) != AM_MAZE_SOLVED) {
+        if (AvatarId == TurnId) {
+            exitGame(filename, server_avatar_turn, maze);
+        }
+        exitCode = 13;
     }
     free(parameter);
     close(comm_sock);
-    if (ntohl(server_avatar_turn.type) != AM_MAZE_SOLVED) {
-        exitCode = 13;
-    }
     pthread_exit(&exitCode);
     return NULL;
 }

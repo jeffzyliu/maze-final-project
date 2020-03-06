@@ -20,6 +20,7 @@
 #include <stdbool.h>
 #include "ui.h"
 #include "../mazedata/maze.h"
+#include "../avatar/messages.h"
 
 /**
  * this method will write the initial starting positions of all the avatars
@@ -30,6 +31,7 @@
  *      int x               x position of the Avatar   
  *      int y               y position of Avatar
  *      XYPos *pos          array of positions of other avatars
+ *      maze_t *maze        the global maze
  */
 void startingState (char *filename, int AvatarId, int x, int y, XYPos *pos, maze_t *maze);
 
@@ -44,6 +46,7 @@ void startingState (char *filename, int AvatarId, int x, int y, XYPos *pos, maze
  *      XYPos newPos        the new position of the avatar
  *      XYPos oldPos        the old position of the avatar
  *      XYPos *pos          array of positions of other avatars
+ *      maze_t *maze        the global maze
  */     
 void avatarTurned (bool last, char *filename, int AvatarId, int nAvatars, XYPos newPos, XYPos oldPos, XYPos *pos, int d, maze_t *maze);
 
@@ -53,8 +56,9 @@ void avatarTurned (bool last, char *filename, int AvatarId, int nAvatars, XYPos 
  * Inputs:
  *      char *filename          the file we are writing to
  *      AM_Message finalmessage the finalMessage sent by the server
+ *      maze_t *maze            the global maze
  */
 
-void exitGame (char *filename, AM_Message finalMessage);
+void exitGame (char *filename, AM_Message finalMessage, maze_t *maze);
 
 #endif // __LOGWRITE_H

@@ -24,7 +24,7 @@ typedef struct maze maze_t;
 // ------------------- functions
 
 // ------------------- set_wall
-/* Sets a maze's neighbor to a passed-in node
+/* Sets a maze's neighbor to a passed-in set of coordinates
  * 
  * Inputs:
  *      a maze pointer
@@ -33,7 +33,7 @@ typedef struct maze maze_t;
  *      integer (x,y) coordinates for the new neighbor
  * 
  * Outputs:
- *      False if failure (bad input for d)
+ *      False if failure (NUL maze, bad input for d, invalid coordinates)
  *      True on success
  */
 bool set_neighbor(maze_t *maze, int x, int y, const int d, int neighbor_x, int neighbor_y);
@@ -43,9 +43,14 @@ bool set_neighbor(maze_t *maze, int x, int y, const int d, int neighbor_x, int n
  * 
  * Inputs:
  *      An integer width and height for the maze
+ *      An integer number of avatars
  * 
  * Outputs:
  *      Pointer to new maze, or NULL if error.
+ * 
+ * Guarantees:
+ *      All border walls will be in place
+ *      All nodes' internal neighbors are NULL
  * 
  * Caller responsibilities:
  *      Deleting the maze later with maze_delete
@@ -60,7 +65,7 @@ maze_t *maze_new(int height, int width, int numAvatars);
  *      integer (x,y) coordinates
  * 
  * Outputs:
- *      -1 on failure
+ *      -1 on failure (NULL maze, invalid coordinates)
  *      number of walls in a node on success
  */
 int wall_count(maze_t *maze, int x, int y);
@@ -99,12 +104,16 @@ void unit_mazenode_print(maze_t *maze, int x, int y, FILE *fp);
  */
 void unit_maze_print(maze_t *maze, FILE *fp);
 
-// ------------------- set_avatar
-/** get_avatar
- * gets the avatar with the lowest ID at given x,y
+// ------------------- get_avatar
+/* gets the avatar with the lowest ID at given x,y
  * 
- * if no avatar is found, returns -1
- * else returns the lowest avatarID
+ * Inputs:
+ *      pointer to a valid maze
+ *      integer (x,y) coordinates
+ * 
+ * Outputs:
+ *      if no avatar is found, returns -1
+ *      else returns the lowest avatarID
  */ 
 int get_avatar(maze_t *maze, int x, int y);
 // ------------------- set_avatar

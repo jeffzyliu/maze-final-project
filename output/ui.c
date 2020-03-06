@@ -1,7 +1,7 @@
 /**
  * ui.c
  * 
- * collection of function(s) to print ASCII UI to the command line
+ * Function to print ASCII UI to the command line
  * see ui.h for documentation
  * 
  * AUTHOR: Celina Tala, Jeff Liu, Willem Klein Wassink
@@ -18,14 +18,6 @@
 void print_ui(maze_t *maze)
 {
     printf("****************************************\n");
-
-    // print status message; do we want to have this in logfile.c/h?
-    // do we want to have logfile.c/h return strings, and mutex lock each avatar instead
-    // of each function that changes things? we can centralize mutex locks that way
-    // and have auxilliary functions only manipulate data
-
-    // waiting on maze_t to finish this
-
     printf("Status message\n");
     printf("    ");
 
@@ -75,27 +67,6 @@ void print_ui(maze_t *maze)
         }
         printf("\n");
     }
-    
-    // print "     " (5 spaces)
-    // for each column
-        // print " N  " where N  is row number
-    // print "\n+"
-    // for each column
-        // print "---+"
-    // print "\n"
-    // for each row
-        // print "%3d|" where the number is row number, increasing from 0
-        // for each column
-            // print " N " where N is the avatar number (or space if no avatar)
-            // if this is the last column
-                // print "|\n"
-            // else
-                // print " "
-        // print "   +"
-        // for each column
-            // print "   +"
-        // print "\n"
-
     printf("****************************************\n\n");
 }
 
@@ -103,6 +74,8 @@ void print_ui(maze_t *maze)
 #ifdef UNIT_TEST
 
 int test_uimaze1() {
+    printf("----------------------------------------------------------------\n");
+    
     printf("Creating maze of height 3 and width 3\n");
     maze_t *maze = maze_new(3, 3, 3);
     printf("----------------------------------------------------------------\n");
@@ -213,9 +186,11 @@ int test_uimaze1() {
     return 0;
 }
 
+/*
 int main() {
     test_uimaze1();
     exit(0);
 }
+*/
 
 #endif // UNIT_TEST

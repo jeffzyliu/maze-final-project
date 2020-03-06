@@ -1,7 +1,7 @@
 /**
  * ui.h
  * 
- * collection of function(s) to print ASCII UI to the command line
+ * Function to print ASCII UI to the command line
  * 
  * AUTHOR: Celina Tala, Jeff Liu, Willem Klein Wassink
  */ 
@@ -13,8 +13,13 @@
 #include <stdio.h>
 #include <string.h>
 
-/**
- * prints out the UI to 
+// ------------------- print_ui
+/* Prints out the maze UI to stdout
  * 
+ * Inputs:
+ *      A pointer to a valid maze
+ * 
+ * Outputs:
+ *      A printed maze in stdout
  */ 
 void print_ui(maze_t *maze);

@@ -22,6 +22,7 @@
 
 
 pthread_mutex_t lock; 
+pthread_mutex_t lock2;
 /**
  * The first few lines of the file that logs where each Avatar is inserted
  */
@@ -55,10 +56,12 @@ void startingState (char *filename, int AvatarId, int x, int y, XYPos *pos, maze
  */
 void avatarTurned (bool last, char *filename, int AvatarId, int nAvatars, XYPos newPos, XYPos oldPos, XYPos *pos, int d, maze_t *maze)
 {
+    pthread_mutex_lock(&lock2);
     FILE *fp;
     fp = fopen(filename, "a");
     if (fp == NULL) {
         fprintf(stderr, "Failed to open file\n");
+        pthread_mutex_unlock(&lock2);
         return;
     }
     char movedAvatar[100];
@@ -76,11 +79,11 @@ void avatarTurned (bool last, char *filename, int AvatarId, int nAvatars, XYPos 
         }
         sprintf(avatarStay, "Avatar %d hit %s wall\n", AvatarId, Direction);
         fprintf(fp, "%s", avatarStay);
-        // print_ui(maze, avatarStay);
+        print_ui(maze, avatarStay);
     } else {
         sprintf(movedAvatar, "Avatar %d moved from %d, %d to %d, %d\n", AvatarId, oldPos.x, oldPos.y, newPos.x, newPos.y);
         fprintf(fp, "%s", movedAvatar);
-        // print_ui(maze, movedAvatar);
+        print_ui(maze, movedAvatar);
     }
     fprintf(fp, "Avatar Locations: ");
     if (last) {
@@ -94,13 +97,14 @@ void avatarTurned (bool last, char *filename, int AvatarId, int nAvatars, XYPos 
     }  
     fprintf(fp, "\n");
     fclose(fp);
+    pthread_mutex_unlock(&lock2);
 }
 
 
 /**
  * Writing to our file when we solved the maze
  */
-void exitGame (char *filename, AM_Message finalMessage)
+void exitGame (char *filename, AM_Message finalMessage, maze_t *maze)
 {
     if (ntohl(finalMessage.type) == AM_MAZE_SOLVED) {
         FILE *fp;
@@ -116,6 +120,7 @@ void exitGame (char *filename, AM_Message finalMessage)
         char solvedMessage[100];
         sprintf(solvedMessage, "Mazed solved with %d avatars at Difficulty %d in %d moves at hash %u\n", nAvatars, Difficulty, nMoves, Hash);
         fprintf(fp, "%s", solvedMessage);
+        print_ui(maze, solvedMessage);
         fclose(fp);
     } else {
         errorMessage(filename, finalMessage);

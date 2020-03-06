@@ -131,6 +131,7 @@ void *avatar (void *arg)
             break;
         }
         if (ntohl(server_avatar_turn.type) != AM_AVATAR_TURN) {
+            errorMessage(filename, server_avatar_turn);
             server_avatar_turn = receiveMessage(comm_sock, server_avatar_turn);
             continue;   
         }
@@ -161,14 +162,18 @@ void *avatar (void *arg)
         } 
         server_avatar_turn = receiveMessage(comm_sock, server_avatar_turn);
     }
-    if (ntohl(server_avatar_turn.type) == AM_MAZE_SOLVED && ntohl(server_avatar_turn.maze_solved.nMoves)%nAvatars==AvatarId) {
-        avatarTurned (true, filename, AvatarId, nAvatars, sentinel, oldLoc, pos, Direction, maze);
-        exitGame(filename, server_avatar_turn);
-        exitCode = 0;
-    } 
+    if (ntohl(server_avatar_turn.type) == AM_MAZE_SOLVED) {
+        maze_update(lastHeading, oldLoc, sentinel, maze, AvatarId);
+        avatarTurned (false, filename, AvatarId, nAvatars, sentinel, oldLoc, pos, Direction, maze);
+        if (ntohl(server_avatar_turn.maze_solved.nMoves)%nAvatars==AvatarId) {
+            avatarTurned (true, filename, AvatarId, nAvatars, sentinel, oldLoc, pos, Direction, maze);
+            exitGame(filename, server_avatar_turn, maze);
+        }
+        exitCode = 0; 
+    }  
     if (ntohl(server_avatar_turn.type) != AM_MAZE_SOLVED) {
         if (AvatarId == TurnId) {
-            exitGame(filename, server_avatar_turn);
+            exitGame(filename, server_avatar_turn, maze);
         }
         exitCode = 13;
     }

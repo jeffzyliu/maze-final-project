@@ -1,25 +1,48 @@
-/**
- * logfile.h
- * 
- * Jeff Liu, Willem Klein Wassink, Celina tala
- * 
- * collection of function(s) to print updates to the log file from avatars
- * 
- */ 
+# CS50 Final Project
+## Willem Klein Wassink, Celina Tala, Jeff Liu, CS50 Winter 2020
 
-#ifndef __LOGWRITE_H
-#define __LOGWRITE_H
+### ui.c
 
-#include <pthread.h> 
-#include <stdio.h> 
-#include <stdlib.h> 
-#include <string.h> 
-#include <unistd.h> 
-#include "../amazing.h"
-#include <netinet/in.h>
-#include <stdbool.h>
+*ui.c* exports a method that takes in a pointer to a valid maze and prints out a UI representing the maze to stdout. It is compiled into the *output.a* library.
 
-/**
+### ui.c Usage
+
+*output.a* is to be included within programs that need to print a maze out.
+
+### ui.c Method
+
+```c
+/* Prints out the maze UI to stdout
+ * 
+ * Inputs:
+ *      A pointer to a valid maze
+ * 
+ * Outputs:
+ *      A printed maze in stdout
+ */
+void print_ui(maze_t *maze);
+```
+
+### ui.c Assumptions
+
+None except what is clear from the aformentioned information
+
+---
+
+### logfile.c
+
+*ui.c* exports methods that allow for the printing of updates on the
+avatars' movements to the log file.
+
+### logfile.c Usage
+
+*output.a* is to be included within programs that need to print messages
+to a logfile.
+
+### logfile.c Method
+
+```c
+/*
  * this method will write the initial starting positions of all the avatars
  * 
  * Input:
@@ -31,7 +54,7 @@
  */
 void startingState (char *filename, int AvatarId, int x, int y, XYPos *pos);
 
-/**
+/*
  * This prints the update when each avatar tries to move
  * 
  * Inputs:
@@ -45,7 +68,7 @@ void startingState (char *filename, int AvatarId, int x, int y, XYPos *pos);
  */     
 void avatarTurned (bool last, char *filename, int AvatarId, int nAvatars, XYPos newPos, XYPos oldPos, XYPos *pos, int d);
 
-/**
+/*
  * This prints a message whenever the game exists
  * 
  * Inputs:
@@ -53,5 +76,16 @@ void avatarTurned (bool last, char *filename, int AvatarId, int nAvatars, XYPos 
  *      AM_Message finalmessage the finalMessage sent by the server
  */
 void exitGame (char *filename, AM_Message finalMessage);
+```
 
-#endif // __LOGWRITE_H
+### logfile.c Assumptions
+
+None except what is clear from the aformentioned information
+
+---
+
+### Compilation
+
+To compile, run `make` in the parent directory. The makefile should recursively call `make` in each subdirectory.
+
+To test, uncomment the "-DUNIT_TEST" in this directory's makefile, uncomment the main method at the bottom of ui.c, run `make clean`, and then run `make unit`. Usage: "./ui".

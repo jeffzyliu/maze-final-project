@@ -45,7 +45,7 @@ void print_ui(maze_t *maze)
             }
             
             // Print column dividers
-            if (is_wall(maze, x, y, M_EAST) == 0) { // If there's a wall to the east
+            if (is_wall(maze, x, y, M_EAST) == 0) { // If there's a wall to the east, print it
                 printf("|");
             } else {
                 printf(" ");
@@ -59,7 +59,7 @@ void print_ui(maze_t *maze)
         // Print row dividers
         printf("   +");
         for (int x=0; x < maze->width; x++) {
-            if (y == maze->height-1 || is_wall(maze, x, y, M_SOUTH) == 0) { // If there's a wall to the
+            if (y == maze->height-1 || is_wall(maze, x, y, M_SOUTH) == 0) { // If there's a wall to the south, print it
                 printf("---+");
             } else {
                 printf("   +");

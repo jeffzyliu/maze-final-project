@@ -29,14 +29,13 @@ typedef struct avatar_paramter {
 // -------------------------- local function prototypes
 static bool isGameOver (AM_Message server_avatar_turn);
 bool status = true;
-bool last = true;
 
 /******************* Local Functions
  * The main avatar function that each thread calls
  */
 void *avatar (void *arg)
 {
-    int exitCode;
+    int exitCode;   //our exit code
     avatar_p *parameter = (avatar_p *)arg;
     int mazeport = parameter->mazeport;
     char *hostname = parameter->hostname;
@@ -45,6 +44,7 @@ void *avatar (void *arg)
     int nAvatars = parameter->nAvatars;
     maze_t *maze = parameter->maze;
     
+    //connecting to the sockets
     int comm_sock = socket(AF_INET, SOCK_STREAM, 0);
     if (comm_sock < 0) {
         perror("opening socket");
@@ -125,44 +125,46 @@ void *avatar (void *arg)
     newLoc.x = startingX;
     newLoc.y = startingY;
     int turnCount = 0;
-    //temporary direction to go west. If the server responds with a valid message
+    //while we are able to connect to the socket
     while (status) {
-        if (isGameOver(server_avatar_turn)) {
+        if (isGameOver(server_avatar_turn)) {   //if one of the four conditions for game ending is valid we break out of this loop
             break;
         }
-        if (ntohl(server_avatar_turn.type) != AM_AVATAR_TURN) {
+        if (ntohl(server_avatar_turn.type) != AM_AVATAR_TURN) { //any other error message, we will print it to the file and keep going
             errorMessage(filename, server_avatar_turn);
             server_avatar_turn = receiveMessage(comm_sock, server_avatar_turn);
             continue;   
         }
-        TurnId = ntohl(server_avatar_turn.avatar_turn.TurnId);
-        pos = server_avatar_turn.avatar_turn.Pos;
+        TurnId = ntohl(server_avatar_turn.avatar_turn.TurnId);  //getting the updated turnID
+        pos = server_avatar_turn.avatar_turn.Pos;               //the updated array
+        //if it is this avatar's turn we update the x and y positions
         if (TurnId%nAvatars == AvatarId) {
             newLoc.x = ntohl(pos[AvatarId].x);
             newLoc.y = ntohl(pos[AvatarId].y);
+            //if it is the sentinel avatar or the avatar already got to the correct position, it doesn't move
             if (AvatarId == 0 || avatar_moved(newLoc, sentinel) == M_NULL_MOVE) {
                 Direction = M_NULL_MOVE;
             } else {
-                if (turnCount != 0) {
+                if (turnCount != 0) {    //we will update the maze with the new avatar locations
                     maze_update(lastHeading, oldLoc, newLoc, maze, AvatarId);
                 }
-                avatarTurned (false, filename, AvatarId, nAvatars, newLoc, oldLoc, pos, Direction, maze);
-                Direction = decide_maprighthand(lastHeading, oldLoc, newLoc, maze);
-                oldLoc = newLoc;
+                avatarTurned (false, filename, AvatarId, nAvatars, newLoc, oldLoc, pos, Direction, maze);   //print to logfile
+                Direction = decide_maprighthand(lastHeading, oldLoc, newLoc, maze);     //getting the new direction
+                oldLoc = newLoc;            //updating the location and direction and incrementing the turnCount
                 lastHeading = Direction;
                 turnCount++;
             }
-            exitCode = validMessageTurn(comm_sock, avatarTurn, AvatarId, Direction, server_avatar_turn);
-            if (exitCode == 7) {
+            exitCode = validMessageTurn(comm_sock, avatarTurn, AvatarId, Direction, server_avatar_turn);    //sending the new direction to server
+            if (exitCode == 7) {            //if the socket broke we will exit out of this thread
                 close(comm_sock);
                 status = false;
                 free(parameter);
                 pthread_exit(&exitCode);
             }
         } 
-        server_avatar_turn = receiveMessage(comm_sock, server_avatar_turn);
+        server_avatar_turn = receiveMessage(comm_sock, server_avatar_turn);         //getting the next server message
     }
-    if (ntohl(server_avatar_turn.type) == AM_MAZE_SOLVED) {
+    if (ntohl(server_avatar_turn.type) == AM_MAZE_SOLVED) {                     //if we solved the maze we will update our maze and print the exit message
         maze_update(lastHeading, oldLoc, sentinel, maze, AvatarId);
         if (ntohl(server_avatar_turn.maze_solved.nMoves)%nAvatars==AvatarId) {
             avatarTurned (true, filename, AvatarId, nAvatars, sentinel, oldLoc, pos, Direction, maze);
@@ -170,13 +172,13 @@ void *avatar (void *arg)
         }
         exitCode = 0; 
     }  
-    if (ntohl(server_avatar_turn.type) != AM_MAZE_SOLVED) {
+    if (ntohl(server_avatar_turn.type) != AM_MAZE_SOLVED) {     //if it is the other errors, we will print exit message and set appropriate exit code
         if (AvatarId == TurnId) {
             exitGame(filename, server_avatar_turn, maze);
         }
         exitCode = 13;
     }
-    free(parameter);
+    free(parameter);                                           //freeing the appropriate parameters
     close(comm_sock);
     pthread_exit(&exitCode);
     return NULL;
@@ -187,7 +189,7 @@ void *avatar (void *arg)
  */
 avatar_p *clientParameters(int AvatarId, int nAvatars, int Difficulty, char *hostname, int mazeport, char *filename, maze_t *maze)
 {
-    avatar_p *parameter = malloc(sizeof(avatar_p));
+    avatar_p *parameter = malloc(sizeof(avatar_p));     //mallocing space and updating the instance variables
     if (parameter == NULL) {
         fprintf(stderr, "Failed to allocate memory\n");
         exit(EXIT_FAILURE);
@@ -207,5 +209,6 @@ avatar_p *clientParameters(int AvatarId, int nAvatars, int Difficulty, char *hos
  */
 static bool isGameOver (AM_Message server_avatar_turn)
 {
+    //the four conditions for the game ending
     return server_avatar_turn.type == ntohl(AM_MAZE_SOLVED) || server_avatar_turn.type == ntohl(AM_SOCKET_BREAK) || server_avatar_turn.type == ntohl(AM_TOO_MANY_MOVES) || server_avatar_turn.type == ntohl(AM_SERVER_TIMEOUT);
 }

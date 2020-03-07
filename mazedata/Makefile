@@ -26,7 +26,7 @@ maze.o: ../amazing.h
 .PHONY: clean unit
 
 clean:
-	rm -f core
+	rm -f *core*
 	rm -f maze.o
 	rm -f mazedata.a
 	rm -f maze

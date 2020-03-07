@@ -157,12 +157,12 @@ int wall_count(maze_t *maze, int x, int y) {
 
     if (x < 0 || y < 0) {
         fprintf(stderr, "Error: Coordinates cannot be negative");
-        return false;
+        return -1;
     }
 
     if (x >= maze->width || y >= maze->height) {
         fprintf(stderr, "Error: Coordinates must be less than height/width. Max x value: %d. Max y value: %d", maze->width-1, maze->height-1);
-        return false;
+        return -1;
     }
 
     mazenode_t *node = maze->array[y][x];

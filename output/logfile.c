@@ -27,14 +27,14 @@ pthread_mutex_t lock;
  */
 void startingState (char *filename, int AvatarId, int x, int y, XYPos *pos, maze_t *maze)
 {
-    pthread_mutex_lock(&lock);
+    pthread_mutex_lock(&lock);  //this method has to be locked because all threads will try and access this at the same time
     FILE *fp;
     fp = fopen(filename, "a");
     if (fp == NULL) {
         fprintf(stderr, "failed to open file\n");
         return;
     }
-    char startposition[100];
+    char startposition[100];    //our starting message
     sprintf(startposition, "Inserted %d at %d,%d\n", AvatarId, x, y);
     fprintf(fp, "%s", startposition);
     if (AvatarId == 0) {
@@ -47,7 +47,7 @@ void startingState (char *filename, int AvatarId, int x, int y, XYPos *pos, maze
     fprintf(fp, "\n");
     fclose(fp);
     print_ui(maze, startposition);
-    pthread_mutex_unlock(&lock); 
+    pthread_mutex_unlock(&lock); //unlock it at the end
 }
 
 /**
@@ -64,7 +64,7 @@ void avatarTurned (bool last, char *filename, int AvatarId, int nAvatars, XYPos 
     char movedAvatar[100];
     char avatarStay[100];
     char *Direction;
-    if (newPos.x == oldPos.x && newPos.y == oldPos.y) {
+    if (newPos.x == oldPos.x && newPos.y == oldPos.y) { //if the avatar didn't move we set the direction properly
         if (d == 0) {
             Direction = "West";
         } else if (d == 1) {
@@ -74,7 +74,7 @@ void avatarTurned (bool last, char *filename, int AvatarId, int nAvatars, XYPos 
         } else {
             Direction = "East";
         }
-        sprintf(avatarStay, "Avatar %d hit %s wall\n", AvatarId, Direction);
+        sprintf(avatarStay, "Avatar %d hit %s wall\n", AvatarId, Direction); 
         fprintf(fp, "%s", avatarStay);
         print_ui(maze, avatarStay);
     } else {
@@ -82,7 +82,7 @@ void avatarTurned (bool last, char *filename, int AvatarId, int nAvatars, XYPos 
         fprintf(fp, "%s", movedAvatar);
         print_ui(maze, movedAvatar);
     }
-    fprintf(fp, "Avatar Locations: ");
+    fprintf(fp, "Avatar Locations: ");  //printing all of the current locations
     if (last) {
         for (int i = 0; i < nAvatars; i++) {
             fprintf(fp, "%d: (%d, %d); ", i, newPos.x, newPos.y);
@@ -102,7 +102,7 @@ void avatarTurned (bool last, char *filename, int AvatarId, int nAvatars, XYPos 
  */
 void exitGame (char *filename, AM_Message finalMessage, maze_t *maze)
 {
-    if (ntohl(finalMessage.type) == AM_MAZE_SOLVED) {
+    if (ntohl(finalMessage.type) == AM_MAZE_SOLVED) { //if we solved the maze
         FILE *fp;
         fp = fopen(filename, "a");
         if (fp == NULL) {
@@ -119,7 +119,7 @@ void exitGame (char *filename, AM_Message finalMessage, maze_t *maze)
         print_ui(maze, solvedMessage);
         fclose(fp);
     } else {
-        errorMessage(filename, finalMessage);
+        errorMessage(filename, finalMessage); //any other error messages
     }
 }
 

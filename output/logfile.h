@@ -32,6 +32,9 @@
  *      int y               y position of Avatar
  *      XYPos *pos          array of positions of other avatars
  *      maze_t *maze        the global maze
+ * 
+ * Output:
+ *      Prints the message when each avatar is inserted into the maze
  */
 void startingState (char *filename, int AvatarId, int x, int y, XYPos *pos, maze_t *maze);
 
@@ -46,7 +49,12 @@ void startingState (char *filename, int AvatarId, int x, int y, XYPos *pos, maze
  *      XYPos newPos        the new position of the avatar
  *      XYPos oldPos        the old position of the avatar
  *      XYPos *pos          array of positions of other avatars
+ *      int d               the direction that avatar turned
  *      maze_t *maze        the global maze
+ * 
+ * Output:
+ *      Prints the message when each avatar moves
+ *      
  */     
 void avatarTurned (bool last, char *filename, int AvatarId, int nAvatars, XYPos newPos, XYPos oldPos, XYPos *pos, int d, maze_t *maze);
 
@@ -57,6 +65,9 @@ void avatarTurned (bool last, char *filename, int AvatarId, int nAvatars, XYPos 
  *      char *filename          the file we are writing to
  *      AM_Message finalmessage the finalMessage sent by the server
  *      maze_t *maze            the global maze
+ * 
+ * Output:
+ *      prints the end game message
  */
 
 void exitGame (char *filename, AM_Message finalMessage, maze_t *maze);

@@ -23,12 +23,11 @@
  * Inputs:
  *      the file to write our error
  *      the message sent by the server
- *  
  * 
  * Outputs:
  *      exit code
  */
-int errorMessage(char *filename, AM_Message server_message);
+void errorMessage(char *filename, AM_Message server_message);
 
 /**
  * check to see if the server message is valid when an avatar attempts to move

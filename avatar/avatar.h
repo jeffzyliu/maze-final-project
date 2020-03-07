@@ -50,6 +50,7 @@ void *avatar (void *arg);
  *      char *hostname      hostname
  *      int mazeport        the port of maze location
  *      char *filename      the file we are writing to
+ *      maze_t *maze        the global maze
  * 
  * Outputs:
  *      the data struct avatar_p with necessary parameters

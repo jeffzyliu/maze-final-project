@@ -1,23 +1,20 @@
-/**
- * move.h 
- * author: Jeff Liu, Willem Klein Wassink, Celina tala
- * 
- * 
- * module about move information and algorithms
- * implements a simple right-hand-follower as well as
- * an enhanced one which keeps track of known information,
- * and enables dead-end filling to avoid non-useful moves
- */ 
+# CS50 Final Project -- Maze Challenge, Winter 2020
+## Team Willpower--Jeff Liu, Willem Klein Wassink, Celina Tala
 
-#ifndef __MOVE_H
-#define __MOVE_H
+### algorithms
 
-#include <stdio.h>
-#include <stdlib.h>
-#include "../amazing.h"
-#include "../mazedata/maze.h"
-#include <stdbool.h>
+The *algorithms* library consists of a set of algorithms governing move decisions and information tracking. It currently implements a simple right-hand-follower and an enhanced follower that makes use of the *mazedata* library.
 
+### Usage
+
+*algorithms* compiles a library that is to be used by any avatars in need of deciding moves in the maze. It also draws upon the *mazedata* library to record prior learned information.
+
+It exports a set of functions through *move.h*.
+
+### Implementation
+
+move.h functions:
+```c
 /**
  * checks if an avatar moved and returns its direction
  * 
@@ -60,5 +57,18 @@ int decide_maprighthand(int lastHeading, XYPos oldLoc, XYPos newLoc, maze_t *maz
  * also blocks off the counterpart of the wall since each wall connects with one on the other side
  */ 
 void maze_update(int lastHeading, XYPos oldLoc, XYPos newLoc, maze_t *maze, int avatarID);
+```
 
-#endif // __MOVE_H
+### Compilation
+
+To compile, `make`. This program can also be compiled recursively by calling `make` on the project-maze-challenge-willpower directory, which will call make on its children directories.
+
+### Testing
+
+To test, uncomment out -DALG_TEST in the makefile, and call `make test`. Be sure to recompile `mazedata.a` properly by calling `make clean` and then `make` in the mazedata directory, making sure to comment out the unit test flag there.
+
+Then run ./move to see a unit test of the algorithms.
+
+### Assumptions
+
+The algorithms assume that the structure of the problem is as stated in the instructions, and that any avatar calling its decide functions know for sure that they want to move. In other words, they only pick directions instead of deciding whether a null-move is necessary.

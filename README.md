@@ -12,3 +12,4 @@ To build, run `make`.
 
 To clean up, run `make clean`.
 
+For instructions on how to run the maze, see the README.md file in the amstartup directory.

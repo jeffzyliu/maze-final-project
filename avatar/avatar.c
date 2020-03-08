@@ -170,7 +170,7 @@ void *avatar (void *arg)
         server_avatar_turn = receiveMessage(comm_sock, server_avatar_turn);         //getting the next server message
     }
     if (ntohl(server_avatar_turn.type) == AM_MAZE_SOLVED) {                     //if we solved the maze we will update our maze and print the exit message
-        maze_update(lastHeading, oldLoc, sentinel, maze, AvatarId);
+        if (AvatarId != 0) maze_update(lastHeading, oldLoc, sentinel, maze, AvatarId);
         if (ntohl(server_avatar_turn.maze_solved.nMoves)%nAvatars==AvatarId) {
             avatarTurned (true, filename, AvatarId, nAvatars, sentinel, oldLoc, pos, Direction, maze);
             exitGame(filename, server_avatar_turn, maze);

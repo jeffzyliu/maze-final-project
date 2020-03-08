@@ -94,7 +94,8 @@ bool set_neighbor(maze_t *maze, int x, int y, const int d, int neighbor_x, int n
     }
 
     if (x >= maze->width || y >= maze->height || neighbor_x >= maze->width || neighbor_y >= maze->height) {
-        fprintf(stderr, "Error: Coordinates must be less than height/width. Max x value: %d. Max y value: %d, (%d,%d)", maze->width-1, maze->height-1, x, y);
+        fprintf(stderr, "Error @ set_neighbor: Coordinates must be less than height/width. Max x value: %d. Max y value: %d, (%d,%d) (%d,%d) d: \n",
+                maze->width-1, maze->height-1, x, y, neighbor_x, neighbor_y, d);
         return false;
     }
 
@@ -161,7 +162,7 @@ int wall_count(maze_t *maze, int x, int y) {
     }
 
     if (x >= maze->width || y >= maze->height) {
-        fprintf(stderr, "Error: Coordinates must be less than height/width. Max x value: %d. Max y value: %d", maze->width-1, maze->height-1);
+        fprintf(stderr, "Error @ wall_count: Coordinates must be less than height/width. Max x value: %d. Max y value: %d, (%d,%d)\n", maze->width-1, maze->height-1, x, y);
         return -1;
     }
 
@@ -331,7 +332,7 @@ bool set_avatar(maze_t *maze, int x, int y, int avatar_id, bool status) {
     }
 
     if (x >= maze->width || y >= maze->height) {
-        fprintf(stderr, "Error: Coordinates must be less than height/width. Max x value: %d. Max y value: %d", maze->width-1, maze->height-1);
+        fprintf(stderr, "Error @ set_avatar: Coordinates must be less than height/width. Max x value: %d. Max y value: %d, (%d,%d), id: %d, status: %d\n", maze->width-1, maze->height-1, x, y, avatar_id, status);
         return false;
     }
 
@@ -387,7 +388,7 @@ int is_wall(maze_t *maze, int x, int y, const int d) {
     }
 
     if (x >= maze->width || y >= maze->height) {
-        fprintf(stderr, "Error: Coordinates must be less than height/width. Max x value: %d. Max y value: %d, (%d,%d)\n", maze->width-1, maze->height-1, x, y);
+        fprintf(stderr, "Error @ is_wall: Coordinates must be less than height/width. Max x value: %d. Max y value: %d, (%d,%d), direction: %d\n", maze->width-1, maze->height-1, x, y, d);
         return 5;
     }
 

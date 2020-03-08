@@ -48,6 +48,7 @@ void *avatar (void *arg)
     int comm_sock = socket(AF_INET, SOCK_STREAM, 0);
     if (comm_sock < 0) {
         perror("opening socket");
+        free(parameter);
         exitCode = 4;
         pthread_exit(&exitCode);
     }
@@ -59,6 +60,7 @@ void *avatar (void *arg)
     if (hostp == NULL) {
         fprintf(stderr, "unknown host '%s'\n", hostname);
         exitCode = 5;
+        free(parameter);
         pthread_exit(&exitCode);
     }  
     memcpy(&server.sin_addr, hostp->h_addr_list[0], hostp->h_length);
@@ -67,6 +69,7 @@ void *avatar (void *arg)
     if (connect(comm_sock, (struct sockaddr *)&server, sizeof(server)) < 0) {
         perror("connecting stream socket");
         exitCode = 6;
+        free(parameter);
         pthread_exit(&exitCode);
     }
     //keep trying to send the server a ready message until it is accepted
@@ -81,6 +84,7 @@ void *avatar (void *arg)
             close(comm_sock);
             exitCode = 7;
             status = false;
+            free(parameter);
             pthread_exit(&exitCode);
         }
         int receive = read(comm_sock, &server_avatar_turn, sizeof(AM_Message));
@@ -89,12 +93,13 @@ void *avatar (void *arg)
             exitCode = 8;
             close(comm_sock);
             status = false;
+            free(parameter);
             pthread_exit(&exitCode);
         } 
         if (IS_AM_ERROR(ntohl(server_avatar_turn.type))) {
             errorMessage(filename, server_avatar_turn);
         } 
-    } while (IS_AM_ERROR(ntohl(server_avatar_turn.type)) & status);
+    } while (IS_AM_ERROR(ntohl(server_avatar_turn.type)) && status);
 
     //getting the server response 
     int TurnId = ntohl(server_avatar_turn.avatar_turn.TurnId);

@@ -136,7 +136,7 @@ int main(int argc, char *argv[])
     } 
     //if it returns an error message
     if (IS_AM_ERROR(ntohl(server_message.type))) {
-        errorMessage(NULL, server_message);
+        fprintf(stderr, "Error receiving Message from Server\n");
         exit(9);
     } 
 
@@ -162,6 +162,7 @@ int main(int argc, char *argv[])
     fp = fopen(logfile, "w");
     if (fp == NULL) {
         fprintf(stderr, "error opening file\n");
+        free(logfile);
         exit(11);
     }
     time_t curtime;
@@ -174,6 +175,7 @@ int main(int argc, char *argv[])
     maze_t *maze = maze_new(height, width, nAvatars);
     if (maze == NULL) {
         fprintf(stderr, "Failed to create maze\n");
+        free(logfile);
         exit(10);
     }
     printf("Maze created\n");
@@ -186,6 +188,7 @@ int main(int argc, char *argv[])
         rc = pthread_create(&threads[i], NULL, avatar, (void *)parameter);
         if (rc) {
             printf("Error:unable to create thread, %d\n", rc);
+            free(logfile);
             exit(12);
         }
     }

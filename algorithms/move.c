@@ -72,8 +72,10 @@ int decide_maprighthand(int lastHeading, XYPos oldLoc, XYPos newLoc, maze_t *maz
  */ 
 void maze_update(int lastHeading, XYPos oldLoc, XYPos newLoc, maze_t *maze, int avatarID)
 {
+    // calculate the direction we moved in
     int direction = avatar_moved(oldLoc, newLoc);
-    set_avatar(maze, oldLoc.x, oldLoc.y, avatarID, false);
+    // update the avatar's location in the our local maze first
+    set_avatar(maze, oldLoc.x, oldLoc.y, avatarID, false); 
     set_avatar(maze, newLoc.x, newLoc.y, avatarID, true);
     if (direction != M_NULL_MOVE) { // moved in a direction, set new path in direction moved
         if (wall_count(maze, oldLoc.x, oldLoc.y) >= 3 && get_avatar(maze, oldLoc.x, oldLoc.y) == -1) { // exited a dead-end, mark as closed
@@ -81,14 +83,13 @@ void maze_update(int lastHeading, XYPos oldLoc, XYPos newLoc, maze_t *maze, int 
             set_neighbor(maze, oldLoc.x, oldLoc.y, direction, oldLoc.x, oldLoc.y); // cannot go forward
             set_neighbor(maze, newLoc.x, newLoc.y, turnAround(direction), newLoc.x, newLoc.y); // cannot go back
         } else {
-            set_neighbor(maze, oldLoc.x, oldLoc.y, direction, newLoc.x, newLoc.y); // mark as open
-            set_neighbor(maze, newLoc.x, newLoc.y, turnAround(direction), oldLoc.x, oldLoc.y); // can go back
+            set_neighbor(maze, oldLoc.x, oldLoc.y, direction, newLoc.x, newLoc.y); // mark as open forwards
+            set_neighbor(maze, newLoc.x, newLoc.y, turnAround(direction), oldLoc.x, oldLoc.y); // mark as open backwards
         }
     } else { // didn't move, set last heading to wall
         XYPos otherside = otherSide(lastHeading, oldLoc);
-        set_neighbor(maze, oldLoc.x, oldLoc.y, lastHeading, oldLoc.x, oldLoc.y); // cannot go through
-        
-        set_neighbor(maze, otherside.x, otherside.y, turnAround(lastHeading), otherside.x, otherside.y); // cannot come through
+        set_neighbor(maze, oldLoc.x, oldLoc.y, lastHeading, oldLoc.x, oldLoc.y); // cannot go forward
+        set_neighbor(maze, otherside.x, otherside.y, turnAround(lastHeading), otherside.x, otherside.y); // cannot go back
     }
 }
 
@@ -262,7 +263,7 @@ maze_t *create_server_maze()
 }
 
 /**
- * helper method to print out status reports without logfile.c
+ * helper function to print out status reports without logfile.c
  */ 
 char *direction_to_string(int direction)
 {
@@ -291,11 +292,14 @@ void test_rhf(maze_t *servermaze, XYPos target)
     avatar.x = 0;
     avatar.y = 2;
 
+    // simulate the last move to start the function off with some info
     int lastHeading = M_SOUTH;
     XYPos oldLoc;
     oldLoc.x = avatar.x;
     oldLoc.y = avatar.y - 1;
 
+    // simulate the client-server loop by checking our moves against the maze that we "can't see"
+    // and keeping tally of the number of checks we need to do as "turns"
     int turnCount;
     for (turnCount = 0; avatar_moved(target, avatar) != M_NULL_MOVE; turnCount++) {
         if (turnCount != 0) {
@@ -304,14 +308,13 @@ void test_rhf(maze_t *servermaze, XYPos target)
         lastHeading = decide_simplerighthand(lastHeading, oldLoc, avatar);
         oldLoc = avatar;
         printf("\nturn %d: avatar at (%d,%d) attempting to move %s", turnCount, avatar.x, avatar.y, direction_to_string(lastHeading));
-        avatar = check_neighbor(servermaze, avatar.x, avatar.y, lastHeading);
+        avatar = check_neighbor(servermaze, avatar.x, avatar.y, lastHeading); // pretend server ping
     }
     printf(" (success)\ngame ended at (%d,%d) [expected 2,0] in %d turns [expected 22]\n", avatar.x, avatar.y, turnCount);
 }
 
 /**
- * tests the enhanced alg
- * does not test for mutex locking and starvation
+ * tests the enhanced alg with dead end filling
  */ 
 void test_maprhf(maze_t *servermaze, XYPos target)
 {
@@ -320,10 +323,13 @@ void test_maprhf(maze_t *servermaze, XYPos target)
     avatar.x = 0;
     avatar.y = 2;
 
+    // same as mentioned earlier
     int lastHeading = M_SOUTH;
     XYPos oldLoc;
     oldLoc.x = avatar.x;
     oldLoc.y = avatar.y - 1;
+
+    // this time keep our own maze that we annotate as we learn about it
     maze_t *avatarmaze = maze_new(3, 3, 1);
     set_avatar(avatarmaze, 0, 2, 0, true);
 
@@ -331,14 +337,14 @@ void test_maprhf(maze_t *servermaze, XYPos target)
     for (turnCount = 0; turnCount < 20 && avatar_moved(target, avatar) != M_NULL_MOVE; turnCount++) {
         if (turnCount != 0) {
             avatar_moved(oldLoc, avatar) != 8 ? printf(" (success)") : printf(" (failed)");
-            maze_update(lastHeading, oldLoc, avatar, avatarmaze, 0);
+            maze_update(lastHeading, oldLoc, avatar, avatarmaze, 0); // update the maze on each successive turn
         }
-        lastHeading = decide_maprighthand(lastHeading, oldLoc, avatar, avatarmaze);
+        lastHeading = decide_maprighthand(lastHeading, oldLoc, avatar, avatarmaze); // use upgraded alg
         oldLoc = avatar;
         printf("\nturn %d: avatar at (%d,%d) attempting to move %s", turnCount, avatar.x, avatar.y, direction_to_string(lastHeading));
-        avatar = check_neighbor(servermaze, avatar.x, avatar.y, lastHeading);
+        avatar = check_neighbor(servermaze, avatar.x, avatar.y, lastHeading); // pretend server ping
     }
-    maze_update(lastHeading, oldLoc, avatar, avatarmaze, 0);
+    maze_update(lastHeading, oldLoc, avatar, avatarmaze, 0); // one final update after we finish the maze
     printf(" (success)\ngame ended at (%d,%d) [expected 2,0] in %d turns [expected 13]\n", avatar.x, avatar.y, turnCount);
     printf("\ncheck resultant maze for correct markings and dead-end-blocking:\n");
     unit_maze_print(avatarmaze, stdout);

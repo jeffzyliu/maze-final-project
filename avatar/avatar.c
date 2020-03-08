@@ -175,17 +175,18 @@ void *avatar (void *arg)
             avatarTurned (true, filename, AvatarId, nAvatars, sentinel, oldLoc, pos, Direction, maze);
             exitGame(filename, server_avatar_turn, maze);
         }
-        exitCode = 0; 
     }  
     if (ntohl(server_avatar_turn.type) != AM_MAZE_SOLVED) {     //if it is the other errors, we will print exit message and set appropriate exit code
         if (AvatarId == TurnId) {
             exitGame(filename, server_avatar_turn, maze);
         }
         exitCode = 13;
+        free(parameter);
+        close(comm_sock);
+        pthread_exit(&exitCode);
     }
     free(parameter);                                           //freeing the appropriate parameters
     close(comm_sock);
-    pthread_exit(&exitCode);
     return NULL;
 }
 

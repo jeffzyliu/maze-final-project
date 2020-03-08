@@ -174,7 +174,7 @@ int main(int argc, char *argv[])
     //create our global maze
     maze_t *maze = maze_new(height, width, nAvatars);
     if (maze == NULL) {
-        fprintf(stderr, "Failed to create maze\n");
+        fprintf(logfile, "Failed to create maze\n");
         free(logfile);
         exit(10);
     }

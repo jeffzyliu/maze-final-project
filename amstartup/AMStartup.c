@@ -136,7 +136,7 @@ int main(int argc, char *argv[])
     } 
     //if it returns an error message
     if (IS_AM_ERROR(ntohl(server_message.type))) {
-        errorMessage(NULL, server_message);
+        fprintf(stderr, "Error receiving Message from Server\n");
         exit(9);
     } 
 

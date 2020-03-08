@@ -20,6 +20,7 @@ void errorMessage (char *filename, AM_Message server_message)
 {
     FILE *fp = NULL;
     int errortype = ntohl(server_message.type);
+    //a switch statement that matches each error messages to the right one
     switch(errortype) {
         case AM_INIT_FAILED:
             if (ntohl(server_message.init_failed.ErrNum) == AM_INIT_TOO_MANY_AVATARS) {
@@ -53,12 +54,15 @@ void errorMessage (char *filename, AM_Message server_message)
         case AM_SERVER_OUT_OF_MEM:
             fprintf(fp, "Server cannot allocate enough memory to serve a maze\n");
             break;
+        case AM_SOCKET_BREAK:
+            fprintf(fp, "Socket Broke\n");
+            break;
     }
     fclose(fp);
 }
 
 /**
- * Checking if the server message is valid
+ * sending a message to the server with the new direction
  */
 int validMessageTurn (int comm_sock, AM_Message client, int AvatarId, int Direction, AM_Message server_avatar_turn)
 {
@@ -73,7 +77,10 @@ int validMessageTurn (int comm_sock, AM_Message client, int AvatarId, int Direct
     return 0;
 }
 
-AM_Message receiveMessage (char *filename, int comm_sock, AM_Message server_avatar_turn, int AvatarId, int TurnId)
+/**
+ * Getting the mssage from the server
+ */
+AM_Message receiveMessage (int comm_sock, AM_Message server_avatar_turn)
 {
     int receive = read(comm_sock, &server_avatar_turn, sizeof(AM_Message));
     //If it is less than or equal to 0, then the connection closed

@@ -27,5 +27,6 @@ clean:
 	rm -f $(LIBS)
 	rm -f $(OBJS)
 	rm -f $(PROG)
+	rm -f *core*
 
 unit: $(PROG)

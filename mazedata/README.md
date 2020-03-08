@@ -1,29 +1,17 @@
-/*
- * Willem Klein Wassink, CS50, Winter 2020
- * 
- * maze.h - header file for the client-side procedurally created maze
- * 
- * A maze is a 2d array of mazenode structs. It starts with all nodes
- * being null and creates them as an avatar requests to move into a place.
- * 
- * A mazenode is an element of a maze representing one square. See maze.c for more information
- * 
- */
+# CS50 Final Project
+## Willem Klein Wassink, Celina Tala, Jeff Liu, CS50 Winter 2020
 
-#ifndef __MAZE_H
-#define __MAZE_H
+### maze.c
 
-#include <stdio.h>
-#include <stdbool.h>
-#include <stdlib.h>
-#include "../amazing.h"
+*maze.c* defines a data structure `maze_t` that represents the avatar's knowledge of the maze on the client side. It is compiled into the *mazedata.a* library.
 
-// ------------------- global types
-typedef struct maze maze_t;
+### Usage
 
-// ------------------- functions
+*mazedata.a* is to be included within programs wish to make use of the maze data structure.
 
-// ------------------- set_wall
+### Methods
+
+```c
 /* Sets a maze's neighbor to a passed-in set of coordinates
  * 
  * Inputs:
@@ -38,7 +26,7 @@ typedef struct maze maze_t;
  */
 bool set_neighbor(maze_t *maze, int x, int y, const int d, int neighbor_x, int neighbor_y);
 
-// ------------------- maze_new
+
 /* Initializes a new maze
  * 
  * Inputs:
@@ -57,7 +45,7 @@ bool set_neighbor(maze_t *maze, int x, int y, const int d, int neighbor_x, int n
  */
 maze_t *maze_new(int height, int width, int numAvatars);
 
-// ------------------- wall_count
+
 /* Returns the number of walls a mazenode is neighbors with
  *
  * Inputs:
@@ -70,7 +58,7 @@ maze_t *maze_new(int height, int width, int numAvatars);
  */
 int wall_count(maze_t *maze, int x, int y);
 
-// ------------------- maze_delete
+
 /* Deletes all the mazenodes in a maze and then the maze itself
  * 
  * Inputs:
@@ -80,7 +68,7 @@ int wall_count(maze_t *maze, int x, int y);
  */
 void maze_delete(maze_t *maze);
 
-// ------------------- unit_mazenode_print
+
 /* Prints out the node at (x,y) in the maze
  * 
  * Inputs:
@@ -95,7 +83,7 @@ void maze_delete(maze_t *maze);
  */
 void unit_mazenode_print(maze_t *maze, int x, int y, FILE *fp);
 
-// ------------------- unit_maze_print
+
 /* Iterates over the entire maze, calling unit_mazenode_print on each location
  * 
  * Inputs:
@@ -104,7 +92,7 @@ void unit_mazenode_print(maze_t *maze, int x, int y, FILE *fp);
  */
 void unit_maze_print(maze_t *maze, FILE *fp);
 
-// ------------------- get_avatar
+
 /* gets the avatar with the lowest ID at given x,y
  * 
  * Inputs:
@@ -116,7 +104,8 @@ void unit_maze_print(maze_t *maze, FILE *fp);
  *      else returns the lowest avatarID
  */ 
 int get_avatar(maze_t *maze, int x, int y);
-// ------------------- set_avatar
+
+
 /* Puts an avatar of a given ID into a location in a maze
  * 
  * Inputs:
@@ -126,7 +115,7 @@ int get_avatar(maze_t *maze, int x, int y);
  */
 bool set_avatar(maze_t *maze, int x, int y, int avatar_id, bool status);
 
-// ------------------- check_neighbor
+
 /* Returns an XYPos of the coordinates of the neighbor of a given node in a given direction
  * 
  * Inputs:
@@ -140,7 +129,7 @@ bool set_avatar(maze_t *maze, int x, int y, int avatar_id, bool status);
  */
 XYPos check_neighbor(maze_t *maze, int x, int y, int d);
 
-// ------------------- is_wall
+
 /* Returns an int value based on the result. Indicates whether or not a node has a wall in a certain direction
  *
  * Inputs:
@@ -157,5 +146,14 @@ XYPos check_neighbor(maze_t *maze, int x, int y, int d);
  *      5 for too high coordinates
  */
 int is_wall(maze_t *maze, int x, int y, const int d);
+```
 
-#endif // __MAZE_H
+### Assumptions
+
+None except what is clear from the aformentioned information
+
+### Compilation
+
+To compile, run `make` in the parent directory. The makefile should recursively call `make` in each subdirectory.
+
+To test, uncomment the "-DUNIT_TEST" in this directory's makefile, uncomment the main method at the bottom of maze.c, run `make clean`, and then run `make unit`. Usage: "./maze".

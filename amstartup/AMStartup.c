@@ -192,7 +192,7 @@ int main(int argc, char *argv[])
     for (int i = 0; i < nAvatars; i++) {
         pthread_join(threads[i], (void**)&exitCode);
     }
-    
+    //we return the exit code from each of the threads and exit using that
     free(logfile);
     maze_delete(maze);
     return exitCode;

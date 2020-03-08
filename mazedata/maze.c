@@ -95,6 +95,7 @@ bool set_neighbor(maze_t *maze, int x, int y, const int d, int neighbor_x, int n
 
     if (x >= maze->width || y >= maze->height || neighbor_x >= maze->width || neighbor_y >= maze->height) {
         fprintf(stderr, "Error: Coordinates must be less than height/width. Max x value: %d. Max y value: %d, (%d,%d)", maze->width-1, maze->height-1, x, y);
+        unit_maze_print(maze, stdout);
         return false;
     }
 

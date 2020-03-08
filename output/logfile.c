@@ -112,7 +112,7 @@ void exitGame (char *filename, AM_Message finalMessage, maze_t *maze)
         int nAvatars = ntohl(finalMessage.maze_solved.nAvatars);
         int Difficulty = ntohl(finalMessage.maze_solved.Difficulty);
         int nMoves = ntohl(finalMessage.maze_solved.nMoves);
-        int Hash = ntohl(finalMessage.maze_solved.Hash);
+        unsigned int Hash = ntohl(finalMessage.maze_solved.Hash);
         char solvedMessage[100];
         sprintf(solvedMessage, "Mazed solved with %d avatars at Difficulty %d in %d moves at hash %u\n", nAvatars, Difficulty, nMoves, Hash);
         fprintf(fp, "%s", solvedMessage);

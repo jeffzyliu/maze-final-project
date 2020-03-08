@@ -162,7 +162,7 @@ int wall_count(maze_t *maze, int x, int y) {
     }
 
     if (x >= maze->width || y >= maze->height) {
-        fprintf(stderr, "Error @ wall_count: Coordinates must be less than height/width. Max x value: %d. Max y value: %d", maze->width-1, maze->height-1);
+        fprintf(stderr, "Error @ wall_count: Coordinates must be less than height/width. Max x value: %d. Max y value: %d, (%d,%d)\n", maze->width-1, maze->height-1, x, y);
         return -1;
     }
 
@@ -332,7 +332,7 @@ bool set_avatar(maze_t *maze, int x, int y, int avatar_id, bool status) {
     }
 
     if (x >= maze->width || y >= maze->height) {
-        fprintf(stderr, "Error @ set_avatar: Coordinates must be less than height/width. Max x value: %d. Max y value: %d\n", maze->width-1, maze->height-1);
+        fprintf(stderr, "Error @ set_avatar: Coordinates must be less than height/width. Max x value: %d. Max y value: %d, (%d,%d)\n", maze->width-1, maze->height-1, x, y);
         return false;
     }
 

@@ -29,9 +29,11 @@ void errorMessage (char *filename, AM_Message server_message)
                 fprintf(stderr, "Difficulty out of range\n");
             }
             return;
+        pthread_mutex_lock(&lock);
         fp = fopen(filename, "a");
         if (fp == NULL ){
             fprintf(fp, "failed to open file\n");
+            pthread_mutex_unlock(&lock);
         }
         case AM_NO_SUCH_AVATAR:
             fprintf(fp, "Received message from an Unknown AvatarId\n");
@@ -59,6 +61,7 @@ void errorMessage (char *filename, AM_Message server_message)
             break;
     }
     fclose(fp);
+    pthread_mutex_unlock(&lock);
 }
 
 /**

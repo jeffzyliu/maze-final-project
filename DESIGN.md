@@ -6,6 +6,7 @@
 The command line usage is: 
 `usage: ./AMStartup -n nAvatar -d Difficulty -h Hostname`
 
+
 where
 * nAvatar: is the number of avatars we want in our maze (from 1 to 10)
 * Difficulty: is the difficulty of our maze (from 0 to 9)
@@ -13,6 +14,7 @@ where
 
 We will be checking to see if the command line has all seven parameters. Because we utilize command line options, the order of the arguments does not matter.
 
+*Note: this should be called from the "amstartup" directory.*
 
 ### Input & Outputs
 #### Inputs
@@ -21,7 +23,7 @@ The only user interaction with the user is through the command line. Refer to us
 The program will take inputs from the server.
 
 #### Outputs
-Our program will maintain a single log file logging the actions of each Avatar. The first line of the log file should have the MazePort, AvatarId, and the date and time. It will then track the movements of each avatar, documenting which avatar moved and if the avatar ran into a wall. The file will either end with an error message or `AM_MAZE_SOLVED`. 
+Our program will maintain a single log file logging the actions of each Avatar. The first line of the log file should have the user, MazePort, and the date and time. It will then track the movements of each avatar, documenting which avatar moved and if the avatar ran into a wall. The file will either end with an error message or `AM_MAZE_SOLVED`. 
 
 The program will also output a ASCII user interface that prints out the maze and where each avatar is. With each movement, a new maze is printed out showcasing the new position of each avatar. The top of the graphic will explicitly state which avatar is moving to which position.
 
@@ -39,20 +41,25 @@ The program will also output a ASCII user interface that prints out the maze and
 
 * clientParameter
     * We create the `struct avatar_p` required to pass parameters into our avatar method
+
 * avatar
     * This is where each of the individual threads will start
     * Keeps track of the last move request and the last location as well as the updated location
     * Holds a loop where it listens for server messages and sends its move messages when necessary
-    * Updates the global maze when wall updates
+    * Updates the global maze with wall updates
+
 * move decider
     * Determines what move to attempt next based on the limited information it has
-    * Planned implementation: enhanced right-hand-follower where interprocess communication is used to expedite checking and block off dead ends
+    * Implementation: enhanced right-hand-follower where interprocess communication is used to expedite checking and block off dead ends, and dead-end blocking is enabled
+
+* maze update
+    * This is where we will update our global maze based one each server message
+
 * log writer
     * Function to write the results of messages to the logfile
     * This function will have a mutex lock on it so only one thread can access it at once
-* maze update
-    * This is where we will update our global maze based one each server message
-    * This will also have a mutex lock on it as only one thread should be able to upate the global maze at once
+
+    
 * UI writer
     * prints the status of the maze during every move at the command line
 
@@ -101,7 +108,7 @@ use avatar_moved to determine if we moved last time
 else (location did not change, movement failed):
     set proposed heading to the left of the last proposed heading
 check if our proposed direction will run into a wall by checking the move with our global map struct
-    if so, reprocess move heading until we head into a traversible or unknown direction
+    if so, turn left until we head into a traversible or unknown direction
 return proposed move heading
 ```
 
@@ -118,9 +125,9 @@ else:
 
 **maze_update**
 ```
-Extract message from AM_AVATAR_TURN
-Utilize avatar_moved to see if all of the avatars have moved
+Get the move that just happened or failed and the avatar ID from params
 Update the global mazenodes depending on which moves succeeded and which failed (failed = closed wall, success = open)
+Fill in the past square as unreachable if the avatar just exited a dead end (and no other avatars are behind)
 Update the avatar locations inside the maze data structure
 ```
 
@@ -145,7 +152,7 @@ print out the maze by doing the following:
         print the left wall
         for each column:
             print the intersections
-            (optional)print all bottom and side edges at each maze location, noting whether they're unexplored, open, or closed
+            print all bottom and side edges at each maze location, noting whether they're unexplored, open, or closed
             if a coordinate matches the location of an avatar, print the avatar number there
         print the right wall
     for the bottom row:
@@ -157,14 +164,15 @@ print an end divider of *** characters
 
 * Maze struct: represents full maze (interprocess global struct)
     * int width, int height
+    * int number of avatars in the maze
     * 2d array of mazenodes
 * Mazenodes: each represents one (x,y) location in the maze. 
     * contains its own coordinates for reference from inside
-    * contains four pointers to adjacent nodes that can be either walls, represented by a pointer to itself, unexplored, which is null, or open, which points to an adjacent node in the array
-    * contains an integer for avatarID which would be -1 if no avatar or 0-9 if an avatar is present
+    * contains four pointers to adjacent nodes in an array that can be either walls, represented by a pointer to itself, unexplored, which is null, or open, which points to an adjacent node in the 2d array
+    * contains array of booleans, one for each avatar. True if avatar is in this location, false otherwise.
 * avatar_p
-    * contains all six parameters necessary to start an avatar in a tuple so they can be passed together
-    * The parameters include avatarId, numAvatar, difficulty, hostname, mazeport, and filename.
+    * contains all seven parameters necessary to start an avatar in a tuple so they can be passed together
+    * The parameters include avatarId, numAvatars, difficulty, hostname, mazeport, and filename, and the global maze.
 
 * XYPos (amazing.h)
     * a struct that holds x and y coordinates
@@ -176,3 +184,4 @@ print an end divider of *** characters
 * AM_Message (amazing.h)
     * This is how the client and server communciates with each other
     * There are more specific messages within this data structure (refer to "amazing.h" for the exact messages)
+    * We added our own error message type for when the port disconnects

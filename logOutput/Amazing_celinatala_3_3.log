@@ -1,0 +1,422 @@
+celinatala 38593 Mon Mar  9 20:02:15 2020
+*****************************************
+Inserted 0 at 15,15
+Avatar 0 will not move and all other avatars will move here
+Avatar Locations: 0: (15, 15); 
+Inserted 1 at 15,16
+Avatar Locations: 0: (15, 15); 1: (15, 16); 
+Inserted 2 at 6,2
+Avatar Locations: 0: (15, 15); 1: (15, 16); 2: (6, 2); 
+Avatar 1 moved from 15, 17 to 15, 16
+Avatar Locations: 0: (15, 15); 1: (15, 16); 2: (6, 2); 
+Avatar 2 moved from 6, 3 to 6, 2
+Avatar Locations: 0: (15, 15); 1: (16, 16); 2: (6, 2); 
+Avatar 1 moved from 15, 16 to 16, 16
+Avatar Locations: 0: (15, 15); 1: (16, 16); 2: (7, 2); 
+Avatar 2 moved from 6, 2 to 7, 2
+Avatar Locations: 0: (15, 15); 1: (16, 16); 2: (7, 2); 
+Avatar 1 hit South wall
+Avatar Locations: 0: (15, 15); 1: (16, 16); 2: (7, 3); 
+Avatar 2 moved from 7, 2 to 7, 3
+Avatar Locations: 0: (15, 15); 1: (16, 16); 2: (7, 3); 
+Avatar 1 hit East wall
+Avatar Locations: 0: (15, 15); 1: (16, 16); 2: (7, 3); 
+Avatar 2 hit West wall
+Avatar Locations: 0: (15, 15); 1: (16, 15); 2: (7, 3); 
+Avatar 1 moved from 16, 16 to 16, 15
+Avatar Locations: 0: (15, 15); 1: (16, 15); 2: (7, 4); 
+Avatar 2 moved from 7, 3 to 7, 4
+Avatar Locations: 0: (15, 15); 1: (16, 15); 2: (7, 4); 
+Avatar 1 hit East wall
+Avatar Locations: 0: (15, 15); 1: (16, 15); 2: (6, 4); 
+Avatar 2 moved from 7, 4 to 6, 4
+Avatar Locations: 0: (15, 15); 1: (16, 15); 2: (6, 4); 
+Avatar 1 hit North wall
+Avatar Locations: 0: (15, 15); 1: (16, 15); 2: (6, 4); 
+Avatar 2 hit North wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (6, 4); 
+Avatar 2 hit West wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (6, 4); 
+Avatar 2 moved from 6, 4 to 6, 5
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (6, 5); 
+Avatar 2 hit West wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (6, 5); 
+Avatar 2 moved from 6, 5 to 6, 6
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (6, 6); 
+Avatar 2 moved from 6, 6 to 5, 6
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (5, 6); 
+Avatar 2 hit North wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (5, 6); 
+Avatar 2 hit West wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (5, 6); 
+Avatar 2 moved from 5, 6 to 5, 7
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (5, 7); 
+Avatar 2 hit West wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (5, 7); 
+Avatar 2 moved from 5, 7 to 5, 8
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (5, 8); 
+Avatar 2 moved from 5, 8 to 4, 8
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (4, 8); 
+Avatar 2 hit North wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (4, 8); 
+Avatar 2 hit West wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (4, 8); 
+Avatar 2 moved from 4, 8 to 4, 9
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (4, 9); 
+Avatar 2 hit West wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (4, 9); 
+Avatar 2 hit South wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (4, 9); 
+Avatar 2 moved from 4, 9 to 5, 9
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (5, 9); 
+Avatar 2 hit South wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (5, 9); 
+Avatar 2 moved from 5, 9 to 6, 9
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (6, 9); 
+Avatar 2 moved from 6, 9 to 6, 10
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (6, 10); 
+Avatar 2 hit West wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (6, 10); 
+Avatar 2 moved from 6, 10 to 6, 11
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (6, 11); 
+Avatar 2 hit West wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (6, 11); 
+Avatar 2 hit South wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (6, 11); 
+Avatar 2 hit East wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (6, 11); 
+Avatar 2 moved from 6, 11 to 6, 10
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (6, 10); 
+Avatar 2 moved from 6, 10 to 7, 10
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (7, 10); 
+Avatar 2 moved from 7, 10 to 7, 11
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (7, 11); 
+Avatar 2 hit South wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (7, 11); 
+Avatar 2 moved from 7, 11 to 8, 11
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (8, 11); 
+Avatar 2 hit South wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (8, 11); 
+Avatar 2 moved from 8, 11 to 9, 11
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (9, 11); 
+Avatar 2 moved from 9, 11 to 9, 12
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (9, 12); 
+Avatar 2 hit West wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (9, 12); 
+Avatar 2 hit South wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (9, 12); 
+Avatar 2 moved from 9, 12 to 10, 12
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (10, 12); 
+Avatar 2 moved from 10, 12 to 10, 13
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (10, 13); 
+Avatar 2 hit West wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (10, 13); 
+Avatar 2 hit South wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (10, 13); 
+Avatar 2 moved from 10, 13 to 11, 13
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (11, 13); 
+Avatar 2 hit South wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (11, 13); 
+Avatar 2 moved from 11, 13 to 12, 13
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (12, 13); 
+Avatar 2 hit South wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (12, 13); 
+Avatar 2 hit East wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (12, 13); 
+Avatar 2 moved from 12, 13 to 12, 12
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (12, 12); 
+Avatar 2 moved from 12, 12 to 13, 12
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (13, 12); 
+Avatar 2 moved from 13, 12 to 13, 13
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (13, 13); 
+Avatar 2 moved from 13, 13 to 13, 14
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (13, 14); 
+Avatar 2 hit West wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (13, 14); 
+Avatar 2 hit South wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (13, 14); 
+Avatar 2 moved from 13, 14 to 14, 14
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (14, 14); 
+Avatar 2 moved from 14, 14 to 14, 15
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (14, 15); 
+Avatar 2 hit West wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (14, 15); 
+Avatar 2 moved from 14, 15 to 14, 16
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (14, 16); 
+Avatar 2 moved from 14, 16 to 13, 16
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (13, 16); 
+Avatar 2 hit North wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (13, 16); 
+Avatar 2 moved from 13, 16 to 12, 16
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (12, 16); 
+Avatar 2 hit North wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (12, 16); 
+Avatar 2 moved from 12, 16 to 11, 16
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (11, 16); 
+Avatar 2 hit North wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (11, 16); 
+Avatar 2 hit West wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (11, 16); 
+Avatar 2 moved from 11, 16 to 11, 17
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (11, 17); 
+Avatar 2 hit West wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (11, 17); 
+Avatar 2 hit South wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (11, 17); 
+Avatar 2 moved from 11, 17 to 12, 17
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (12, 17); 
+Avatar 2 hit South wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (12, 17); 
+Avatar 2 moved from 12, 17 to 13, 17
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (13, 17); 
+Avatar 2 moved from 13, 17 to 13, 18
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (13, 18); 
+Avatar 2 hit West wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (13, 18); 
+Avatar 2 hit South wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (13, 18); 
+Avatar 2 moved from 13, 18 to 14, 18
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (14, 18); 
+Avatar 2 moved from 14, 18 to 14, 19
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (14, 19); 
+Avatar 2 moved from 14, 19 to 13, 19
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (13, 19); 
+Avatar 2 moved from 13, 19 to 12, 19
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (12, 19); 
+Avatar 2 hit North wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (12, 19); 
+Avatar 2 moved from 12, 19 to 11, 19
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (11, 19); 
+Avatar 2 hit North wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (11, 19); 
+Avatar 2 moved from 11, 19 to 10, 19
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (10, 19); 
+Avatar 2 moved from 10, 19 to 10, 18
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (10, 18); 
+Avatar 2 moved from 10, 18 to 11, 18
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (11, 18); 
+Avatar 2 moved from 11, 18 to 12, 18
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (12, 18); 
+Avatar 2 moved from 12, 18 to 11, 18
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (11, 18); 
+Avatar 2 moved from 11, 18 to 10, 18
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (10, 18); 
+Avatar 2 hit North wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (10, 18); 
+Avatar 2 moved from 10, 18 to 9, 18
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (9, 18); 
+Avatar 2 hit North wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (9, 18); 
+Avatar 2 hit West wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (9, 18); 
+Avatar 2 moved from 9, 18 to 9, 19
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (9, 19); 
+Avatar 2 moved from 9, 19 to 8, 19
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (8, 19); 
+Avatar 2 moved from 8, 19 to 8, 18
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (8, 18); 
+Avatar 2 moved from 8, 18 to 8, 17
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (8, 17); 
+Avatar 2 moved from 8, 17 to 9, 17
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (9, 17); 
+Avatar 2 hit East wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (9, 17); 
+Avatar 2 moved from 9, 17 to 9, 16
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (9, 16); 
+Avatar 2 hit East wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (9, 16); 
+Avatar 2 moved from 9, 16 to 9, 15
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (9, 15); 
+Avatar 2 hit East wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (9, 15); 
+Avatar 2 moved from 9, 15 to 9, 14
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (9, 14); 
+Avatar 2 moved from 9, 14 to 10, 14
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (10, 14); 
+Avatar 2 moved from 10, 14 to 10, 15
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (10, 15); 
+Avatar 2 moved from 10, 15 to 10, 16
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (10, 16); 
+Avatar 2 moved from 10, 16 to 10, 17
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (10, 17); 
+Avatar 2 moved from 10, 17 to 10, 16
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (10, 16); 
+Avatar 2 moved from 10, 16 to 10, 15
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (10, 15); 
+Avatar 2 moved from 10, 15 to 11, 15
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (11, 15); 
+Avatar 2 moved from 11, 15 to 12, 15
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (12, 15); 
+Avatar 2 moved from 12, 15 to 13, 15
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (13, 15); 
+Avatar 2 moved from 13, 15 to 12, 15
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (12, 15); 
+Avatar 2 moved from 12, 15 to 12, 14
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (12, 14); 
+Avatar 2 moved from 12, 14 to 11, 14
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (11, 14); 
+Avatar 2 hit West wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (11, 14); 
+Avatar 2 hit South wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (11, 14); 
+Avatar 2 moved from 11, 14 to 12, 14
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (12, 14); 
+Avatar 2 moved from 12, 14 to 12, 15
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (12, 15); 
+Avatar 2 moved from 12, 15 to 11, 15
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (11, 15); 
+Avatar 2 moved from 11, 15 to 10, 15
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (10, 15); 
+Avatar 2 moved from 10, 15 to 10, 14
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (10, 14); 
+Avatar 2 moved from 10, 14 to 9, 14
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (9, 14); 
+Avatar 2 moved from 9, 14 to 9, 13
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (9, 13); 
+Avatar 2 moved from 9, 13 to 8, 13
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (8, 13); 
+Avatar 2 moved from 8, 13 to 8, 12
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (8, 12); 
+Avatar 2 hit West wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (8, 12); 
+Avatar 2 moved from 8, 12 to 8, 13
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (8, 13); 
+Avatar 2 hit West wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (8, 13); 
+Avatar 2 moved from 8, 13 to 8, 14
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (8, 14); 
+Avatar 2 hit West wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (8, 14); 
+Avatar 2 hit South wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (8, 14); 
+Avatar 2 hit East wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (8, 14); 
+Avatar 2 moved from 8, 14 to 8, 13
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (8, 13); 
+Avatar 2 moved from 8, 13 to 9, 13
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (9, 13); 
+Avatar 2 moved from 9, 13 to 9, 14
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (9, 14); 
+Avatar 2 moved from 9, 14 to 9, 15
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (9, 15); 
+Avatar 2 hit West wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (9, 15); 
+Avatar 2 moved from 9, 15 to 9, 16
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (9, 16); 
+Avatar 2 hit West wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (9, 16); 
+Avatar 2 moved from 9, 16 to 9, 17
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (9, 17); 
+Avatar 2 moved from 9, 17 to 8, 17
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (8, 17); 
+Avatar 2 hit North wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (8, 17); 
+Avatar 2 moved from 8, 17 to 7, 17
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (7, 17); 
+Avatar 2 hit North wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (7, 17); 
+Avatar 2 hit West wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (7, 17); 
+Avatar 2 moved from 7, 17 to 7, 18
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (7, 18); 
+Avatar 2 hit West wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (7, 18); 
+Avatar 2 moved from 7, 18 to 7, 19
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (7, 19); 
+Avatar 2 moved from 7, 19 to 6, 19
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (6, 19); 
+Avatar 2 moved from 6, 19 to 6, 18
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (6, 18); 
+Avatar 2 moved from 6, 18 to 6, 17
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (6, 17); 
+Avatar 2 hit North wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (6, 17); 
+Avatar 2 hit West wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (6, 17); 
+Avatar 2 moved from 6, 17 to 6, 18
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (6, 18); 
+Avatar 2 moved from 6, 18 to 5, 18
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (5, 18); 
+Avatar 2 hit North wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (5, 18); 
+Avatar 2 moved from 5, 18 to 4, 18
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (4, 18); 
+Avatar 2 hit North wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (4, 18); 
+Avatar 2 hit West wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (4, 18); 
+Avatar 2 moved from 4, 18 to 4, 19
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (4, 19); 
+Avatar 2 hit West wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (4, 19); 
+Avatar 2 moved from 4, 19 to 5, 19
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (5, 19); 
+Avatar 2 hit East wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (5, 19); 
+Avatar 2 hit North wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (5, 19); 
+Avatar 2 moved from 5, 19 to 4, 19
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (4, 19); 
+Avatar 2 moved from 4, 19 to 4, 18
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (4, 18); 
+Avatar 2 moved from 4, 18 to 5, 18
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (5, 18); 
+Avatar 2 moved from 5, 18 to 6, 18
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (6, 18); 
+Avatar 2 moved from 6, 18 to 6, 19
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (6, 19); 
+Avatar 2 moved from 6, 19 to 7, 19
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (7, 19); 
+Avatar 2 hit East wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (7, 19); 
+Avatar 2 moved from 7, 19 to 7, 18
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (7, 18); 
+Avatar 2 hit East wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (7, 18); 
+Avatar 2 moved from 7, 18 to 7, 17
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (7, 17); 
+Avatar 2 moved from 7, 17 to 8, 17
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (8, 17); 
+Avatar 2 moved from 8, 17 to 8, 18
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (8, 18); 
+Avatar 2 moved from 8, 18 to 8, 19
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (8, 19); 
+Avatar 2 moved from 8, 19 to 9, 19
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (9, 19); 
+Avatar 2 hit East wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (9, 19); 
+Avatar 2 moved from 9, 19 to 9, 18
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (9, 18); 
+Avatar 2 moved from 9, 18 to 10, 18
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (10, 18); 
+Avatar 2 moved from 10, 18 to 10, 19
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (10, 19); 
+Avatar 2 moved from 10, 19 to 11, 19
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (11, 19); 
+Avatar 2 moved from 11, 19 to 12, 19
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (12, 19); 
+Avatar 2 moved from 12, 19 to 13, 19
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (13, 19); 
+Avatar 2 moved from 13, 19 to 14, 19
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (14, 19); 
+Avatar 2 moved from 14, 19 to 15, 19
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (15, 19); 
+Avatar 2 hit East wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (15, 19); 
+Avatar 2 moved from 15, 19 to 15, 18
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (15, 18); 
+Avatar 2 hit East wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (15, 18); 
+Avatar 2 moved from 15, 18 to 15, 17
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (15, 17); 
+Avatar 2 hit East wall
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (15, 17); 
+Avatar 2 moved from 15, 17 to 15, 16
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (15, 16); 
+Avatar 2 moved from 15, 16 to 16, 16
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (16, 16); 
+Avatar 2 moved from 16, 16 to 16, 15
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (16, 15); 
+Avatar 2 moved from 16, 15 to 15, 15
+Avatar Locations: 0: (15, 15); 1: (15, 15); 2: (15, 15); 
+Mazed solved with 3 avatars at Difficulty 3 in 593 moves at hash 817648945

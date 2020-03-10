@@ -20,21 +20,23 @@ void errorMessage (char *filename, AM_Message server_message)
 {
     FILE *fp = NULL;
     int errortype = ntohl(server_message.type);
+    if (errortype == AM_INIT_FAILED) {
+        if (ntohl(server_message.init_failed.ErrNum) == AM_INIT_TOO_MANY_AVATARS) {
+            fprintf(stderr, "Avatar out of range\n");
+        } else if (ntohl(server_message.init_failed.ErrNum)== AM_INIT_BAD_DIFFICULTY) {
+            fprintf(stderr, "Difficulty out of range\n");
+        }
+        return;
+    }
+    pthread_mutex_lock(&lock);
+    fp = fopen(filename, "a");
+    if (fp == NULL ){
+        fprintf(fp, "failed to open file\n");
+        pthread_mutex_unlock(&lock);
+        return;
+    }
     //a switch statement that matches each error messages to the right one
     switch(errortype) {
-        case AM_INIT_FAILED:
-            if (ntohl(server_message.init_failed.ErrNum) == AM_INIT_TOO_MANY_AVATARS) {
-                fprintf(stderr, "Avatar out of range\n");
-            } else if (ntohl(server_message.init_failed.ErrNum)== AM_INIT_BAD_DIFFICULTY) {
-                fprintf(stderr, "Difficulty out of range\n");
-            }
-            return;
-        pthread_mutex_lock(&lock);
-        fp = fopen(filename, "a");
-        if (fp == NULL ){
-            fprintf(fp, "failed to open file\n");
-            pthread_mutex_unlock(&lock);
-        }
         case AM_NO_SUCH_AVATAR:
             fprintf(fp, "Received message from an Unknown AvatarId\n");
             break;
